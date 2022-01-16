@@ -1,0 +1,35 @@
+{
+   "messages": [
+      "sendMessage",
+      "receiveMessage"
+   ],
+   "React": [
+      "createElement",
+      "Component"
+   ],
+   "ReactDOM": [
+      "hydrate",
+      "findDOMNode"
+   ],
+   "Flux": [
+      "Store",
+      "connectStores"
+   ],
+   "modal": [
+      "openModal",
+      "openModalLazy"
+   ],
+   "contextMenu": [
+      "openContextMenu",
+      "closeContextMenu"
+   ],
+   "channels": [
+      "getChannelId",
+      "getLastSelectedChannelId",
+      "getVoiceChannelId"
+   ],
+   "constants": [
+      "Endpoints",
+      "API_HOST"
+   ]
+}

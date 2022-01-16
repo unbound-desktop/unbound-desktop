@@ -1,0 +1,25 @@
+const { colors } = require('@constants');
+
+module.exports = class Addon {
+   constructor(instance) {
+      this.instance = instance;
+   }
+
+   start() { }
+
+   stop() { }
+
+   load() { }
+
+   get color() {
+      return colors.primary;
+   }
+
+   get manifest() {
+      return this.data;
+   }
+
+   get dependencies() {
+      return this.data.dependencies;
+   }
+};

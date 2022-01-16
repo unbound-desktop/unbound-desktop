@@ -1,0 +1,37 @@
+{
+   "exclude": [
+      "node_modules"
+   ],
+   "compilerOptions": {
+      "baseUrl": "./src/",
+      "paths": {
+         "@structures": [
+            "src/structures/*"
+         ],
+         "@modules": [
+            "src/modules/*"
+         ],
+         "@webpack": [
+            "src/modules/webpack/*"
+         ],
+         "@utilities": [
+            "src/modules/utilities/*"
+         ],
+         "@constants": [
+            "src/modules/constants/*"
+         ],
+         "@patcher": [
+            "src/modules/patcher/*"
+         ],
+         "@api": [
+            "src/core/api/*"
+         ],
+         "@managers": [
+            "src/managers/*"
+         ],
+         "@data": [
+            "src/data/*"
+         ]
+      }
+   }
+}
