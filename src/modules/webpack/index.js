@@ -47,7 +47,7 @@ module.exports = new class Webpack {
       return res;
    }
 
-   getModule(filter, { all = false, cache = true, force = false } = {}) {
+   getModule(filter, { all = false, cache = true, force = false, defaultExport = false } = {}) {
       if (typeof (filter) !== 'function') return void 0;
 
       const finder = this.request(cache);
@@ -68,6 +68,11 @@ module.exports = new class Webpack {
          if (!mdl || mdl === window) continue;
 
          if (typeof mdl == 'object') {
+            if (!defaultExport && mdl.default != null && search(mdl.default, id)) {
+               if (!all) return mdl;
+               found.push(mdl);
+            }
+
             if (search(mdl, id)) {
                if (!all) return mdl;
                found.push(mdl);
@@ -106,14 +111,14 @@ module.exports = new class Webpack {
    }
 
    getByDisplayName(...options) {
-      const [names, { bulk = false, default: defaultExport = false, wait = false, ...rest }] = this.parseOptions(options);
+      const [names, { bulk = false, default: defaultExport = true, wait = false, ...rest }] = this.parseOptions(options);
 
       if (!bulk && !wait) {
-         return this.getModule(this.filters.byDisplayName(names[0]), rest);
+         return this.getModule(this.filters.byDisplayName(names[0]), { defaultExport, ...rest });
       }
 
       if (wait && !bulk) {
-         return this.waitFor(this.filters.byDisplayName(names[0]), rest);
+         return this.waitFor(this.filters.byDisplayName(names[0]), { defaultExport, ...rest });
       }
 
       if (bulk) {
