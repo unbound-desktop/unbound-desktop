@@ -51,7 +51,7 @@ module.exports = class Manager extends Emitter {
             this.assignData(data, res.instance, entry);
 
             res.instance?.start?.();
-            this.entities.set(data.id, res);
+            this.entities.set(basename(entry), res);
             this.logger.log(`${data.name} was loaded.`);
          } catch (e) {
             this.logger.error(`Failed to start ${basename(entry)}`, e);
@@ -66,7 +66,7 @@ module.exports = class Manager extends Emitter {
             set: () => this.logger.error('Entity manifest changes are forbidden at runtime.')
          },
          id: {
-            get: () => data.id,
+            get: () => basename(path),
             set: () => this.logger.error('Entity ID changes are forbidden at runtime.')
          },
          path: {
