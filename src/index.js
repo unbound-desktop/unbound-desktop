@@ -4,9 +4,11 @@ const path = require('path');
 
 alias(path.resolve(__dirname, '..'));
 require('./compilers');
+require('./fixes');
 
 const Unbound = require('@structures/unbound');
 const Webpack = require('@modules/webpack');
+
 
 const { windowOptions } = ipcRenderer.sendSync('UNBOUND_GET_WINDOW_DATA');
 

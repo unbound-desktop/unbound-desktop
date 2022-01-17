@@ -4,7 +4,7 @@
    "description": "A discord client aimed at giving the user control, stability, a beautiful appearance, and freeing them from the shackles of other client modifications.",
    "main": "src/index.js",
    "keywords": [],
-   "author": "",
+   "author": "eternal",
    "license": "ISC",
    "dependencies": {
       "coffeescript": "^2.6.1",
