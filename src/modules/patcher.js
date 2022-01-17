@@ -38,7 +38,7 @@ module.exports = new class Patcher {
 
          for (const before of patch.patches.filter(e => e.type === 'before')) {
             try {
-               const tempArgs = before.callback(this, args, patch.originalFunction.bind(this));
+               const tempArgs = before.callback(this, args, patch.original.bind(this));
                if (Array.isArray(tempArgs)) args = tempArgs;
             } catch (error) {
                Logger.error(`Could not fire before patch for ${patch.func} of ${before.caller}`, error);
