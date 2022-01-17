@@ -33,5 +33,5 @@ exports.avatar = 'https://cdn.discordapp.com/icons/887015827134632057/3008ebb24c
 
 exports.entities = {
    'themes': (...args) => new (require('@structures/theme'))(...args),
-   'plugins': (...args) => new (require('@structures/plugin'))(...args)
+   'plugins': (...args) => new args[0](...args)
 };
