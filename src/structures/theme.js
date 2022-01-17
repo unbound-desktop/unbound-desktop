@@ -23,7 +23,6 @@ module.exports = class Theme extends Addon {
    }
 
    apply() {
-      console.log('applied');
       try {
          const stylesheet = document.createElement('style');
          stylesheet.id = this.id;
