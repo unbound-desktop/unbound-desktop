@@ -6,7 +6,7 @@ Module._extensions['.js'] = (mdl, filename) => {
    const content = readFileSync(filename, 'utf-8');
 
    const { code } = sucrase.transform(content, {
-      transforms: ['jsx', 'flow'],
+      transforms: ['jsx', 'flow', 'imports'],
       filePath: filename
    });
 

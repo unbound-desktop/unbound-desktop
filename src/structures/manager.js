@@ -43,7 +43,7 @@ module.exports = class Manager extends Emitter {
             }
 
             const res = {
-               instance: constants.entities[this.type](Entity, data),
+               instance: constants.entities[this.type](Entity.__esModule ? Entity.default : Entity, data),
                path: entry
             };
 
