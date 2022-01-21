@@ -2,6 +2,7 @@ const { lstatSync, existsSync, readdirSync, mkdirSync, readFileSync } = require(
 const { constants, utilities: { capitalize } } = require('@modules');
 const { resolve, join, basename } = require('path');
 const Logger = require('@modules/logger');
+const { watch } = require('chokidar');
 const Emitter = require('events');
 
 module.exports = class Manager extends Emitter {
@@ -13,6 +14,26 @@ module.exports = class Manager extends Emitter {
 
       this.entities = new Map();
       this.logger = new Logger('Manager', capitalize(this.type));
+
+      this.watcher = watch(this.path, {
+         ignored: /((^|[\/\\])\..|.git|node_modules)/,
+         ignoreInitial: true,
+         persistent: true
+      });
+
+      this.watcher.on('addDir', (path) => {
+         try {
+            this.reload(basename(path));
+         } catch { }
+      });
+
+      this.watcher.on('unlinkDir', (path) => {
+         try {
+            this.unload(basename(path));
+         } catch { }
+      });
+
+      window.addEventListener('unload', () => this.watcher.close());
    }
 
    loadAll() {
@@ -90,7 +111,12 @@ module.exports = class Manager extends Emitter {
          this.entities.set(id, res);
          this.emit('load', id, res);
 
-         if (true/*enabled*/) this.start(id);
+         /**
+          * @requires Settings
+          * @todo
+          */
+
+         if (true) this.start(id);
 
          return res;
       } catch (e) {
@@ -108,8 +134,8 @@ module.exports = class Manager extends Emitter {
             entity.instance.start?.();
             entity.started = true;
             this.logger.log(`${entity.data.name} was started.`);
-         } catch(e) {
-            this.logger.error(`Coudln't start ${entity.data.name}`, e)
+         } catch (e) {
+            this.logger.error(`Coudln't start ${entity.data.name}`, e);
          }
       }
    }
@@ -121,8 +147,8 @@ module.exports = class Manager extends Emitter {
             entity.instance.stop?.();
             entity.started = false;
             this.logger.log(`${entity.data.name} was stopped.`);
-         } catch(e) {
-            this.logger.error(`Couldn't stop ${entity.data.name}`, e)
+         } catch (e) {
+            this.logger.error(`Couldn't stop ${entity.data.name}`, e);
          }
       }
    }
@@ -132,18 +158,19 @@ module.exports = class Manager extends Emitter {
       if (entity) {
          try {
             entity.instance?.stop?.();
+            const cache = Object.keys(require.cache).filter(c => c.includes(id));
+            cache.map(c => delete require.cache[c]);
+            this.entities.delete(id);
             this.logger.log(`${entity.data.name} was stopped & unloaded.`);
          } catch (e) {
             this.logger.error(`FATAL: ${id} was not able to unload properly, a reload using CTRL+R is recommended.`, e);
          }
-
-         this.entities.delete(id);
       }
    }
 
    reload(id) {
       let entity = this.entities.get(id);
-      
+
       try {
          if (!entity) {
             return this.load(id);
@@ -151,7 +178,7 @@ module.exports = class Manager extends Emitter {
 
          this.unload(id);
          this.load(id);
-      } catch(e) {
+      } catch (e) {
          throw new Error(`Couldn't reload ${id}`, e);
       }
 
