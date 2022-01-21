@@ -7,14 +7,16 @@ require('./compilers');
 require('./fixes');
 
 const Unbound = require('@structures/unbound');
+const Manager = require('@structures/manager');
 const Webpack = require('@modules/webpack');
-
 
 const { windowOptions } = ipcRenderer.sendSync('UNBOUND_GET_WINDOW_DATA');
 
 if (!windowOptions.webPreferences.nativeWindowOpen) {
    window.__SPLASH__ = true;
-   require('@managers/themes');
+
+   const Themes = new Manager('themes');
+   Themes.loadAll();
 }
 
 Webpack.ready.then(() => window.unbound = new Unbound());
