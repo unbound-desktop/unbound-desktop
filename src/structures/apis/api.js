@@ -1,8 +1,8 @@
-const { logger } = require('@modules');
+const Logger = require('@modules/logger');
 
 module.exports = class API {
    name = this.constructor.name;
-   logger = new logger('API', this.name);
+   logger = new Logger('API', this.name);
 
    start() { }
    stop() { }

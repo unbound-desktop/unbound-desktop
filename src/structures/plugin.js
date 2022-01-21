@@ -1,11 +1,11 @@
 const Addon = require('@structures/addon');
-const { logger } = require('@modules');
+const Logger = require('@modules/logger');
 
 module.exports = class Plugin extends Addon {
    constructor(instance, data) {
       super(instance, data);
 
-      this.logger = new logger('Plugin', data.name);
+      this.logger = new Logger('Plugin', data.name);
       this.settingsTab = null;
    }
 

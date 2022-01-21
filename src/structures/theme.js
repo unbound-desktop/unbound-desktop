@@ -1,12 +1,12 @@
 const Addon = require('@structures/addon');
-const { logger } = require('@modules');
+const Logger = require('@modules/logger');
 const { resolve } = require('path');
 
 module.exports = class Theme extends Addon {
    constructor(instance, data) {
       super(instance, data);
 
-      this.logger = new logger('Theme', data.name);
+      this.logger = new Logger('Theme', data.name);
    }
 
    start() {

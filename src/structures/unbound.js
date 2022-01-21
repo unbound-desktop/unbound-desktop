@@ -1,25 +1,34 @@
-const { logger } = require('@modules');
+const APIManager = require('@structures/apis/manager');
+const Manager = require('@structures/manager');
+const { addAlias } = require('module-alias');
+const Logger = require('@modules/logger');
 
 module.exports = class Unbound {
    constructor() {
-      this.init();
+      this.logger = new Logger('Core');
 
-      this.logger = new logger('Core');
-      // this.modules = require('../core/modules');
+      this.init();
    }
 
    async init() {
-      this.webpack = require('@webpack');
+      // addAlias('@components', '../modules/components');
 
-      this.apis = require('@structures/apis/manager');
-      await this.apis.start();
+      this.webpack = require('@webpack');
+      require('@core/patches');
+
+      const APIs = new APIManager();
+      await APIs.start();
+      this.apis = APIs.apis;
 
       this.utilities = require('@utilities');
       this.constants = require('@constants');
 
       this.managers = {
-         plugins: require('@managers/plugins'),
-         themes: require('@managers/themes')
+         plugins: new Manager('plugins'),
+         themes: new Manager('themes')
       };
+
+      this.managers.themes.loadAll();
+      this.managers.plugins.loadAll();
    }
 };
