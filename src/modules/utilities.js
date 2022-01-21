@@ -1,7 +1,86 @@
+/**
+ * Most of these were taken from PC Compat.
+ * @copyright https://github.com/Strencher
+ * @url https://github.com/strencher-kernel/pc-compat/blob/dev/src/renderer/powercord/util.ts
+ */
+
 module.exports = new class Util {
    constructor() {
       this.bindAll(this, Reflect.ownKeys(this.__proto__));
    }
+
+   sleep(time) {
+      return new Promise(f => setTimeout(f, time));
+   }
+
+   async waitFor(selector) {
+      let element = document.querySelector(selector);
+
+      while (!element && (element = document.querySelector(selector))) {
+         await this.sleep(1);
+      };
+
+      return element;
+   }
+
+   findInReactTree(tree, filter, options = {}) {
+      return this.findInTree(tree, filter, { ...options, walkable: ['props', 'children'] });
+   };
+
+   getReactInstance(element) {
+      return element['__reactFiber$'];
+   };
+
+   getOwnerInstance(node, filter = _ => true) {
+      if (!node) return null;
+      const fiber = getReactInstance(node);
+      let current = fiber;
+
+      const matches = () => filter(current?.stateNode);
+
+      while (!matches()) {
+         current = current?.return;
+      }
+
+      return current?.stateNode ?? null;
+   };
+
+   findInTree(tree = {}, filter = _ => _, { ignore = [], walkable = [], maxProperties = 100 } = {}) {
+      let stack = [tree];
+      const wrapFilter = function (...args) {
+         try {
+            return Reflect.apply(filter, this, args);
+         } catch {
+            return false;
+         }
+      };
+
+      while (stack.length && maxProperties) {
+         const node = stack.shift();
+         if (wrapFilter(node)) return node;
+
+         if (Array.isArray(node)) {
+            stack.push(...node);
+         } else if (typeof node === 'object' && node !== null) {
+            if (walkable.length) {
+               for (const key in node) {
+                  const value = node[key];
+                  if (~walkable.indexOf(key) && !~ignore.indexOf(key)) {
+                     stack.push(value);
+                  }
+               }
+            } else {
+               for (const key in node) {
+                  const value = node[key];
+                  if (node && ~ignore.indexOf(key)) continue;
+
+                  stack.push(value);
+               }
+            }
+         }
+         maxProperties--;
+      }
+   };
 
    uuid(length = 30) {
       let uuid = '';
