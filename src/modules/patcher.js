@@ -121,10 +121,10 @@ module.exports = new class Patcher {
          id: get.patches.count,
          callback,
          unpatch: () => {
-            get.patches.splice(get.patches.findIndex(p => p.id === child.id && p.type === type), 1);
+            get.patches.splice(get.patches.findIndex(p => p.id === patch.id && p.type === type), 1);
 
             if (get.patches.length <= 0) {
-               const index = this.patches.findIndex(p => p.module == module && p.func == func);
+               const index = this.patches.findIndex(p => p.mdl == mdl && p.func == func);
                this.patches[index].unpatch();
                this.patches.splice(index, 1);
             }
