@@ -7,7 +7,7 @@ module.exports = new class Patcher {
    constructor() {
       this.patches = [];
 
-      bindAll(this, ['unpatchAll', 'after', 'before', 'after']);
+      bindAll(this, ['unpatchAll', 'after', 'before', 'instead']);
    }
 
    getPatchesByCaller(id) {
@@ -45,10 +45,10 @@ module.exports = new class Patcher {
             }
          }
 
-         const instead = patch.patches.filter(e => e.type === 'instead');
-         if (!instead.length) res = patch.original.apply(this, args);
+         const insteads = patch.patches.filter(e => e.type === 'instead');
+         if (!insteads.length) res = patch.original.apply(this, args);
 
-         else for (const instead of insteadPatches) {
+         else for (const instead of insteads) {
             try {
                const ret = instead.callback(this, args, patch.original.bind(this));
                if (typeof (ret) !== 'undefined') res = ret;

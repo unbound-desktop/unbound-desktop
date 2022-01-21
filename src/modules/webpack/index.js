@@ -35,7 +35,7 @@ module.exports = new class Webpack {
          Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(this));
       }));
 
-      bindAll(this, ['getByProps', 'getByDisplayName', 'getModule']);
+      bindAll(this, ['getByProps', 'getByDisplayName', 'getModule', 'getModules']);
    }
 
    request(cache = true) {
@@ -47,7 +47,7 @@ module.exports = new class Webpack {
       return res;
    }
 
-   getModule(filter, { all = false, cache = true, force = false, defaultExport = false } = {}) {
+   getModule(filter, { all = false, cache = true, force = false, defaultExport = true } = {}) {
       if (typeof (filter) !== 'function') return void 0;
 
       const finder = this.request(cache);
@@ -68,19 +68,14 @@ module.exports = new class Webpack {
          if (!mdl || mdl === window) continue;
 
          if (typeof mdl == 'object') {
-            if (!defaultExport && mdl.default != null && search(mdl.default, id)) {
-               if (!all) return mdl;
-               found.push(mdl);
-            }
-
             if (search(mdl, id)) {
                if (!all) return mdl;
                found.push(mdl);
             }
 
             if (mdl.__esModule && mdl.default != null && search(mdl.default, id)) {
-               if (!all) return mdl.default;
-               found.push(mdl.default);
+               if (!all) return defaultExport ? mdl.default : mdl;
+               found.push(defaultExport ? mdl.default : mdl);
             }
 
             if (force && mdl.__esModule) for (const key in mdl) {
