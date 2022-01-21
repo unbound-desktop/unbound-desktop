@@ -26,11 +26,14 @@
          "@api": [
             "src/core/api/*"
          ],
-         "@managers": [
-            "src/managers/*"
-         ],
          "@data": [
             "src/data/*"
+         ],
+         "@root": [
+            "./"
+         ],
+         "@core": [
+            "src/core"
          ]
       }
    }
