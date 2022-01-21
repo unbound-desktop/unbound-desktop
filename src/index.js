@@ -4,7 +4,6 @@ const path = require('path');
 
 alias(path.resolve(__dirname, '..'));
 require('./compilers');
-require('./fixes');
 
 const Unbound = require('@structures/unbound');
 const Manager = require('@structures/manager');
