@@ -1,4 +1,4 @@
-exports.consoleStyles = {
+exports.console = {
    success: {
       'background-color': '#6bffb2',
       'color': 'black',

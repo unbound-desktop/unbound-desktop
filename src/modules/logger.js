@@ -1,5 +1,5 @@
 const { parseStyleObject } = require('@utilities');
-const { consoleStyles } = require('@constants');
+const { console } = require('@constants');
 
 module.exports = class Logger {
    constructor(...name) {
@@ -7,7 +7,7 @@ module.exports = class Logger {
 
       const tag = this.name.map(n => `%c${n}`);
 
-      Object.entries(consoleStyles).map(([type, style]) => {
+      Object.entries(console).map(([type, style]) => {
          const styles = [];
 
          tag.map((_, index) => {
@@ -22,13 +22,13 @@ module.exports = class Logger {
             styles.push(parseStyleObject(style));
          });
 
-         this[type] = ((...args) => {
-            return console.log(
-               tag.join(''),
-               ...styles,
-               ...args
-            );
-         }).bind(this);
+         const handler = (...args) => window.console.log(
+            tag.join(''),
+            ...styles,
+            ...args
+         );
+
+         this[type] = handler.bind(this);
       });
    }
 };
