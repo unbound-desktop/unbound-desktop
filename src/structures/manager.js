@@ -31,7 +31,7 @@ module.exports = class Manager extends Emitter {
             set: () => this.logger.error('Entity manifest changes are forbidden at runtime.')
          },
          id: {
-            get: () => data.id,
+            get: () => basename(path),
             set: () => this.logger.error('Entity ID changes are forbidden at runtime.')
          },
          path: {
