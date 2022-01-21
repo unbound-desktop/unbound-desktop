@@ -12,8 +12,6 @@ module.exports = class Manager extends Emitter {
 
       this.entities = new Map();
       this.logger = new logger('Manager', this.constructor.name);
-
-      this.loadAll();
    }
 
    loadAll() {
@@ -51,8 +49,10 @@ module.exports = class Manager extends Emitter {
             this.assignData(data, res.instance, entry);
 
             res.instance?.start?.();
+
             this.entities.set(basename(entry), res);
             this.logger.log(`${data.name} was loaded.`);
+            this.emit('load', basename(entry), res);
          } catch (e) {
             this.logger.error(`Failed to start ${basename(entry)}`, e);
          }
