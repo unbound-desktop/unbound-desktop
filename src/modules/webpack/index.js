@@ -35,7 +35,7 @@ module.exports = new class Webpack {
          Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(this));
       }));
 
-      bindAll(this, ['getByProps', 'getByDisplayName', 'getModule', 'getModules']);
+      bindAll(this, ['getByProps', 'getByDisplayName', 'getModule', 'getModules', 'getByDefaultString']);
    }
 
    request(cache = true) {
@@ -145,6 +145,26 @@ module.exports = new class Webpack {
       return null;
    }
 
+   getByDefaultString(...options) {
+      const [props, { bulk = false, wait = false, ...rest }] = this.parseOptions(options);
+
+      if (!bulk && !wait) {
+         return this.getModule(this.filters.byDefaultString(...props), rest);
+      }
+
+      if (wait && !bulk) {
+         return this.waitFor(this.filters.byDefaultString(...props), rest);
+      }
+
+      if (bulk) {
+         const filters = props.map((propsArray) => this.filters.byDefaultString(...propsArray)).concat({ wait, ...rest });
+
+         return this.bulk(...filters);
+      }
+
+      return null;
+   }
+
    async waitFor(filter, { retries = 100, all = false, forever = false, delay = 50 } = {}) {
       for (let i = 0; (i < retries || forever); i++) {
          const module = this.getModule(filter, { all, cache: false });
@@ -188,7 +208,11 @@ module.exports = new class Webpack {
          byDisplayName: (name, def) => (mdl) => {
             if (!mdl || (def && !mdl.default)) return false;
             return typeof mdl === 'function' && mdl.displayName === name;
-         }
+         },
+         byDefaultString: (...strings) => (mdl) => {
+            if (!mdl?.default) return false;
+            return strings.every(s => mdl.default.toString().includes(s))
+         } 
       };
    }
 
@@ -212,6 +236,10 @@ module.exports = new class Webpack {
 
    get findByDisplayName() {
       return this.getByDisplayName;
+   }
+
+   get findByDefaultString() {
+      return this.getByDefaultString;
    }
 
    get findModule() {
