@@ -15,6 +15,10 @@
       "Store",
       "connectStores"
    ],
+   "Dispatcher": [
+      "_dispatch",
+      "dirtyDispatch"
+   ],
    "modal": [
       "openModal",
       "openModalLazy"

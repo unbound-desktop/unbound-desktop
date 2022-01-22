@@ -1,6 +1,5 @@
 const APIManager = require('@structures/apis/manager');
 const Manager = require('@structures/manager');
-const { addAlias } = require('module-alias');
 const Logger = require('@modules/logger');
 
 module.exports = class Unbound {
@@ -11,8 +10,6 @@ module.exports = class Unbound {
    }
 
    async init() {
-      // addAlias('@components', '../modules/components');
-
       this.webpack = require('@webpack');
       require('@core/patches');
 
