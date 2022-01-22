@@ -9,14 +9,19 @@ module.exports = class Theme extends Addon {
       this.logger = new Logger('Theme', data.name);
    }
 
-   start() {
-      const splash = this.data.splash ?? this.data.splashTheme;
-      if (window.__SPLASH__ && splash) {
-         this.instance = require(resolve(this.path, splash));
+   start(css) {
+      if (css) {
+         this.instance = css;
+      } else {
+         const splash = this.data.splash ?? this.data.splashTheme;
+         if (window.__SPLASH__ && splash) {
+            const res = require(resolve(this.path, splash));
+            this.instance = typeof res == 'function' ? new res(res, this.data) : res;
+         }
       }
 
       if (document.readyState === 'loading') {
-         return window.onload = this.apply.bind(this);
+         return window.addEventListener('load', this.apply.bind(this));
       }
 
       this.apply();

@@ -32,6 +32,12 @@ exports.colors = {
 exports.avatar = 'https://cdn.discordapp.com/icons/887015827134632057/3008ebb24c7217aa7dccee05603b2935.png?size=128&quality=lossless';
 
 exports.entities = {
-   'themes': (...args) => new (require('@structures/theme'))(...args),
+   'themes': (instance, data) => {
+      const isJS = typeof instance == 'function';
+      if (isJS) return new instance(instance, data);
+
+      const Theme = require('@structures/theme');
+      return new Theme(instance, data);
+   },
    'plugins': (...args) => new args[0](...args)
 };
