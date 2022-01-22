@@ -7,7 +7,17 @@ module.exports = new class Patcher {
    constructor() {
       this.patches = [];
 
-      bindAll(this, ['unpatchAll', 'after', 'before', 'instead']);
+      bindAll(this, ['unpatchAll', 'after', 'before', 'instead', 'create']);
+   }
+
+   create(name) {
+      return {
+         getPatchesByCaller: this.getPatchesByCaller,
+         instead: (...args) => this.instead(name, ...args),
+         after: (...args) => this.after(name, ...args),
+         before: (...args) => this.before(name, ...args),
+         unpatchAll: () => this.unpatchAll(name)
+      };
    }
 
    getPatchesByCaller(id) {
