@@ -12,12 +12,6 @@ module.exports = class Theme extends Addon {
    start(css) {
       if (css) {
          this.instance = css;
-      } else {
-         const splash = this.data.splash ?? this.data.splashTheme;
-         if (window.__SPLASH__ && splash) {
-            const res = require(resolve(this.path, splash));
-            this.instance = typeof res == 'function' ? new res(res, this.data) : res;
-         }
       }
 
       if (document.readyState === 'loading') {

@@ -89,7 +89,10 @@ module.exports = class Manager extends Emitter {
             throw new Error(`${id} is missing the manifest keys "name" or "id"`);
          }
 
-         const Entity = require(resolve(this.path, entry, data.main ?? ''));
+         const Entity = window.__SPLASH__ && data.splash ?
+            require(resolve(this.path, entry, data.splash)) :
+            require(resolve(this.path, entry, data.main ?? ''));
+
          const id = basename(entry);
 
          try {
