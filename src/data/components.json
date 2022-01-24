@@ -1,0 +1,71 @@
+{
+   "Button": {
+      "props": [
+         "DropdownSizes"
+      ]
+   },
+   "FormNotice": {
+      "name": "FormNotice"
+   },
+   "Card": {
+      "name": "Card"
+   },
+   "Clickable": {
+      "name": "Clickable"
+   },
+   "Spinner": {
+      "name": "Spinner"
+   },
+   "FormTitle": {
+      "name": "FormTitle"
+   },
+   "FormItem": {
+      "name": "FormItem"
+   },
+   "FormText": {
+      "name": "FormText"
+   },
+   "HeaderBar": {
+      "name": "HeaderBar"
+   },
+   "TabBar": {
+      "name": "TabBar"
+   },
+   "Text": {
+      "name": "Text"
+   },
+   "Flex": {
+      "name": "Flex"
+   },
+   "Tooltip": {
+      "props": [
+         "TooltipContainer"
+      ],
+      "prop": "TooltipContainer"
+   },
+   "RelativeTooltip": {
+      "props": [
+         "TooltipContainer"
+      ],
+      "prop": "default"
+   },
+   "Menu": {
+      "props": [
+         "MenuGroup"
+      ],
+      "assign": {
+         "default": "Menu"
+      }
+   },
+   "Divider": {
+      "name": "FormDivider"
+   },
+   "Switch": {
+      "name": "Switch"
+   },
+   "Markdown": {
+      "props": [
+         "rules"
+      ]
+   }
+}

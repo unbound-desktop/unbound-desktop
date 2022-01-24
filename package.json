@@ -17,6 +17,7 @@
       "@structures": "src/structures",
       "@modules": "src/modules",
       "@webpack": "src/modules/webpack",
+      "@components": "src/components",
       "@utilities": "src/modules/utilities",
       "@constants": "src/modules/constants",
       "@patcher": "src/modules/patcher",
