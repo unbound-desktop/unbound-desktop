@@ -1,8 +1,10 @@
 const { appendCSS } = require('@utilities');
 const styles = require('./styles');
 
-for (const style of Object.keys(styles)) {
-   appendCSS(`unbound-core-${style}`, styles[style]);
+if (!window.__SPLASH__) {
+   for (const style of Object.keys(styles)) {
+      appendCSS(`unbound-core-${style}`, styles[style]);
+   }
 }
 
 require('fs')

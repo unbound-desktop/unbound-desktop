@@ -43,11 +43,15 @@ after('unbound-settings', SettingsView.prototype, 'getPredicateSections', (_, ar
             label: 'Settings',
             element: Settings
          },
-         ...Object.keys(unbound.managers).map(m => ({
-            section: capitalize(m),
-            label: capitalize(m),
-            element: m.panel
-         })),
+         ...Object.keys(unbound.managers).map(m => {
+            const Manager = unbound.managers[m];
+
+            return {
+               section: capitalize(m),
+               label: capitalize(m),
+               element: Manager.panel
+            };
+         }),
          { section: 'DIVIDER' }
       );
 

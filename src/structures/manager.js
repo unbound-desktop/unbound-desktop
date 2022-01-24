@@ -1,7 +1,6 @@
 const { lstatSync, existsSync, readdirSync, mkdirSync, readFileSync } = require('fs');
 const { constants, utilities: { capitalize } } = require('@modules');
 const { resolve, join, basename } = require('path');
-const Components = require('@core/components');
 const Logger = require('@modules/logger');
 const { watch } = require('chokidar');
 const Emitter = require('events');
@@ -16,15 +15,19 @@ module.exports = class Manager extends Emitter {
       this.entities = new Map();
       this.logger = new Logger('Manager', capitalize(this.type));
 
+      this.panel = () => {
+         const { Manager } = require('@core/components');
+         const { React } = require('@webpack/common');
+
+         return React.createElement(Manager, {
+            type: this.type,
+         });
+      };
+
       this.watcher = watch(this.path, {
          ignored: /((^|[\/\\])\..|.git|node_modules)/,
          ignoreInitial: true,
          persistent: true
-      });
-
-      this.panel = (props) => React.createElement(Components.Manager, {
-         type: this.type,
-         ...props
       });
 
       this.watcher.on('addDir', (path) => {
