@@ -35,7 +35,14 @@ module.exports = new class Webpack {
          Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(this));
       }));
 
-      bindAll(this, ['getByProps', 'getByDisplayName', 'getModule', 'getModules', 'getByDefaultString']);
+      bindAll(this, [
+         'bulk',
+         'getByProps',
+         'getByDisplayName',
+         'getModule',
+         'getModules',
+         'getByDefaultString'
+      ]);
    }
 
    request(cache = true) {
@@ -211,8 +218,8 @@ module.exports = new class Webpack {
          },
          byDefaultString: (...strings) => (mdl) => {
             if (!mdl?.default) return false;
-            return strings.every(s => mdl.default.toString().includes(s))
-         } 
+            return strings.every(s => mdl.default.toString().includes(s));
+         }
       };
    }
 
