@@ -1,7 +1,7 @@
 const { lstatSync, existsSync, readdirSync, mkdirSync, readFileSync } = require('fs');
 const { constants, utilities: { capitalize } } = require('@modules');
 const { resolve, join, basename } = require('path');
-const { Manager } = require('@core/components');
+const Components = require('@core/components');
 const Logger = require('@modules/logger');
 const { watch } = require('chokidar');
 const Emitter = require('events');
@@ -22,7 +22,7 @@ module.exports = class Manager extends Emitter {
          persistent: true
       });
 
-      this.panel = (props) => React.createElement(Manager, {
+      this.panel = (props) => React.createElement(Components.Manager, {
          type: this.type,
          ...props
       });
