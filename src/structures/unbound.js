@@ -11,11 +11,11 @@ module.exports = class Unbound {
 
    async init() {
       this.webpack = require('@webpack');
-      require('@core/patches');
 
       const APIs = new APIManager();
       await APIs.start();
       this.apis = APIs.apis;
+      require('@core/patches');
 
       this.utilities = require('@utilities');
       this.constants = require('@constants');
