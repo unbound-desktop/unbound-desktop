@@ -1,6 +1,8 @@
-const fs = require('fs');
+require('fs')
+   .readdirSync(__dirname)
+   .filter(file => file !== require('path').basename(__filename)).map(file => {
+      const items = file.split('.');
+      items.splice(items.length - 1, 1);
 
-// Gather everything from current dir and export it
-fs.readdirSync(__dirname).filter(file => file !== 'index.js').map(file => {
-   module.exports[file.replace(/\.js(|x)|\.ts(|x)|\.coffee/, '')] = require(`${__dirname}/${file}`);
-});
+      module.exports[items.join('.')] = require(`${__dirname}/${file}`);
+   });
