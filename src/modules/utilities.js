@@ -93,6 +93,13 @@ module.exports = new class Util {
       return uuid;
    }
 
+   appendCSS(id, css) {
+      const stylesheet = document.createElement('style');
+      stylesheet.id = id ?? 'Unknown';
+      stylesheet.innerHTML = css;
+      return document.head.appendChild(stylesheet);
+   }
+
    bindAll(ctx, array) {
       if (!ctx || !['function', 'object'].includes(typeof ctx)) {
          throw new TypeError('bindAll\'s first argument must be of type function');
@@ -124,4 +131,6 @@ module.exports = new class Util {
 
       return Object.entries(style).map(([a, b]) => `${a}: ${b};`).join(line ? '\n' : ' ');
    }
+
+   noop() { }
 };
