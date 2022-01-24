@@ -1,0 +1,32 @@
+.unbound-addon-card {
+   position: relative;
+   border-radius: 4px;
+   background: var(--deprecated-card-editable-bg);
+   border-left: 5px solid var(--entity-color);
+   flex-grow: 1;
+   padding: 15px;
+   margin: 10px 10px 10px 0;
+}
+
+.unbound-addon-type-icon {
+   margin-right: 2.5px;
+   vertical-align: -2.5px;
+}
+
+.unbound-addon-header {
+   display: flex;
+   padding-bottom: 10px;
+}
+
+.unbound-addon-name {
+   font-weight: 500;
+}
+
+.unbound-addon-controls {
+   margin-left: auto;
+   display: flex;
+}
+
+.unbound-addon-description div[class*='paragraph'] {
+   margin-bottom: 0;
+}
