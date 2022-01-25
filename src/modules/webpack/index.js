@@ -5,59 +5,55 @@
 *  @link https://github.com/strencher-kernel/pc-compat/blob/dev/src/renderer/modules/webpack.ts
 */
 
-const { uuid, bindAll } = require('@utilities');
+const { uuid } = require('@utilities');
 const modules = require('@data/modules');
 
-module.exports = new class Webpack {
-   constructor() {
-      this.instance = null;
+const common = {};
 
-      this.common = {};
-      this.ready = this.available.then(() => new Promise(async ready => {
-         const [Dispatcher, { ActionTypes } = {}] = await this.getByProps(
+module.exports = class Webpack {
+   instance = null;
+
+   static get common() {
+      return common;
+   }
+
+   static async init() {
+      return await Webpack.#available.then(() => new Promise(async ready => {
+         const [Dispatcher, { ActionTypes } = {}] = await Webpack.getByProps(
             ['dirtyDispatch'], ['API_HOST', 'ActionTypes'],
             { cache: false, bulk: true, wait: true, forever: true }
          );
 
          const listener = function () {
-            Dispatcher.unsubscribe(ActionTypes.START_SESSION, listener.bind(this));
+            Dispatcher.unsubscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
 
             const names = Object.keys(modules);
-            const results = this.bulk(...Object.values(modules).map(m => this.filters.byProps(...m)));
+            const results = Webpack.bulk(...Object.values(modules).map(m => Webpack.filters.byProps(...m)));
 
             for (let i = 0; i < results.length; i++) {
-               this.common[names[i]] = results[i];
+               Webpack.common[names[i]] = results[i];
             }
 
             ready(true);
          };
 
-         Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(this));
+         Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
       }));
-
-      bindAll(this, [
-         'bulk',
-         'getByProps',
-         'getByDisplayName',
-         'getModule',
-         'getModules',
-         'getByDefaultString'
-      ]);
    }
 
-   request(cache = true) {
-      if (cache && this.instance) return this.instance;
+   static #request(cache = true) {
+      if (cache && Webpack.instance) return Webpack.instance;
 
-      const res = window[this.global].push([[uuid()], [], p => p]);
-      if (res) this.instance = res;
+      const res = window[Webpack.#global].push([[uuid()], [], p => p]);
+      if (res) Webpack.instance = res;
 
       return res;
    }
 
-   getModule(filter, { all = false, cache = true, force = false, defaultExport = true } = {}) {
+   static getModule(filter, { all = false, cache = true, force = false, defaultExport = true } = {}) {
       if (typeof (filter) !== 'function') return void 0;
 
-      const finder = this.request(cache);
+      const finder = Webpack.#request(cache);
       const found = [];
 
       if (!finder) return;
@@ -104,87 +100,87 @@ module.exports = new class Webpack {
       return all ? found : found[0];
    }
 
-   getModules(filter) {
-      return this.getModule(filter, { all: true });
+   static getModules(filter) {
+      return Webpack.getModule(filter, { all: true });
    }
 
-   parseOptions(args, filter = o => typeof (o) === 'object' && !Array.isArray(o)) {
+   static #parseOptions(args, filter = o => typeof (o) === 'object' && !Array.isArray(o)) {
       return [args, filter(args[args.length - 1]) ? args.pop() : {}];
    }
 
-   getByDisplayName(...options) {
-      const [names, { bulk = false, default: defaultExport = true, wait = false, ...rest }] = this.parseOptions(options);
+   static getByDisplayName(...options) {
+      const [names, { bulk = false, default: defaultExport = true, wait = false, ...rest }] = Webpack.#parseOptions(options);
 
       if (!bulk && !wait) {
-         return this.getModule(this.filters.byDisplayName(names[0]), { defaultExport, ...rest });
+         return Webpack.getModule(Webpack.filters.byDisplayName(names[0]), { defaultExport, ...rest });
       }
 
       if (wait && !bulk) {
-         return this.waitFor(this.filters.byDisplayName(names[0]), { defaultExport, ...rest });
+         return Webpack.#waitFor(Webpack.filters.byDisplayName(names[0]), { defaultExport, ...rest });
       }
 
       if (bulk) {
-         const filters = names.map(filters.map(this.filters.byDisplayName)).concat({ wait, cache });
+         const filters = names.map(filters.map(Webpack.filters.byDisplayName)).concat({ wait, cache });
 
-         return this.bulk(...filters);
+         return Webpack.bulk(...filters);
       }
 
       return null;
    }
 
-   getByProps(...options) {
-      const [props, { bulk = false, wait = false, ...rest }] = this.parseOptions(options);
+   static getByProps(...options) {
+      const [props, { bulk = false, wait = false, ...rest }] = Webpack.#parseOptions(options);
 
       if (!bulk && !wait) {
-         return this.getModule(this.filters.byProps(...props), rest);
+         return Webpack.getModule(Webpack.filters.byProps(...props), rest);
       }
 
       if (wait && !bulk) {
-         return this.waitFor(this.filters.byProps(...props), rest);
+         return Webpack.waitFor(Webpack.filters.byProps(...props), rest);
       }
 
       if (bulk) {
-         const filters = props.map((propsArray) => this.filters.byProps(...propsArray)).concat({ wait, ...rest });
+         const filters = props.map((propsArray) => Webpack.filters.byProps(...propsArray)).concat({ wait, ...rest });
 
-         return this.bulk(...filters);
+         return Webpack.bulk(...filters);
       }
 
       return null;
    }
 
-   getByDefaultString(...options) {
-      const [props, { bulk = false, wait = false, ...rest }] = this.parseOptions(options);
+   static getByDefaultString(...options) {
+      const [props, { bulk = false, wait = false, ...rest }] = Webpack.#parseOptions(options);
 
       if (!bulk && !wait) {
-         return this.getModule(this.filters.byDefaultString(...props), rest);
+         return Webpack.getModule(Webpack.filters.byDefaultString(...props), rest);
       }
 
       if (wait && !bulk) {
-         return this.waitFor(this.filters.byDefaultString(...props), rest);
+         return Webpack.#waitFor(Webpack.filters.byDefaultString(...props), rest);
       }
 
       if (bulk) {
-         const filters = props.map((propsArray) => this.filters.byDefaultString(...propsArray)).concat({ wait, ...rest });
+         const filters = props.map((propsArray) => Webpack.filters.byDefaultString(...propsArray)).concat({ wait, ...rest });
 
-         return this.bulk(...filters);
+         return Webpack.bulk(...filters);
       }
 
       return null;
    }
 
-   async waitFor(filter, { retries = 100, all = false, forever = false, delay = 50 } = {}) {
+   static async #waitFor(filter, { retries = 100, all = false, forever = false, delay = 50 } = {}) {
       for (let i = 0; (i < retries || forever); i++) {
-         const module = this.getModule(filter, { all, cache: false });
+         const module = Webpack.getModule(filter, { all, cache: false });
          if (module) return module;
          await new Promise(res => setTimeout(res, delay));
       }
    }
 
-   bulk(...options) {
-      const [filters, { wait = false, ...rest }] = this.parseOptions(options);
+   static bulk(...options) {
+      const [filters, { wait = false, ...rest }] = Webpack.#parseOptions(options);
 
       const found = new Array(filters.length);
-      const search = wait ? this.waitFor : this.getModule;
+      const search = wait ? Webpack.#waitFor : Webpack.getModule;
       const wrapped = filters.map(filter => (m) => {
          try {
             return filter(m);
@@ -193,7 +189,7 @@ module.exports = new class Webpack {
          }
       });
 
-      const res = search.call(this, (module) => {
+      const res = search.call(Webpack, (module) => {
          for (let i = 0; i < wrapped.length; i++) {
             const filter = wrapped[i];
             if (typeof filter !== 'function' || !filter(module) || found[i] != null) continue;
@@ -209,7 +205,7 @@ module.exports = new class Webpack {
       return found;
    }
 
-   get filters() {
+   static get filters() {
       return {
          byProps: (...mdls) => (mdl) => mdls.every(k => mdl[k]),
          byDisplayName: (name, def) => (mdl) => {
@@ -223,9 +219,9 @@ module.exports = new class Webpack {
       };
    }
 
-   get available() {
+   static get #available() {
       return new Promise(async cb => {
-         while (typeof window[this.global] == 'undefined' || window[this.global].length < 1) {
+         while (typeof window[Webpack.#global] == 'undefined' || window[Webpack.#global].length < 1) {
             await new Promise(setImmediate);
          }
 
@@ -233,27 +229,27 @@ module.exports = new class Webpack {
       });
    }
 
-   get global() {
+   static get #global() {
       return 'webpackChunkdiscord_app';
    }
 
-   get findByProps() {
-      return this.getByProps;
+   static get findByProps() {
+      return Webpack.getByProps;
    }
 
-   get findByDisplayName() {
-      return this.getByDisplayName;
+   static get findByDisplayName() {
+      return Webpack.getByDisplayName;
    }
 
-   get findByDefaultString() {
-      return this.getByDefaultString;
+   static get findByDefaultString() {
+      return Webpack.getByDefaultString;
    }
 
-   get findModule() {
-      return this.getModule;
+   static get findModule() {
+      return Webpack.getModule;
    }
 
-   get findModules() {
-      return this.getModules;
+   static get findModules() {
+      return Webpack.getModules;
    }
 };
