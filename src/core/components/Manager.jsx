@@ -9,7 +9,7 @@ module.exports = class extends React.PureComponent {
       this.entities = {
          unbound: [...unbound.managers[this.type]?.entities?.values() ?? []],
          powercord: [],
-         bd: []
+         BetterDiscord: []
       };
 
       if (this.type == 'plugins' && window.powercord?.pluginManager) {
@@ -19,9 +19,9 @@ module.exports = class extends React.PureComponent {
       }
 
       if (this.type == 'plugins' && window.BdApi?.Plugins) {
-         this.entities.bd.push(...[...BdApi.Plugins.getAll()]);
+         this.entities.BetterDiscord.push(...[...BdApi.Plugins.getAll()]);
       } else if (this.type == 'themes' && window.BdApi?.Themes) {
-         this.entities.bd.push(...[...BdApi.Themes.getAll()]);
+         this.entities.BetterDiscord.push(...[...BdApi.Themes.getAll()]);
       }
 
       this.state = {

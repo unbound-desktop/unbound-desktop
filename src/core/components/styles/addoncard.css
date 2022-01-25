@@ -9,17 +9,20 @@
 }
 
 .unbound-addon-type-icon {
-   margin-right: 2.5px;
-   vertical-align: -2.5px;
+   margin-left: 7.5px;
+   color: var(--text-muted);
 }
 
 .unbound-addon-header {
    display: flex;
    padding-bottom: 10px;
+   align-items: center;
 }
 
 .unbound-addon-name {
    font-weight: 500;
+   padding-right: 7.5px;
+   border-right: 1px solid var(--background-modifier-accent);
 }
 
 .unbound-addon-controls {

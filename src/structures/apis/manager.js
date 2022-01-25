@@ -1,6 +1,5 @@
 const { logger } = require('@modules');
 const Logger = new logger('APIs');
-const fs = require('fs');
 
 module.exports = class APIs {
    constructor() {

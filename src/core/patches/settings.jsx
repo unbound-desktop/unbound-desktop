@@ -1,9 +1,8 @@
 const { getByDisplayName } = require('@webpack');
-const { React } = require('@webpack/common');
 const { capitalize } = require('@utilities');
 const { after } = require('@patcher');
 
-const { Settings, Manager } = require('@core/components');
+const { Settings } = require('@core/components');
 
 const blacklisted = {
    labels: ['Powercord', 'BetterDiscord'],
