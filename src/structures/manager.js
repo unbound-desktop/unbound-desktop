@@ -207,4 +207,8 @@ module.exports = class Manager extends Emitter {
    isEnabled(id) {
       return true;
    }
+
+   toggle(id) {
+      this.emit('toggle', id);
+   }
 };
