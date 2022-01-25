@@ -28,15 +28,46 @@ module.exports = new class Util {
    };
 
    getReactInstance(element) {
-      return element['__reactFiber$'];
+      if (!element) return null;
+
+      return element[Object.keys(element ?? {}).find(p =>
+         p.indexOf('__reactFiber') ||
+         p.indexOf('__reactInternalInstance')
+      )];
    };
+
+   getNestedType(comp) {
+      if (!comp) return null;
+
+      const Ref = Symbol.for('react.forward_ref');
+      const Element = Symbol.for('react.element');
+      const Memo = Symbol.for('react.memo');
+
+      switch (comp.$$typeof) {
+         case Ref:
+            if (returnParent && !comp.render.$$typeof) return component;
+            return this.getNestedType(comp.render);
+         case Element:
+         case Memo:
+            if (returnParent && !comp.type.$$typeof) return comp;
+            return this.getNestedType(comp.type);
+         default:
+            return comp;
+      }
+   }
 
    getOwnerInstance(node, filter = _ => true) {
       if (!node) return null;
-      const fiber = getReactInstance(node);
+      const fiber = this.getReactInstance(node);
       let current = fiber;
 
-      const matches = () => filter(current?.stateNode);
+      const matches = () => {
+         if (!current?.stateNode || typeof current.type === 'string') return false;
+         const type = this.getNestedType(current);
+         if (!type) return false;
+
+         return type && filter(current?.stateNode);
+      };
 
       while (!matches()) {
          current = current?.return;

@@ -6,18 +6,20 @@ alias(path.resolve(__dirname, '..'));
 require('./compilers');
 
 const Webpack = require('@modules/webpack');
-const { windowOptions } = ipcRenderer.sendSync('UNBOUND_GET_WINDOW_DATA');
 
+const { windowOptions } = ipcRenderer.sendSync('UNBOUND_GET_WINDOW_DATA');
 if (!windowOptions.webPreferences.nativeWindowOpen) {
    window.__SPLASH__ = true;
+
+   require('./splash');
 
    const Manager = require('@structures/manager');
    const Themes = new Manager('themes');
    Themes.loadAll();
 }
 
-Webpack.ready.then(() => {
+Webpack.init().then(() => {
    const Unbound = require('@structures/unbound');
 
-   window.unbound = new Unbound();
+   global.unbound = new Unbound();
 });
