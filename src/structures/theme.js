@@ -1,13 +1,12 @@
 const Addon = require('@structures/addon');
 const Logger = require('@modules/logger');
-const { resolve } = require('path');
 
 module.exports = class Theme extends Addon {
    constructor(instance, data) {
       super(instance, data);
 
       this.logger = new Logger('Theme', data.name);
-      this.settings = unbound.apis.settings.makeStore(this.id);
+      this.settings = window.unbound?.apis.settings.makeStore(this.id);
    }
 
    start(css) {

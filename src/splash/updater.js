@@ -11,7 +11,6 @@ try {
    const Instance = getOwnerInstance(document.querySelector('#splash'));
    const Splash = Instance.constructor;
 
-   console.log(Instance, Splash.prototype);
    Patcher.after(Splash.prototype, 'render', (_, args, res) => {
       console.log(_, args, res);
    });
