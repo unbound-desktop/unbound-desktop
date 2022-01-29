@@ -36,6 +36,12 @@ module.exports = new class Util {
       )];
    };
 
+   getNestedProp(object, path) {
+      return path.split('.').reduce((parent, key) => {
+         return parent && parent[key];
+      }, object);
+   }
+
    getNestedType(comp) {
       if (!comp) return null;
 
