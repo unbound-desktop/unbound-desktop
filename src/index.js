@@ -1,6 +1,9 @@
 const { ipcRenderer } = require('electron');
 const alias = require('module-alias');
+const Module = require('module');
 const path = require('path');
+
+Module.globalPaths.push(path.resolve(__dirname, '..', 'node_modules'));
 
 alias(path.resolve(__dirname, '..'));
 require('./compilers');
