@@ -1,9 +1,7 @@
-window.resizeTo(1000, 1000);
 const Webpack = require('@webpack');
 
 const { logger } = require('@modules');
 const Logger = new logger('Splash', 'Webpack');
-
 
 const call = Function.prototype.call;
 Function.prototype.call = function (...args) {
