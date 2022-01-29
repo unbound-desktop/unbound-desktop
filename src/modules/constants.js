@@ -1,3 +1,10 @@
+const path = require('path');
+
+exports.paths = {
+   root: path.join(__dirname, '..', '..'),
+   settings: path.join(__dirname, '..', '..', 'settings')
+};
+
 exports.console = {
    success: {
       'background-color': '#6bffb2',
