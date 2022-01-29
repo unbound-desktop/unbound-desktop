@@ -24,25 +24,25 @@ module.exports = class Manager extends Emitter {
          });
       };
 
-      this.watcher = watch(this.path, {
-         ignored: /((^|[\/\\])\..|.git|node_modules)/,
-         ignoreInitial: true,
-         persistent: true
-      });
+      // this.watcher = watch(this.path, {
+      //    ignored: /((^|[\/\\])\..|.git|node_modules)/,
+      //    ignoreInitial: true,
+      //    persistent: true
+      // });
 
-      this.watcher.on('addDir', (path) => {
-         try {
-            this.reload(basename(path));
-         } catch { }
-      });
+      // this.watcher.on('addDir', (path) => {
+      //    try {
+      //       this.reload(basename(path));
+      //    } catch { }
+      // });
 
-      this.watcher.on('unlinkDir', (path) => {
-         try {
-            this.unload(basename(path));
-         } catch { }
-      });
+      // this.watcher.on('unlinkDir', (path) => {
+      //    try {
+      //       this.unload(basename(path));
+      //    } catch { }
+      // });
 
-      window.addEventListener('unload', () => this.watcher.close());
+      // window.addEventListener('unload', () => this.watcher.close());
    }
 
    loadAll() {
