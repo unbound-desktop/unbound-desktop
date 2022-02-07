@@ -33,7 +33,7 @@ class Settings extends Flux.Store {
    }
 
    getSetting(file, setting, defaults) {
-      return settings[file][setting] ?? defaults;
+      return settings[file]?.[setting] ?? defaults;
    }
 
    get(file) {
