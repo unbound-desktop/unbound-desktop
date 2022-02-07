@@ -23,8 +23,7 @@ module.exports = new class Commands extends API {
       this.section = {
          id: 'unbound',
          type: 1,
-         name: 'Unbound',
-         icon: '__UNBOUND__'
+         name: 'Unbound'
       };
 
       bindAll(this, ['register', 'unregister']);
@@ -39,7 +38,7 @@ module.exports = new class Commands extends API {
       );
 
       after('unbound-commands', AssetUtils, 'getApplicationIconURL', (_, [props]) => {
-         if (props.icon === '__UNBOUND__') return avatar;
+         if (props.id === 'unbound') return avatar;
       });
 
       after('unbound-commands', Commands, 'getBuiltInCommands', (_, [, , isChat], res) => {
