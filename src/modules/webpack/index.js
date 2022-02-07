@@ -27,12 +27,53 @@ module.exports = class Webpack {
          const listener = function () {
             Dispatcher.unsubscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
 
-            const names = Object.keys(modules);
-            const results = Webpack.bulk(...Object.values(modules).map(m => Webpack.filters.byProps(...m)));
+            const filters = [];
+            Object.entries(modules).map(([name, m]) => {
+               if (m.props) {
+                  if (m.props.every(props => Array.isArray(props))) {
+                     const found = [];
 
-            for (let i = 0; i < results.length; i++) {
-               Webpack.common[names[i]] = results[i];
-            }
+                     filters.push({
+                        id: name,
+                        filter: (mdl) => {
+                           const res = m.props.some(props => props.every(p => mdl[p]));
+                           if (res && m.ensure && m.ensure(mdl) === false) {
+                              return false;
+                           } else if (res) {
+                              found.push(mdl);
+                           }
+
+                           return res;
+                        },
+                        map: () => Object.assign({}, ...found)
+                     });
+                  } else {
+                     filters.push({
+                        id: name,
+                        filter: (mdl) => {
+                           const res = Webpack.filters.byProps(...m.props)(mdl);
+                           if (res && m.ensure && m.ensure(mdl) === false) {
+                              return false;
+                           }
+
+                           return res;
+                        }
+                     });
+                  }
+               } else if (m.displayName) {
+                  filters.push({
+                     id: name,
+                     filter: Webpack.filters.byDisplayName(m.displayName)
+                  });
+               }
+            });
+
+            const results = Webpack.bulk(...filters.map(({ filter }) => filter));
+            filters.map(({ id, map }, index) => {
+               const mapper = map ?? (_ => _);
+               const res = mapper(results[index]);
+               Webpack.common[id] = res;
+            });
 
             ready(true);
          };
