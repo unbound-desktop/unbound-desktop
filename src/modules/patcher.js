@@ -147,14 +147,14 @@ module.exports = new class Patcher {
    }
 
    after(caller, mdl, func, callback) {
-      this.patch(caller, mdl, func, callback, 'after');
+      return this.patch(caller, mdl, func, callback, 'after');
    }
 
    before(caller, mdl, func, callback) {
-      this.patch(caller, mdl, func, callback, 'before');
+      return this.patch(caller, mdl, func, callback, 'before');
    }
 
    instead(caller, mdl, func, callback) {
-      this.patch(caller, mdl, func, callback, 'instead');
+      return this.patch(caller, mdl, func, callback, 'instead');
    }
 };
