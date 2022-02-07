@@ -6,7 +6,7 @@ module.exports = class Theme extends Addon {
       super(instance, data);
 
       this.logger = new Logger('Theme', data.name);
-      this.settings = window.unbound?.apis.settings.makeStore(this.id);
+      this.settings = window.unbound?.apis.settings.makeStore(data.id);
    }
 
    start(css) {
@@ -24,7 +24,7 @@ module.exports = class Theme extends Addon {
    apply() {
       try {
          const stylesheet = document.createElement('style');
-         stylesheet.id = this.id;
+         stylesheet.id = this.data.id;
          stylesheet.innerHTML = this.instance;
          this.stylesheet = document.head.appendChild(stylesheet);
       } catch (e) {

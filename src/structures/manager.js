@@ -1,7 +1,8 @@
-const { lstatSync, existsSync, readdirSync, mkdirSync, readFileSync } = require('fs');
+const { lstatSync, existsSync, readdirSync, mkdirSync, readFileSync, writeFileSync } = require('fs');
 const { constants, utilities: { capitalize } } = require('@modules');
 const { resolve, join, basename } = require('path');
 const Logger = require('@modules/logger');
+const { paths } = require('@constants');
 const { watch } = require('chokidar');
 const Emitter = require('events');
 
@@ -14,6 +15,54 @@ module.exports = class Manager extends Emitter {
 
       this.entities = new Map();
       this.logger = new Logger('Manager', capitalize(this.type));
+      this.settings = window.unbound ? window.unbound.apis.settings.makeStore('enabled-entities') : (() => {
+         let store = {};
+
+         try {
+            store = JSON.parse(readFileSync(join(paths.settings, 'enabled-entities.json'), 'utf-8'));
+         } catch { }
+
+         const save = () => {
+            writeFileSync(join(paths.settings, 'enabled-entities.json'), JSON.stringify(store, null, 2), 'utf-8');
+         };
+
+         return {
+            settings: store,
+            set: (setting, value) => {
+               if (!setting || typeof setting != 'string') {
+                  throw new TypeError('the second argument setting must be of type string');
+               }
+
+               if (value == void 0) {
+                  delete store[setting];
+               } else {
+                  store[setting] = value;
+               }
+
+               save();
+            },
+
+            get: (setting, defaults) => {
+               if (!setting || typeof setting != 'string') {
+                  throw new TypeError('the second argument setting must be of type string');
+               }
+
+               return store[setting] ?? defaults;
+            },
+
+            toggle: (setting, defaults) => {
+               if (!setting || typeof setting != 'string') {
+                  throw new TypeError('the second argument setting must be of type string');
+               } else if (!defaults || typeof defaults != 'boolean') {
+                  throw new TypeError('the third argument defaults must be of type boolean');
+               }
+
+               store[setting] = !store[setting] ?? !defaults;
+
+               save();
+            }
+         };
+      })();
 
       this.panel = () => {
          const { Manager } = require('@core/components');
@@ -45,11 +94,23 @@ module.exports = class Manager extends Emitter {
       // window.addEventListener('unload', () => this.watcher.close());
    }
 
+   resolve(idOrName) {
+      if (!idOrName) {
+         throw new TypeError('first argument idOrName must be of type string or object');
+      }
+
+      const direct = this.entities.get(idOrName.instance ? idOrName.instance.id : idOrName);
+      if (direct) return direct;
+
+      const folder = [...this.entities.values()].find(e => e.folder == idOrName);
+      if (folder) return folder;
+   }
+
    loadAll() {
       const files = this.fetch();
 
       for (const file of files) {
-         if (this.entities.get(file)) continue;
+         if (this.resolve(file)) continue;
          this.load(file);
       }
    }
@@ -61,13 +122,17 @@ module.exports = class Manager extends Emitter {
             set: () => this.logger.error('Entity manifest changes are forbidden at runtime.')
          },
          id: {
-            get: () => basename(path),
+            get: () => data.id,
             set: () => this.logger.error('Entity ID changes are forbidden at runtime.')
          },
          path: {
             get: () => path,
             set: () => this.logger.error('Path changes are forbidden at runtime.')
          },
+         folder: {
+            get: () => basename(path),
+            set: () => this.logger.error('Folder changes are forbidden at runtime.')
+         }
       });
    };
 
@@ -103,8 +168,6 @@ module.exports = class Manager extends Emitter {
             resolve(this.path, entry, data.main ?? '')
          );
 
-         const id = basename(entry);
-
          try {
             this.validateManifest(data);
          } catch (e) {
@@ -112,8 +175,7 @@ module.exports = class Manager extends Emitter {
          }
 
          const res = {
-            instance: constants.entities[this.type](Entity.__esModule ? Entity.default : Entity, data),
-            path: entry
+            instance: constants.entities[this.type](Entity.__esModule ? Entity.default : Entity, data)
          };
 
          this.assignData(data, res, entry);
@@ -121,31 +183,28 @@ module.exports = class Manager extends Emitter {
 
          res.instance?.load?.();
 
-         this.entities.set(id, res);
-         this.emit('load', id, res);
+         this.entities.set(data.id, res);
+         this.emit('load', data.id, res);
 
-         /**
-          * @requires Settings
-          * @todo
-          */
-
-         if (true) this.start(id);
+         if (this.isEnabled(data.id) || this.isEnabled(entry)) {
+            this.start(data.id);
+         }
 
          return res;
       } catch (e) {
-         this.logger.error(`Failed to start ${id}`, e);
+         this.logger.error(`Failed to start ${basename(entry)}`, e);
          return null;
       }
    }
 
    start(id) {
-      let entity = this.entities.get(id);
+      let entity = this.resolve(id);
       if (!entity) entity = this.load(id);
 
       if (entity && entity.instance && !entity.started) {
          try {
-            entity.instance.start();
             entity.started = true;
+            entity.instance.start();
             this.logger.log(`${entity.data.name} was started.`);
          } catch (e) {
             this.logger.error(`Couldn't start ${entity.data.name}`, e);
@@ -154,11 +213,11 @@ module.exports = class Manager extends Emitter {
    }
 
    stop(id) {
-      const entity = this.entities.get(id);
+      const entity = this.resolve(id);
       if (entity && entity.instance && entity.started) {
          try {
-            entity.instance.stop();
             entity.started = false;
+            entity.instance.stop();
             this.logger.log(`${entity.data.name} was stopped.`);
          } catch (e) {
             this.logger.error(`Couldn't stop ${entity.data.name}`, e);
@@ -167,7 +226,7 @@ module.exports = class Manager extends Emitter {
    }
 
    unload(id) {
-      const entity = this.entities.get(id);
+      const entity = this.resolve(id);
       if (entity) {
          try {
             entity.instance?.stop?.();
@@ -182,7 +241,7 @@ module.exports = class Manager extends Emitter {
    }
 
    reload(id) {
-      let entity = this.entities.get(id);
+      let entity = this.resolve(id);
 
       try {
          if (!entity) {
@@ -205,10 +264,56 @@ module.exports = class Manager extends Emitter {
    };
 
    isEnabled(id) {
-      return true;
+      const settings = this.settings.get(this.type, []);
+      const direct = this.resolve(id);
+
+      return settings.includes(direct?.id);
+   }
+
+   enable(id) {
+      const entity = this.resolve(id);
+
+      try {
+         const store = this.settings.get(this.type, []);
+         store.push(entity.id);
+         this.settings.set(this.type, store);
+         this.start(entity.id);
+      } catch (e) {
+         console.log(e);
+         // this.logger.error(`Failed to enable ${entity.id}`, e);
+      }
+   }
+
+   disable(id) {
+      const entity = this.resolve(id);
+
+      try {
+         const store = this.settings.get(this.type, []);
+         const index = ~store.indexOf(entity.id);
+         index && store.splice(index, 1);
+         this.settings.set(this.type, store);
+         this.stop(entity.id);
+      } catch (e) {
+         console.log(e);
+         // this.logger.error(`Failed to disable ${entity.id}`, e);
+      }
    }
 
    toggle(id) {
-      this.emit('toggle', id);
+      const entity = this.resolve(id);
+      const isEnabled = this.isEnabled(entity);
+
+      try {
+         if (isEnabled) {
+            this.disable(entity.id);
+         } else {
+            this.enable(entity.id);
+         }
+
+         this.emit('toggle', entity.id);
+      } catch (e) {
+         console.log(e);
+         // this.logger.error(`Failed to toggle ${entity.id}`, e);
+      }
    }
 };
