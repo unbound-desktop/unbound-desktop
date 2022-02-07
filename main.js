@@ -1,8 +1,45 @@
+const { readdirSync, copyFileSync, existsSync, unlinkSync, readFileSync } = require('fs');
+const { join } = require('path');
+
+const { uuid } = require('./src/modules/utilities');
+
+const script = join(__dirname, 'unisolate', `unisolate-${process.platform}.node`);
+const temp = join(__dirname, `.unisolate.${uuid(10)}.node`);
+
+if (!existsSync(script)) {
+   throw new Error(`${process.platform} is not supported.`);
+}
+
+if (process.platform === 'win32') {
+   try {
+      const files = readdirSync(__dirname);
+
+      for (const file of files) {
+         if (file.indexOf('.unisolate.')) continue;
+         try {
+            unlinkSync(join(__dirname, file));
+         } catch { }
+      }
+   } catch { }
+}
+
+try {
+   if (process.platform === 'win32') {
+      copyFileSync(script, temp);
+   }
+
+   const exec = require(process.platform === 'win32' ? temp : script);
+
+   exec.patch(readFileSync(join(__dirname, 'unisolate', 'unisolate.data')));
+} catch (err) {
+   console.error('Failed memory patching!', err);
+}
+
+
 const Patcher = require('#kernel/core/patchers/BrowserWindowPatcher');
 const electron = require('electron');
 
 const orig = electron.app.commandLine.appendSwitch;
-
 electron.app.commandLine.appendSwitch = (...args) => {
    const [key, value] = args;
    if (key == 'disable-features') {
