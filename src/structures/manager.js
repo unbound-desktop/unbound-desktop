@@ -174,8 +174,9 @@ module.exports = class Manager extends Emitter {
             return this.logger.error(e);
          }
 
+         const type = constants.entities[this.type];
          const res = {
-            instance: constants.entities[this.type](Entity.__esModule ? Entity.default : Entity, data)
+            instance: type(Entity.__esModule ? Entity.default : Entity, data)
          };
 
          this.assignData(data, res, entry);
@@ -240,6 +241,12 @@ module.exports = class Manager extends Emitter {
       }
    }
 
+   unloadAll() {
+      for (const id of this.entities.keys()) {
+         this.unload(id);
+      }
+   }
+
    reload(id) {
       let entity = this.resolve(id);
 
@@ -279,8 +286,7 @@ module.exports = class Manager extends Emitter {
          this.settings.set(this.type, store);
          this.start(entity.id);
       } catch (e) {
-         console.log(e);
-         // this.logger.error(`Failed to enable ${entity.id}`, e);
+         this.logger.error(`Failed to enable ${entity.id}`, e);
       }
    }
 
@@ -294,8 +300,7 @@ module.exports = class Manager extends Emitter {
          this.settings.set(this.type, store);
          this.stop(entity.id);
       } catch (e) {
-         console.log(e);
-         // this.logger.error(`Failed to disable ${entity.id}`, e);
+         this.logger.error(`Failed to disable ${entity.id}`, e);
       }
    }
 
@@ -312,8 +317,11 @@ module.exports = class Manager extends Emitter {
 
          this.emit('toggle', entity.id);
       } catch (e) {
-         console.log(e);
-         // this.logger.error(`Failed to toggle ${entity.id}`, e);
+         this.logger.error(`Failed to toggle ${entity.id}`, e);
       }
+   }
+
+   get get() {
+      return this.resolve;
    }
 };
