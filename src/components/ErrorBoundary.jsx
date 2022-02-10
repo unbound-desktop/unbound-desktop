@@ -74,8 +74,6 @@ module.exports = class ErrorBoundary extends React.PureComponent {
                >
                   Oops, we had a fucky wucky.
                </Text>
-               {this.renderStack(js)}
-               {this.renderStack(component)}
                <RelativeTooltip text='Retry'>
                   {props => <Icon
                      {...props}
@@ -88,6 +86,8 @@ module.exports = class ErrorBoundary extends React.PureComponent {
                      Retry
                   </Icon>}
                </RelativeTooltip>
+               {this.renderStack(js)}
+               {this.renderStack(component)}
             </div>
          );
       }

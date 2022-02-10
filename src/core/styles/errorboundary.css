@@ -7,7 +7,7 @@
 
 .unbound-boundary-retry {
    margin: auto;
-   margin-top: 15px;
+   margin-bottom: 15px;
    padding: 5px;
    color: var(--interactive-normal);
    cursor: pointer;
