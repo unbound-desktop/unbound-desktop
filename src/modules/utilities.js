@@ -130,11 +130,17 @@ module.exports = new class Util {
       return uuid;
    }
 
+   classnames(...classes) {
+      return classes.filter(Boolean).join(' ');
+   }
+
    appendCSS(id, css) {
       const stylesheet = document.createElement('style');
       stylesheet.id = id ?? 'Unknown';
       stylesheet.innerHTML = css;
-      return document.head.appendChild(stylesheet);
+      const res = document.head.appendChild(stylesheet);
+
+      return () => res.remove();
    }
 
    bindAll(ctx, array) {

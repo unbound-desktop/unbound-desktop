@@ -8,19 +8,6 @@ module.exports = class Plugin extends Addon {
       this.logger = new Logger('Plugin', data.name);
       this.settings = window.unbound?.apis.settings.makeStore(data.id);
 
-      this.settingsTab = null;
       this.styles = [];
-   }
-
-   registerSettings(component) {
-      if (typeof component !== 'function') {
-         throw new TypeError('first argument "component" should be of type function');
-      }
-
-      this.settingsTab = component;
-   }
-
-   unregisterSettings() {
-      this.settingsTab = null;
    }
 };
