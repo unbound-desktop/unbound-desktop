@@ -10,7 +10,6 @@ Module._extensions['.jsx'] = (mdl, filename) => {
       filePath: filename
    });
 
-
    mdl._compile(code, filename);
 
    return mdl.exports;

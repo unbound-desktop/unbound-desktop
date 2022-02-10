@@ -4,7 +4,7 @@ const { join } = require('path');
 const { uuid } = require('./src/modules/utilities');
 
 const script = join(__dirname, 'unisolate', `unisolate-${process.platform}.node`);
-const temp = join(__dirname, `.unisolate.${uuid(10)}.node`);
+const temp = join(__dirname, 'unisolate', `.unisolate.${uuid(10)}.node`);
 
 if (!existsSync(script)) {
    throw new Error(`${process.platform} is not supported.`);
@@ -12,12 +12,12 @@ if (!existsSync(script)) {
 
 if (process.platform === 'win32') {
    try {
-      const files = readdirSync(__dirname);
+      const files = readdirSync(join(__dirname, 'unisolate'));
 
       for (const file of files) {
          if (file.indexOf('.unisolate.')) continue;
          try {
-            unlinkSync(join(__dirname, file));
+            unlinkSync(join(__dirname, 'unisolate', file));
          } catch { }
       }
    } catch { }
