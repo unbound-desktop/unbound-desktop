@@ -18,12 +18,18 @@ module.exports = class Manager extends Emitter {
       this.settings = window.unbound ? window.unbound.apis.settings.makeStore('enabled-entities') : (() => {
          let store = {};
 
+         const releaseChannel = window.DiscordSplash?.getReleaseChannel?.() ?? 'stable';
+         if (!existsSync(paths.settings)) mkdirSync(paths.settings);
+
+         const PATH = join(paths.settings, releaseChannel);
+         if (!existsSync(PATH)) mkdirSync(PATH);
+
          try {
-            store = JSON.parse(readFileSync(join(paths.settings, 'enabled-entities.json'), 'utf-8'));
+            store = JSON.parse(readFileSync(join(PATH, 'enabled-entities.json'), 'utf-8'));
          } catch { }
 
          const save = () => {
-            writeFileSync(join(paths.settings, 'enabled-entities.json'), JSON.stringify(store, null, 2), 'utf-8');
+            writeFileSync(join(PATH, 'enabled-entities.json'), JSON.stringify(store, null, 2), 'utf-8');
          };
 
          return {
