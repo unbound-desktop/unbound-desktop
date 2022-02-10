@@ -9,15 +9,18 @@ const Logger = new logger('Settings', 'Store');
 
 const settings = {};
 
+const PATH = join(paths.settings, GLOBAL_ENV.RELEASE_CHANNEL);
+
 if (!fs.existsSync(paths.settings)) {
    fs.mkdirSync(paths.settings);
 } else {
-   const files = fs.readdirSync(paths.settings).filter(f => f.endsWith('.json'));
+   if (!fs.existsSync(PATH)) fs.mkdirSync(PATH);
+   const files = fs.readdirSync(PATH).filter(f => f.endsWith('.json'));
 
    for (const file of files) {
       const name = file.replace(/\.json/, '');
       try {
-         const data = require(resolve(paths.settings, file));
+         const data = require(resolve(PATH, file));
          settings[name] = data;
       } catch {
          settings[name] = {};
@@ -48,7 +51,7 @@ class Settings extends Flux.Store {
       for (const file in settings) {
          try {
             const contents = JSON.stringify(settings[file], null, 2);
-            writeFileSync(join(paths.settings, `${file}.json`), contents);
+            writeFileSync(join(paths.settings, GLOBAL_ENV.RELEASE_CHANNEL, `${file}.json`), contents);
          } catch (e) {
             Logger.error(`Failed to save settings file ${file}`, e);
          }
