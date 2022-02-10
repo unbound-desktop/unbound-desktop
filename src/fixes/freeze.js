@@ -1,9 +1,11 @@
 const setNow = window.setImmediate;
 
-window.setImmediate = (callback, ...rest) => {
-   return setNow((...args) => {
+window.setImmediate = function (callback, ...rest) {
+   return setNow.apply(this, [(...args) => {
       try {
          callback(...args);
-      } catch { }
-   }, ...rest);
+      } catch (e) {
+         if (e) console.error('Failed to call callback.', e);
+      }
+   }, ...rest]);
 };
