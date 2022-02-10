@@ -5,7 +5,7 @@
    "main": "src/index.js",
    "keywords": [],
    "author": "eternal",
-   "license": "Unlicensed",
+   "license": "See LICENSE",
    "dependencies": {
       "chokidar": "^3.5.3",
       "module-alias": "^2.2.2",
