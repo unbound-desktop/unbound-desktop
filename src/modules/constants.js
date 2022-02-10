@@ -5,6 +5,10 @@ exports.paths = {
    settings: path.join(__dirname, '..', '..', 'settings')
 };
 
+exports.regex = {
+   newline: /\r?\n|\r/g
+};
+
 exports.console = {
    success: {
       'background-color': '#6bffb2',

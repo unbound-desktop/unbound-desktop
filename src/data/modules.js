@@ -64,5 +64,11 @@ module.exports = {
          'Messages'
       ],
       ensure: (m) => Object.keys(m.Messages ?? {}).length > 50
+   },
+   HighlightJS: {
+      props: [
+         'highlight',
+         'NUMBER_MODE'
+      ]
    }
 }

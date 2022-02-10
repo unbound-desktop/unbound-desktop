@@ -4,7 +4,9 @@ module.exports = class AsyncComponent extends React.PureComponent {
    constructor(props) {
       super(props);
 
-      this.state = { resolved: null };
+      this.state = {
+         resolved: null
+      };
    }
 
    render() {

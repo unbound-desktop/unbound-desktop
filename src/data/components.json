@@ -67,5 +67,14 @@
       "props": [
          "rules"
       ]
+   },
+   "SearchBar": {
+      "name": "SearchBar"
+   },
+   "ScrollerThin": {
+      "props": [
+         "AdvancedScrollerThin"
+      ],
+      "prop": "AdvancedScrollerThin"
    }
 }

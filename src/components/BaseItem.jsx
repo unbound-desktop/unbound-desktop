@@ -3,8 +3,8 @@ const { bulk, filters } = require('@webpack');
 const { React } = require('@webpack/common');
 
 const [
-   { marginTop8, marginBottom20 },
-   { description }
+   { marginTop8, marginBottom20 } = {},
+   { description } = {}
 ] = bulk(
    filters.byProps('marginSmall'),
    filters.byProps('formText', 'description')
