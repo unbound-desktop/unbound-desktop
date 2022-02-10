@@ -1,7 +1,9 @@
 const { React } = require('@webpack/common');
+
+const { SearchBar, ErrorBoundary } = require('@components');
 const AddonCard = require('./AddonCard');
 
-module.exports = class extends React.PureComponent {
+class Manager extends React.PureComponent {
    constructor(props) {
       super();
 
@@ -25,18 +27,52 @@ module.exports = class extends React.PureComponent {
       }
 
       this.state = {
-         search: null
+         query: null
       };
    }
 
    render() {
-      const entities = Object.keys(this.entities).map(type => {
+      return (
+         <ErrorBoundary>
+            <div className='unbound-addon-page-header'>
+               <SearchBar
+                  onQueryChange={(value) => this.setState({ query: value })}
+                  onClear={() => this.setState({ query: '' })}
+                  placeholder={`Search ${this.type}...`}
+                  size={SearchBar.Sizes.MEDIUM}
+                  query={this.state.query}
+                  className='unbound-addon-search-bar'
+               />
+            </div>
+            {this.renderEntities()}
+         </ErrorBoundary>
+      );
+   }
+
+   renderEntities() {
+      const { get, set } = this.props;
+
+      let entities = Object.keys(this.entities).map(type => {
          const entities = this.entities[type];
          entities.map(e => e.type = type);
 
          return entities;
       }).flat();
 
-      return entities.map(e => <AddonCard type={this.type} entity={e} />);
+      return entities.filter(e => {
+         if (this.state.query) {
+            const filterable = get('filters', ['name', 'description', 'author']);
+
+            if (filterable.some(f => (e[f] ?? e.data?.[f] ?? e.instance?.[f])?.includes(this.state.query))) {
+               return true;
+            }
+
+            return false;
+         }
+
+         return true;
+      }).map(e => <AddonCard type={this.type} entity={e} />);
    }
 };
+
+module.exports = unbound.apis.settings.connectStores('manager-tab-settings')(Manager);

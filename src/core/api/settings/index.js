@@ -1,4 +1,4 @@
-const { Dispatcher } = require('@webpack/common');
+const { Dispatcher, Flux } = require('@webpack/common');
 const { bindAll } = require('@utilities');
 const API = require('@structures/api');
 const Store = require('./flux');
@@ -67,5 +67,9 @@ module.exports = new class Settings extends API {
          get: (key, defaults) => this.get(file, key, defaults),
          toggle: (key, defaults) => this.toggle(file, key, defaults)
       };
+   }
+
+   connectStores(file) {
+      return Flux.connectStores([this.store], () => this.makeStore(file));
    }
 };

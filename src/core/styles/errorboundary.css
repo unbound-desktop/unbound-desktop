@@ -1,0 +1,67 @@
+.unbound-boundary-wrapper {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   margin: auto;
+}
+
+.unbound-boundary-retry {
+   margin: auto;
+   margin-top: 15px;
+   padding: 5px;
+   color: var(--interactive-normal);
+   cursor: pointer;
+}
+
+.unbound-boundary-retry:hover {
+   background: var(--background-modifier-hover);
+   border-radius: 5px;
+}
+
+.unbound-boundary-integration-card {
+   padding: 20px 16px;
+   margin-bottom: 16px;
+}
+
+.unbound-boundary-align {
+   display: flex;
+   align-items: center;
+}
+
+.unbound-boundary-error-wrapper {
+   display: flex;
+   margin-top: 15px;
+   border: none;
+   background: var(--background-tertiary);
+}
+
+.unbound-boundary-error-details {
+   padding: 10px;
+   padding-bottom: 7.5px;
+   padding-right: 7.5px;
+   white-space: pre;
+}
+
+.unbound-boundary-scroller {
+   overflow: auto !important;
+}
+
+.unbound-boundary-divider {
+   margin-top: 20px;
+}
+
+.unbound-boundary-integration-icon {
+   color: var(--text-muted);
+   float: right;
+}
+
+.unbound-boundary-sad-wumpus {
+   padding-top: 50px;
+   display: flex;
+   margin: auto;
+}
+
+.unbound-boundary-notice {
+   margin: 25px 0;
+   text-align: center;
+}

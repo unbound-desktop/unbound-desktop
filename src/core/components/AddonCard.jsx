@@ -111,7 +111,6 @@ module.exports = class extends React.PureComponent {
          return;
       }
 
-      console.log(name);
       this.forceUpdate();
    }
 

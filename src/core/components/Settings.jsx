@@ -1,7 +1,11 @@
 const { React } = require('@webpack/common');
 
-module.exports = class extends React.PureComponent {
+const { ErrorBoundary } = require('@components');
+
+module.exports = class Settings extends React.PureComponent {
    render() {
-      return <p style={{ color: 'white' }}>General settings</p>;
+      return <ErrorBoundary>
+         <p style={{ color: 'white' }}>General settings</p>;
+      </ErrorBoundary>;
    }
 };
