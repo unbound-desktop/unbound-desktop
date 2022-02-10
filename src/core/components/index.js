@@ -1,17 +1,9 @@
-const { appendCSS } = require('@utilities');
-const styles = require('./styles');
+const { readdirSync } = require('fs');
+const { basename } = require('path');
 
-if (!window.__SPLASH__) {
-   for (const style of Object.keys(styles)) {
-      appendCSS(`unbound-core-${style}`, styles[style]);
-   }
-}
+readdirSync(__dirname).filter(f => f !== basename(__filename)).map(file => {
+   const items = file.split('.');
+   if (items.length != 1) items.splice(items.length - 1, 1);
 
-require('fs')
-   .readdirSync(__dirname)
-   .filter(file => file !== require('path').basename(__filename)).map(file => {
-      const items = file.split('.');
-      if (items.length != 1) items.splice(items.length - 1, 1);
-
-      module.exports[items.join('.')] = require(`${__dirname}/${file}`);
-   });
+   module.exports[items.join('.')] = require(`${__dirname}/${file}`);
+});
