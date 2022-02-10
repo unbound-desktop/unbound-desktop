@@ -19,8 +19,8 @@ module.exports = class Webpack {
 
    static async init() {
       return await Webpack.#available.then(() => new Promise(async ready => {
-         const [Dispatcher, { ActionTypes } = {}] = await Webpack.getByProps(
-            ['dirtyDispatch'], ['API_HOST', 'ActionTypes'],
+         const [Dispatcher, { ActionTypes } = {}, { getCurrentUser } = {}] = await Webpack.getByProps(
+            ['dirtyDispatch'], ['API_HOST', 'ActionTypes'], ['getCurrentUser', 'getUser'],
             { cache: false, bulk: true, wait: true, forever: true }
          );
 
@@ -79,6 +79,7 @@ module.exports = class Webpack {
          };
 
          Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
+         if (getCurrentUser() != void 0) listener();
       }));
    }
 
