@@ -7,111 +7,25 @@ module.exports = class extends React.PureComponent {
    constructor(props) {
       super(props);
 
-      this.client = this.props.entity.type;
-   }
-
-   renderType(props) {
-      props.className ??= 'unbound-addon-type-icon';
-      props.width ??= 16;
-      props.height ??= 16;
-
-      switch (this.client.toLowerCase()) {
-         case 'betterdiscord':
-            return <Bd {...props} />;
-         case 'powercord':
-            return <Plug {...props} />;
-         default:
-            return null;
-      }
-   }
-
-   isEnabled() {
-      let type;
-      switch (this.client.toLowerCase()) {
-         case 'powercord':
-            type = this.props.type == 'plugins' ? 'pluginManager' : 'styleManager';
-            return powercord[type].isEnabled(this.props.entity.entityID);
-         case 'betterdiscord':
-            type = this.props.type == 'plugins' ? 'Plugins' : 'Themes';
-            return BdApi[type].isEnabled(this.props.entity.name);
-         case 'unbound':
-            type = this.props.type == 'plugins' ? 'plugins' : 'themes';
-            return unbound.managers[type].isEnabled(this.props.entity.id);
-      }
-   }
-
-   toggle() {
-      let type;
-      switch (this.client.toLowerCase()) {
-         case 'powercord':
-            type = this.props.type == 'plugins' ? 'pluginManager' : 'styleManager';
-            powercord[type].toggle(this.props.entity.entityID);
-         case 'betterdiscord':
-            type = this.props.type == 'plugins' ? 'Plugins' : 'Themes';
-            BdApi[type].toggle(this.props.entity.name);
-         case 'unbound':
-            type = this.props.type == 'plugins' ? 'plugins' : 'themes';
-            unbound.managers[type].toggle(this.props.entity.id);
-      }
+      this.client = this.props.type;
    }
 
    componentWillMount() {
-      let type;
-      switch (this.client.toLowerCase()) {
-         case 'powercord':
-            type = this.props.type == 'plugins' ? 'pluginManager' : 'styleManager';
-            powercord[type].on('toggle', this.onToggle.bind(this));
-         case 'betterdiscord':
-            type = this.props.type == 'plugins' ? 'Plugins' : 'Themes';
-            BdApi[type].on('toggled', this.onToggle.bind(this));
-         case 'unbound':
-            unbound.managers[this.props.type].on('toggle', this.onToggle.bind(this));
-      }
-   }
+      const global = this.getGlobal();
+      const type = this.getType();
 
-   getType() {
-      switch (this.client.toLowerCase()) {
-         case 'powercord':
-            return this.props.type == 'plugins' ? 'pluginManager' : 'styleManager';
-         case 'betterdiscord':
-            return this.props.type == 'plugins' ? 'Plugins' : 'Themes';
-         case 'unbound':
-            return this.props.type == 'plugins' ? 'plugins' : 'themes';
-      }
-   }
+      const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
 
-   getGlobal() {
-      switch (this.props.type.toLowerCase()) {
-         case 'powercord':
-            return 'powercord';
-         case 'betterdiscord':
-            return 'BdApi';
-         case 'unbound':
-            return 'unbound';
-      }
+      manager?.on?.('toggle', this.onToggle.bind(this));
    }
 
    componentWillUnmount() {
-      let type;
-      switch (this.client.toLowerCase()) {
-         case 'powercord':
-            type = this.props.type == 'plugins' ? 'pluginManager' : 'styleManager';
-            powercord[type].off('toggle', this.onToggle.bind(this));
-         case 'betterdiscord':
-            type = this.props.type == 'plugins' ? 'Plugins' : 'Themes';
-            BdApi[type].off('toggled', this.onToggle.bind(this));
-         case 'unbound':
-            unbound.managers[this.props.type].off('toggle', this.onToggle.bind(this));
-      }
-   }
+      const global = this.getGlobal();
+      const type = this.getType();
 
-   onToggle(name) {
-      const { entity } = this.props;
-      if (![entity.id, entity.entityID, entity.name].includes(name)) {
-         return;
-      }
+      const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
 
-      this.forceUpdate();
+      manager?.off('toggle', this.onToggle.bind(this));
    }
 
    render() {
@@ -149,5 +63,73 @@ module.exports = class extends React.PureComponent {
             </FormText>
          </div>
       );
+   }
+
+
+   renderType(props) {
+      props.className ??= 'unbound-addon-type-icon';
+      props.width ??= 16;
+      props.height ??= 16;
+
+      switch (this.client.toLowerCase()) {
+         case 'betterdiscord':
+            return <Bd {...props} />;
+         case 'powercord':
+            return <Plug {...props} />;
+         default:
+            return null;
+      }
+   }
+
+   isEnabled() {
+      const name = this.props.entity.entityID ?? this.props.entity.id ?? this.props.entity.name;
+      const global = this.getGlobal();
+      const type = this.getType();
+
+      const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
+
+      return manager?.isEnabled?.(name);
+   }
+
+   toggle() {
+      const name = this.props.entity.entityID ?? this.props.entity.id ?? this.props.entity.name;
+      const global = this.getGlobal();
+      const type = this.getType();
+
+      const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
+
+      return manager?.toggle?.(name);
+   }
+
+   onToggle(name) {
+      const { entity } = this.props;
+      if (![entity.id, entity.entityID, entity.name].includes(name)) {
+         return;
+      }
+
+      this.forceUpdate();
+   }
+
+   getType() {
+      const { manager } = this.props;
+      switch (this.client.toLowerCase()) {
+         case 'powercord':
+            return manager == 'plugins' ? 'pluginManager' : 'styleManager';
+         case 'betterdiscord':
+            return manager == 'plugins' ? 'Plugins' : 'Themes';
+         case 'unbound':
+            return manager == 'plugins' ? 'plugins' : 'themes';
+      }
+   }
+
+   getGlobal() {
+      switch (this.client.toLowerCase()) {
+         case 'powercord':
+            return 'powercord';
+         case 'betterdiscord':
+            return 'BdApi';
+         case 'unbound':
+            return 'unbound';
+      }
    }
 };

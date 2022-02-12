@@ -52,26 +52,75 @@ class Manager extends React.PureComponent {
    renderEntities() {
       const { get, set } = this.props;
 
-      let entities = Object.keys(this.entities).map(type => {
-         const entities = this.entities[type];
-         entities.map(e => e.type = type);
+      return Object.entries(this.entities).flatMap(([key, value]) => {
+         const entities = value;
+         const res = [];
 
-         return entities;
-      }).flat();
-
-      return entities.filter(e => {
-         if (this.state.query) {
-            const filterable = get('filters', ['name', 'description', 'author']);
-
-            if (filterable.some(f => (e[f] ?? e.data?.[f] ?? e.instance?.[f])?.includes(this.state.query))) {
-               return true;
-            }
-
-            return false;
+         for (const entity of entities) {
+            res.push(
+               <AddonCard
+                  manager={this.type}
+                  type={key}
+                  entity={entity}
+               />
+            );
          }
 
-         return true;
-      }).map(e => <AddonCard type={this.type} entity={e} />);
+         return res;
+      });
+
+      // return null;
+      // return entities.filter(entity => {
+      //    entity.type =
+      // });
+      // for (const key in this.entities) {
+      //    const values = this.entities[key];
+
+      //    for (const entity of values) {
+      //       entity.type = key;
+      //       entities.push(entity);
+      //    }
+      // }
+
+      // return entities.filter(entity => {
+      //    if (this.state.query) {
+      //       const filterable = get('filters', ['name', 'description', 'author']);
+
+      //       let matches = 0;
+      //       for (const filter of filterable) {
+      //          let value;
+      //          switch (filter) {
+      //             case 'name':
+      //                value = entity.name ?? entity.data?.name ?? entity.displayName;
+      //                break;
+      //             case 'description':
+      //                value = (
+      //                   entity.manifest?.description ??
+      //                   entity.data?.description ??
+      //                   entity.description ??
+      //                   'No description provided.'
+      //                );
+      //                break;
+      //             case 'author':
+      //                value = (
+      //                   entity.manifest?.author ??
+      //                   entity.data?.author ??
+      //                   entity.author ??
+      //                   'No description provided.'
+      //                );
+      //                break;
+      //          }
+
+      //          if (value.toLowerCase().includes(this.state.query.toLowerCase())) {
+      //             matches++;
+      //          }
+      //       }
+
+      //       return matches > 0;
+      //    }
+
+      //    return true;
+      // }).map(e => <AddonCard type={this.type} entity={e} />);
    }
 };
 

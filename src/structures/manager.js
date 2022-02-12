@@ -301,8 +301,8 @@ module.exports = class Manager extends Emitter {
 
       try {
          const store = this.settings.get(this.type, []);
-         const index = ~store.indexOf(entity.id);
-         index && store.splice(index, 1);
+         const index = store.findIndex(e => e == entity.id);
+         index > -1 && store.splice(index, 1);
          this.settings.set(this.type, store);
          this.stop(entity.id);
       } catch (e) {
