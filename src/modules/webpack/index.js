@@ -78,16 +78,22 @@ module.exports = class Webpack {
             ready(true);
          };
 
+         if (getCurrentUser?.() != void 0) return listener();
          Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
-         if (getCurrentUser() != void 0) listener();
       }));
    }
 
    static #request(cache = true) {
-      if (cache && Webpack.instance) return Webpack.instance;
+      if (cache && Webpack.instance) {
+         return Webpack.instance;
+      }
 
       const res = window[Webpack.#global].push([[uuid()], [], p => p]);
-      if (res) Webpack.instance = res;
+      window[Webpack.#global].pop();
+
+      if (res) {
+         Webpack.instance = res;
+      }
 
       return res;
    }
