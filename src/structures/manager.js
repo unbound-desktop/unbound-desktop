@@ -79,25 +79,27 @@ module.exports = class Manager extends Emitter {
          });
       };
 
-      // this.watcher = watch(this.path, {
-      //    ignored: /((^|[\/\\])\..|.git|node_modules)/,
-      //    ignoreInitial: true,
-      //    persistent: true
-      // });
+      this.watcher = watch(this.path, {
+         ignored: /((^|[\/\\])\..|.git|node_modules)/,
+         ignoreInitial: true,
+         persistent: true
+      });
 
-      // this.watcher.on('addDir', (path) => {
-      //    try {
-      //       this.reload(basename(path));
-      //    } catch { }
-      // });
+      this.watcher.on('addDir', (path) => {
+         try {
+            this.reload(basename(path));
+            this.emit('changed');
+         } catch { }
+      });
 
-      // this.watcher.on('unlinkDir', (path) => {
-      //    try {
-      //       this.unload(basename(path));
-      //    } catch { }
-      // });
+      this.watcher.on('unlinkDir', (path) => {
+         try {
+            this.unload(basename(path));
+            this.emit('changed');
+         } catch { }
+      });
 
-      // window.addEventListener('unload', () => this.watcher.close());
+      window.addEventListener('unload', () => this.watcher.close());
    }
 
    resolve(idOrName) {
@@ -237,12 +239,13 @@ module.exports = class Manager extends Emitter {
       if (entity) {
          try {
             entity.instance?.stop?.();
-            const cache = Object.keys(require.cache).filter(c => c.includes(id));
+            const cache = Object.keys(require.cache).filter(c => c.includes(entity.folder));
             cache.map(c => delete require.cache[c]);
-            this.entities.delete(id);
+            this.entities.delete(entity.id);
+            this.emit('updated');
             this.logger.log(`${entity.data.name} was stopped & unloaded.`);
          } catch (e) {
-            this.logger.error(`FATAL: ${id} was not able to unload properly, a reload using CTRL+R is recommended.`, e);
+            this.logger.error(`FATAL: ${entity.id} was not able to unload properly, a reload using CTRL+R is recommended.`, e);
          }
       }
    }
@@ -261,10 +264,10 @@ module.exports = class Manager extends Emitter {
             return this.load(id);
          }
 
-         this.unload(id);
-         this.load(id);
+         this.unload(entity.folder);
+         this.load(entity.folder);
       } catch (e) {
-         throw new Error(`Couldn't reload ${id}`, e);
+         this.logger.error(`Couldn't reload ${id}`, e);
       }
 
       return entity;
@@ -290,7 +293,7 @@ module.exports = class Manager extends Emitter {
          const store = this.settings.get(this.type, []);
          store.push(entity.id);
          this.settings.set(this.type, store);
-         this.start(entity.id);
+         this.start(entity.folder);
       } catch (e) {
          this.logger.error(`Failed to enable ${entity.id}`, e);
       }
