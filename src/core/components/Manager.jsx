@@ -28,7 +28,7 @@ class Manager extends React.Component {
       super(props);
 
       this.state = {
-         query: null
+         query: ''
       };
    }
 
@@ -151,8 +151,8 @@ class Manager extends React.Component {
 
       const res = Object.entries(entities).flatMap(([key, value]) => {
          const entities = value.sort((a, b) => {
-            const first = this.handleFilter(a, 'name').toUpperCase();
-            const second = this.handleFilter(b, 'name').toUpperCase();
+            const first = this.resolve(a, 'name').toUpperCase();
+            const second = this.resolve(b, 'name').toUpperCase();
 
             return (first < second) ? -1 : (first > second) ? 1 : 0;
          });
@@ -160,13 +160,13 @@ class Manager extends React.Component {
          const res = [];
 
          for (const entity of entities) {
-            if (this.state.query != void 0) {
+            if (this.state.query !== void 0) {
                const matches = [];
 
                for (const filter in filterable) {
                   if (!filterable[filter]) continue;
 
-                  const value = this.handleFilter(entity, filter)?.toLowerCase();
+                  const value = this.resolve(entity, filter)?.toLowerCase?.();
                   const query = this.state.query.toLowerCase();
 
                   if (value?.includes(query)) {
@@ -184,6 +184,7 @@ class Manager extends React.Component {
                   manager={this.props.type}
                   type={key}
                   entity={entity}
+                  key={this.resolve(entity, 'name')}
                />
             );
          }
@@ -259,7 +260,7 @@ class Manager extends React.Component {
       </>);
    }
 
-   handleFilter(entity, filter) {
+   resolve(entity, filter) {
       switch (filter) {
          case 'name':
             return (
@@ -279,8 +280,15 @@ class Manager extends React.Component {
                'No description provided.'
             );
          case 'author':
+            if (Array.isArray(entity.instance?._config?.info?.authors)) {
+               const authors = entity.instance._config.info.authors;
+               return authors.map(a => a?.name?.toLowerCase?.()).filter(Boolean).join(', ');
+            } else if (Array.isArray(entity.data?.author)) {
+               const authors = entity.data.author;
+               return authors.map(a => (a?.name ?? a)?.toLowerCase?.()).filter(Boolean).join(', ');
+            }
+
             return (
-               entity.instance?._config?.info?.authors ??
                entity.manifest?.author ??
                entity.getAuthor?.() ??
                entity.data?.author ??

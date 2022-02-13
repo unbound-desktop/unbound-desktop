@@ -13,13 +13,15 @@ const [
 );
 
 module.exports = class AddonCard extends React.Component {
+   onToggle = this.onToggle.bind(this);
+
    componentWillMount() {
       const global = this.getGlobal();
       const type = this.getType();
 
       const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
 
-      manager?.on?.('toggle', this.onToggle.bind(this));
+      manager?.on?.('toggle', this.onToggle);
    }
 
    componentWillUnmount() {
@@ -27,8 +29,7 @@ module.exports = class AddonCard extends React.Component {
       const type = this.getType();
 
       const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
-
-      manager?.off?.('toggle', this.onToggle.bind(this));
+      manager?.off?.('toggle', this.onToggle);
    }
 
    render() {
@@ -68,6 +69,7 @@ module.exports = class AddonCard extends React.Component {
 
       const version = (
          entity.instance?._config?.info?.version ??
+         entity.manifest?.version ??
          entity.getVersion?.() ??
          entity.data?.version ??
          entity.version ??
@@ -139,7 +141,7 @@ module.exports = class AddonCard extends React.Component {
             res.push(author);
          } else if (typeof author === 'object' && author.name) {
             const id = typeof author.id || typeof author.discord_id;
-            const hasId = id && (['number', 'string'].includes(id));
+            const hasId = id && (['number', 'string'].includes(typeof id));
 
             res.push(hasId ?
                <Anchor
@@ -196,7 +198,6 @@ module.exports = class AddonCard extends React.Component {
       const type = this.getType();
 
       const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
-
       return manager?.isEnabled?.(name);
    }
 
@@ -212,6 +213,7 @@ module.exports = class AddonCard extends React.Component {
 
    onToggle(name) {
       const { entity } = this.props;
+
       if (![entity.id, entity.entityID, entity.name].includes(name)) {
          return;
       }

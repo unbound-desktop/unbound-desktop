@@ -33,6 +33,6 @@ module.exports = class Theme extends Addon {
    }
 
    stop() {
-      document.head.removeChild(this.stylesheet);
+      if (this.stylesheet) document.head.removeChild(this.stylesheet);
    }
 };
