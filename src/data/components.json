@@ -76,5 +76,11 @@
          "AdvancedScrollerThin"
       ],
       "prop": "AdvancedScrollerThin"
+   },
+   "Popout": {
+      "name": "Popout"
+   },
+   "Anchor": {
+      "name": "Anchor"
    }
 }
