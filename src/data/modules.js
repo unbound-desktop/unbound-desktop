@@ -63,7 +63,7 @@ module.exports = {
       props: [
          'Messages'
       ],
-      ensure: (m) => Object.keys(m.Messages ?? {}).length > 50
+      ensure: (m) => Object.keys(m?.Messages ?? {}).length > 5
    },
    HighlightJS: {
       props: [
