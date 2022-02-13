@@ -162,7 +162,9 @@ module.exports = new class Util {
    }
 
    capitalize(string) {
-      if (typeof string != 'string') throw new TypeError('capitalize\'s first argument must be of type string');
+      if (typeof string != 'string') {
+         throw new TypeError('capitalize\'s first argument must be of type string');
+      }
 
       return string.charAt(0).toUpperCase() + string.slice(1);
    }

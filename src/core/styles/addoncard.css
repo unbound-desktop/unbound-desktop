@@ -8,12 +8,18 @@
    margin: 10px 0 10px 0;
 }
 
-.unbound-addon-page-header {
-   margin-bottom: 25px;
+.unbound-addon-footer {
+   display: flex;
 }
 
 .unbound-addon-type-icon {
    color: var(--text-muted);
+   margin: 0 10px;
+   margin-left: auto;
+   overflow: inherit;
+   min-height: 100%;
+   align-self: flex-end;
+   height: 100%;
 }
 
 .unbound-addon-header {
@@ -24,7 +30,26 @@
 
 .unbound-addon-name {
    font-weight: 500;
+}
+
+.unbound-addon-version {
+   padding: 0 5px;
+}
+
+.unbound-addon-authors {
    padding-right: 7.5px;
+}
+
+.unbound-addon-author {
+   color: var(--interactive-normal);
+}
+
+.unbound-addon-author:hover {
+   color: var(--interactive-hover);
+}
+
+.unbound-addon-author:active {
+   color: var(--interactive-active);
 }
 
 .unbound-addon-controls {
@@ -34,4 +59,8 @@
 
 .unbound-addon-description div[class*='paragraph'] {
    margin-bottom: 0;
+}
+
+.unbound-addon-description.unbound-addon-description-has-icon div[class*='paragraph'] {
+   margin-right: 10px;
 }

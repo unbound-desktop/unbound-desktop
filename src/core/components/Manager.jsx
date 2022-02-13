@@ -1,30 +1,31 @@
-const { React } = require('@webpack/common');
+const { React, Locale: { Messages } } = require('@webpack/common');
+const { capitalize } = require('@utilities');
+const { getByProps } = require('@webpack');
 
-const { SearchBar, ErrorBoundary } = require('@components');
+
+// merry christmas (christmas tree imports)
+const {
+   Text,
+   Icon,
+   Popout,
+   SearchBar,
+   ErrorBoundary,
+   RelativeTooltip,
+   Menu: {
+      Menu,
+      MenuSeparator,
+      MenuControlItem,
+      MenuCheckboxItem,
+   }
+} = require('@components');
+
 const AddonCard = require('./AddonCard');
 
-class Manager extends React.PureComponent {
+const classes = getByProps('emptyStateImage', 'emptyStateSubtext');
+
+class Manager extends React.Component {
    constructor(props) {
-      super();
-
-      this.type = props.type;
-      this.entities = {
-         unbound: [...unbound.managers[this.type]?.entities?.values() ?? []],
-         powercord: [],
-         BetterDiscord: []
-      };
-
-      if (this.type == 'plugins' && window.powercord?.pluginManager) {
-         this.entities.powercord.push(...[...powercord.pluginManager.addons]);
-      } else if (this.type == 'themes' && window.powercord?.styleManager) {
-         this.entities.powercord.push(...[...powercord.styleManager.addons]);
-      }
-
-      if (this.type == 'plugins' && window.BdApi?.Plugins) {
-         this.entities.BetterDiscord.push(...[...BdApi.Plugins.getAll()]);
-      } else if (this.type == 'themes' && window.BdApi?.Themes) {
-         this.entities.BetterDiscord.push(...[...BdApi.Themes.getAll()]);
-      }
+      super(props);
 
       this.state = {
          query: null
@@ -32,34 +33,155 @@ class Manager extends React.PureComponent {
    }
 
    render() {
+      const entities = {
+         unbound: [],
+         BetterDiscord: [],
+         powercord: []
+      };
+
+      const best = [...unbound.managers[this.props.type]?.entities?.values()] ?? [];
+      if (best.length) entities.unbound.push(...best);
+
+      if (this.props.type == 'plugins' && window.BdApi?.Plugins) {
+         const bd = [...BdApi.Plugins.getAll()] ?? [];
+         if (bd.length) entities.BetterDiscord.push(...bd);
+      } else if (this.props.type == 'themes' && window.BdApi?.Themes) {
+         const bd = [...BdApi.Themes.getAll()] ?? [];
+         if (bd.length) entities.BetterDiscord.push(...bd);
+      }
+
+      if (this.props.type == 'plugins' && window.powercord?.pluginManager) {
+         const pc = [...powercord.pluginManager.addons] ?? [];
+         if (pc.length) entities.powercord.push(...pc);
+      } else if (this.props.type == 'themes' && window.powercord?.styleManager) {
+         const pc = [...powercord.styleManager.addons] ?? [];
+         if (pc.length) entities.powercord.push(...pc);
+      }
+
       return (
          <ErrorBoundary>
-            <div className='unbound-addon-page-header'>
-               <SearchBar
-                  onQueryChange={(value) => this.setState({ query: value })}
-                  onClear={() => this.setState({ query: '' })}
-                  placeholder={`Search ${this.type}...`}
-                  size={SearchBar.Sizes.MEDIUM}
-                  query={this.state.query}
-                  className='unbound-addon-search-bar'
-               />
+            <div className='unbound-manager-page-header'>
+               {this.renderHeader()}
             </div>
-            {this.renderEntities()}
+            {this.renderEntities(entities)}
          </ErrorBoundary>
       );
    }
 
-   renderEntities() {
+   componentWillMount() {
+      window.powercord && powercord[this.getType('powercord')].on('updated', this.forceUpdate.bind(this));
+      window.BdApi && BdApi[this.getType('betterdiscord')].on('updated', this.forceUpdate.bind(this));
+      unbound.managers[this.props.type].on('updated', this.forceUpdate.bind(this));
+   }
+
+   componentWillUnmount() {
+      window.powercord && powercord[this.getType('powercord')].off('updated', this.forceUpdate.bind(this));
+      window.BdApi && BdApi[this.getType('betterdiscord')].off('updated', this.forceUpdate.bind(this));
+      unbound.managers[this.props.type].off('updated', this.forceUpdate.bind(this));
+   }
+
+   getType(client) {
+      const { type } = this.props;
+      switch (client) {
+         case 'powercord':
+            return type == 'plugins' ? 'pluginManager' : 'styleManager';
+         case 'betterdiscord':
+            return type == 'plugins' ? 'Plugins' : 'Themes';
+         case 'unbound':
+            return type == 'plugins' ? 'plugins' : 'themes';
+      }
+   }
+
+   getGlobal() {
+      switch (this.props.type.toLowerCase()) {
+         case 'powercord':
+            return 'powercord';
+         case 'betterdiscord':
+            return 'BdApi';
+         case 'unbound':
+            return 'unbound';
+      }
+   }
+
+   renderOverflowMenu() {
       const { get, set } = this.props;
 
-      return Object.entries(this.entities).flatMap(([key, value]) => {
-         const entities = value;
+      const filters = get('filters', {
+         name: true,
+         description: true,
+         author: true,
+         version: true
+      });
+
+      return (
+         <Menu>
+            <MenuControlItem
+               id='filters'
+               control={() => (
+                  <h5 className='unbound-manager-overflow-title'>
+                     Search Options
+                  </h5>
+               )}
+            />
+            <MenuSeparator key='separator' />
+            {Object.keys(filters).map(f =>
+               <MenuCheckboxItem
+                  key={`filter-${f}`}
+                  id={`filter-${f}`}
+                  label={capitalize(f)}
+                  checked={filters[f]}
+                  action={() => {
+                     filters[f] = !filters[f];
+                     set('filters', filters);
+                  }}
+               />
+            )}
+         </Menu>
+      );
+   }
+
+   renderEntities(entities) {
+      const { get } = this.props;
+      const filterable = get('filters', {
+         name: true,
+         description: true,
+         author: true,
+         version: true
+      });
+
+      const res = Object.entries(entities).flatMap(([key, value]) => {
+         const entities = value.sort((a, b) => {
+            const first = this.handleFilter(a, 'name').toUpperCase();
+            const second = this.handleFilter(b, 'name').toUpperCase();
+
+            return (first < second) ? -1 : (first > second) ? 1 : 0;
+         });
+
          const res = [];
 
          for (const entity of entities) {
+            if (this.state.query != void 0) {
+               const matches = [];
+
+               for (const filter in filterable) {
+                  if (!filterable[filter]) continue;
+
+                  const value = this.handleFilter(entity, filter)?.toLowerCase();
+                  const query = this.state.query.toLowerCase();
+
+                  if (value?.includes(query)) {
+                     matches.push(filter);
+                  };
+               }
+
+               if (matches.length === 0) {
+                  continue;
+               }
+            }
+
             res.push(
                <AddonCard
-                  manager={this.type}
+                  manager={this.props.type}
                   type={key}
                   entity={entity}
                />
@@ -69,58 +191,113 @@ class Manager extends React.PureComponent {
          return res;
       });
 
-      // return null;
-      // return entities.filter(entity => {
-      //    entity.type =
-      // });
-      // for (const key in this.entities) {
-      //    const values = this.entities[key];
+      return res.length ? res : (
+         <div className='unbound-manager-not-found'>
+            <div className={classes.emptyStateImage} />
+            <Text color={Text.Colors.MUTED}>{Messages.GIFT_CONFIRMATION_HEADER_FAIL}</Text>
+            <Text color={Text.Colors.MUTED}>{Messages.SEARCH_NO_RESULTS}</Text>
+         </div>
+      );
+   }
 
-      //    for (const entity of values) {
-      //       entity.type = key;
-      //       entities.push(entity);
-      //    }
-      // }
+   renderHeader() {
+      return (<>
+         <SearchBar
+            onQueryChange={(value) => this.setState({ query: value })}
+            onClear={() => this.setState({ query: '' })}
+            placeholder={`Search ${this.props.type}...`}
+            size={SearchBar.Sizes.MEDIUM}
+            query={this.state.query}
+            className='unbound-manager-search-bar'
+         />
+         <RelativeTooltip text='Store' hideOnClick={false}>
+            {props => (
+               <Icon
+                  {...props}
+                  onClick={() => this.forceUpdate()}
+                  name='StoreTag'
+                  className='unbound-manager-button'
+                  width={32}
+                  height={32}
+               />
+            )}
+         </RelativeTooltip>
+         <RelativeTooltip text='Reload' hideOnClick={false}>
+            {props => (
+               <Icon
+                  {...props}
+                  onClick={() => this.forceUpdate()}
+                  name='Replay'
+                  className='unbound-manager-button'
+                  width={32}
+                  height={32}
+               />
+            )}
+         </RelativeTooltip>
+         <RelativeTooltip text='Options' hideOnClick={false}>
+            {props => (
+               <Popout
+                  position={Popout.Positions.TOP}
+                  animation={Popout.Animation.SCALE}
+                  align={Popout.Align.RIGHT}
+                  spacing={12}
+                  renderPopout={this.renderOverflowMenu.bind(this)}
+               >
+                  {popoutProps => (
+                     <Icon
+                        {...props}
+                        {...popoutProps}
+                        name='OverflowMenu'
+                        className='unbound-manager-button'
+                        width={32}
+                        height={32}
+                     />
+                  )}
+               </Popout>
+            )}
+         </RelativeTooltip>
+      </>);
+   }
 
-      // return entities.filter(entity => {
-      //    if (this.state.query) {
-      //       const filterable = get('filters', ['name', 'description', 'author']);
-
-      //       let matches = 0;
-      //       for (const filter of filterable) {
-      //          let value;
-      //          switch (filter) {
-      //             case 'name':
-      //                value = entity.name ?? entity.data?.name ?? entity.displayName;
-      //                break;
-      //             case 'description':
-      //                value = (
-      //                   entity.manifest?.description ??
-      //                   entity.data?.description ??
-      //                   entity.description ??
-      //                   'No description provided.'
-      //                );
-      //                break;
-      //             case 'author':
-      //                value = (
-      //                   entity.manifest?.author ??
-      //                   entity.data?.author ??
-      //                   entity.author ??
-      //                   'No description provided.'
-      //                );
-      //                break;
-      //          }
-
-      //          if (value.toLowerCase().includes(this.state.query.toLowerCase())) {
-      //             matches++;
-      //          }
-      //       }
-
-      //       return matches > 0;
-      //    }
-
-      //    return true;
-      // }).map(e => <AddonCard type={this.type} entity={e} />);
+   handleFilter(entity, filter) {
+      switch (filter) {
+         case 'name':
+            return (
+               entity.instance?._config?.info?.name ??
+               entity.manifest?.name ??
+               entity.displayName ??
+               entity.data?.name ??
+               entity.name ??
+               'No name provided.'
+            );
+         case 'description':
+            return (
+               entity.instance?._config?.info?.description ??
+               entity.manifest?.description ??
+               entity.data?.description ??
+               entity.description ??
+               'No description provided.'
+            );
+         case 'author':
+            return (
+               entity.instance?._config?.info?.authors ??
+               entity.manifest?.author ??
+               entity.getAuthor?.() ??
+               entity.data?.author ??
+               entity.author ??
+               'No author provided.'
+            );
+         case 'version':
+            return (
+               entity.instance?._config?.info?.version ??
+               entity.getVersion?.() ??
+               entity.data?.version ??
+               entity.version ??
+               'No version provided.'
+            );
+         default:
+            return 'Not found.';
+      }
    }
 };
 
