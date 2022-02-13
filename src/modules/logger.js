@@ -22,7 +22,8 @@ module.exports = class Logger {
             styles.push(parseStyleObject(style));
          });
 
-         const handler = (...args) => window.console[type](
+         const stdout = window.console
+         const handler = (...args) => (stdout[type] ?? stdout.log)(
             tag.join(''),
             ...styles,
             ...args

@@ -24,6 +24,7 @@ exports.console = {
    },
    error: {
       'background-color': '#ff0000',
+      'color': 'white',
       'padding': '2.5px 5px',
       'border-radius': '5px',
       'margin-right': '2px'
