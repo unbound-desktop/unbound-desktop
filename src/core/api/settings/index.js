@@ -25,7 +25,7 @@ module.exports = new class Settings extends API {
          throw new TypeError('the second argument setting must be of type string');
       }
 
-      return Dispatcher.dispatch({
+      return Dispatcher.dirtyDispatch({
          type: 'UNBOUND_SET_SETTING',
          file,
          setting,
@@ -52,7 +52,7 @@ module.exports = new class Settings extends API {
          throw new TypeError('the third argument defaults must be of type boolean');
       }
 
-      return Dispatcher.dispatch({
+      return Dispatcher.dirtyDispatch({
          type: 'UNBOUND_TOGGLE_SETTING',
          file,
          setting,
