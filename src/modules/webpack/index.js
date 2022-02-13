@@ -255,7 +255,7 @@ module.exports = class Webpack {
 
    static get filters() {
       return {
-         byProps: (...mdls) => (mdl) => mdls.every(k => mdl[k]),
+         byProps: (...mdls) => (mdl) => mdls.every(k => mdl[k] !== void 0),
          byDisplayName: (name, def) => (mdl) => {
             if (!mdl || (def && !mdl.default)) return false;
             return typeof mdl === 'function' && mdl.displayName === name;
