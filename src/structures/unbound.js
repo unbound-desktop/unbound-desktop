@@ -45,16 +45,16 @@ module.exports = class Unbound {
    async shutdown() {
       const Patcher = require('@patcher');
 
-      Unbound.#styles.remove();
-      await this.apis.stop();
-      await this.patches.remove();
+      Unbound.#styles?.remove?.();
+      await this.apis?.stop?.();
+      await this.patches?.remove?.();
 
-      Object.keys(this.managers).map(m => {
+      Object.keys(this.managers ?? {}).map(m => {
          this.managers[m].unloadAll();
       });
 
       const temp = [];
-      const callers = Patcher.patches.filter(e => {
+      const callers = Patcher.patches?.filter(e => {
          if (temp.includes(e.caller)) return false;
 
          temp.push(e.caller);
