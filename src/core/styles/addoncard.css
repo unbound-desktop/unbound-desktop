@@ -4,7 +4,7 @@
    background: var(--deprecated-card-editable-bg);
    border-left: 5px solid var(--entity-color);
    flex-grow: 1;
-   padding: 15px;
+   padding: 12.5px 15px;
    margin: 10px 0 10px 0;
 }
 
@@ -14,11 +14,9 @@
 
 .unbound-addon-type-icon {
    color: var(--text-muted);
-   margin: 0 10px;
-   margin-left: auto;
+   opacity: 0.75;
    overflow: inherit;
    min-height: 100%;
-   align-self: flex-end;
    height: 100%;
 }
 
@@ -30,22 +28,24 @@
 
 .unbound-addon-name {
    font-weight: 500;
+   font-size: .95rem;
 }
 
 .unbound-addon-version {
    padding: 0 5px;
+   font-size: 0.95rem;
 }
 
 .unbound-addon-authors {
-   padding-right: 7.5px;
+   font-size: 0.95rem;
 }
 
 .unbound-addon-author {
-   color: var(--interactive-normal);
+   color: var(--interactive-hover);
 }
 
 .unbound-addon-author:hover {
-   color: var(--interactive-hover);
+   color: var(--interactive-active);
 }
 
 .unbound-addon-author:active {
@@ -55,12 +55,49 @@
 .unbound-addon-controls {
    margin-left: auto;
    display: flex;
+   align-items: center;
+}
+
+.unbound-addon-description {
+   width: 100%;
 }
 
 .unbound-addon-description div[class*='paragraph'] {
    margin-bottom: 0;
+   font-size: .90rem;
 }
 
 .unbound-addon-description.unbound-addon-description-has-icon div[class*='paragraph'] {
    margin-right: 10px;
+}
+
+.unbound-addon-switch {
+   margin-left: 10px;
+}
+
+.unbound-addon-control-button {
+   color: var(--interactive-normal);
+   align-self: center;
+   margin-left: 5px;
+   padding: 5px;
+   cursor: pointer;
+}
+
+.unbound-addon-control-button:hover {
+   background: var(--background-modifier-hover);
+   border-radius: 5px;
+}
+
+.unbound-addon-control-button:active {
+   transform: translateY(1px);
+   color: var(--interactive-active);
+}
+
+.unbound-addon-control-button[aria-expanded='true'] {
+   background: var(--background-modifier-active);
+   border-radius: 5px;
+}
+
+.unbound-addon-control-button:hover {
+   color: var(--interactive-hover);
 }

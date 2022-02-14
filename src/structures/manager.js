@@ -1,10 +1,22 @@
-const { lstatSync, existsSync, readdirSync, mkdirSync, readFileSync, writeFileSync } = require('fs');
-const { constants, utilities: { capitalize } } = require('@modules');
-const { resolve, join, basename } = require('path');
-const Logger = require('@modules/logger');
-const { paths } = require('@constants');
+const {
+   statSync,
+   lstatSync,
+   mkdirSync,
+   rmdirSync,
+   existsSync,
+   unlinkSync,
+   readdirSync,
+   readFileSync,
+   writeFileSync
+} = require('fs');
+
+const { join, resolve, basename } = require('path');
 const { watch } = require('chokidar');
 const Emitter = require('events');
+
+const { constants, utilities: { capitalize } } = require('@modules');
+const Logger = require('@modules/logger');
+const { paths } = require('@constants');
 
 module.exports = class Manager extends Emitter {
    constructor(type) {
@@ -145,8 +157,8 @@ module.exports = class Manager extends Emitter {
    };
 
    validateManifest(data) {
-      const keys = ['name', 'id', 'author', 'version'];
-      const missing = keys.filter(k => !data[k]);
+      const keys = ['name', 'id', ['author', 'authors'], 'version'];
+      const missing = keys.filter(k => Array.isArray(k) ? k.every(i => !data[i]) : !data[k]);
 
       if (missing?.length) {
          throw `${data.name} is missing the following manifest keys: ${missing.join(', ')}`;
@@ -256,8 +268,23 @@ module.exports = class Manager extends Emitter {
       }
    }
 
+   delete(id) {
+      const entity = this.resolve(id);
+      if (!entity) return this.logger.error(`Addon not found.`);
+
+      try {
+         if (statSync(entity.path).isDirectory()) {
+            rmdirSync(entity.path, { recursive: true });
+         } else {
+            unlinkSync(entity.path);
+         }
+      } catch (e) {
+         this.logger.error(`Failed to delete entity with ID ${id}`, e);
+      }
+   }
+
    reload(id) {
-      let entity = this.resolve(id);
+      const entity = this.resolve(id);
 
       try {
          if (!entity) {

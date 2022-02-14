@@ -1,7 +1,16 @@
-const { Text, FormText, RelativeTooltip, Switch, Markdown, Anchor } = require('@components');
+const {
+   Text,
+   Icon,
+   Switch,
+   Anchor,
+   FormText,
+   Markdown,
+   RelativeTooltip,
+   Menu: { Menu, MenuItem }
+} = require('@components');
 const { bulk, filters: { byProps } } = require('@webpack');
 const { capitalize, classnames } = require('@utilities');
-const { React } = require('@webpack/common');
+const { React, ContextMenu } = require('@webpack/common');
 const { Plug, Bd } = require('./icons');
 
 const [
@@ -55,6 +64,7 @@ module.exports = class AddonCard extends React.Component {
       const author = (
          entity.instance?._config?.info?.authors ??
          entity.manifest?.author ??
+         entity.data?.authors ??
          entity.getAuthor?.() ??
          entity.data?.author ??
          entity.author ??
@@ -80,6 +90,23 @@ module.exports = class AddonCard extends React.Component {
          <div
             className='unbound-addon-card'
             style={{ '--entity-color': color }}
+            onContextMenu={(e) => ContextMenu.openContextMenu(e, () =>
+               <Menu
+                  onClose={ContextMenu.closeContextMenu}
+               >
+                  <MenuItem
+                     label='Delete'
+                     color='colorDanger'
+                     id='delete'
+                     action={() => this.delete()}
+                  />
+                  <MenuItem
+                     label='Reload'
+                     id='reload'
+                     action={() => this.reload()}
+                  />
+               </Menu>
+            )}
          >
             <div className='unbound-addon-header'>
                <Text
@@ -91,18 +118,38 @@ module.exports = class AddonCard extends React.Component {
                <Text
                   className='unbound-addon-version'
                   size={Text.Sizes.SIZE_16}
-                  color={Text.Colors.MUTED}
+                  color={Text.Colors.INTERACTIVE_NORMAL}
                >
                   {version}
                </Text>
                <Text
                   className='unbound-addon-authors'
                   size={Text.Sizes.SIZE_16}
-                  color={Text.Colors.MUTED}
+                  color={Text.Colors.INTERACTIVE_NORMAL}
                >
                   by {this.renderAuthors(author)}
                </Text>
                <div className='unbound-addon-controls'>
+                  <RelativeTooltip
+                     text={`${capitalize(this.props.type)} Addon`}
+                     hideOnClick={false}
+                  >
+                     {p => this.renderType({ ...p })}
+                  </RelativeTooltip>
+                  {this.getSettings() && (
+                     <RelativeTooltip text='Settings' hideOnClick={false}>
+                        {props => (
+                           <Icon
+                              {...props}
+                              onClick={() => this.forceUpdate()}
+                              name='Gear'
+                              width={28}
+                              height={28}
+                              className='unbound-addon-control-button'
+                           />
+                        )}
+                     </RelativeTooltip>
+                  )}
                   <Switch
                      checked={this.isEnabled}
                      onChange={(v) => this.toggle(v)}
@@ -112,22 +159,12 @@ module.exports = class AddonCard extends React.Component {
             </div>
             <div className='unbound-addon-footer'>
                <FormText
-                  className={classnames(
-                     'unbound-addon-description',
-                     this.props.type != 'unbound' &&
-                     'unbound-addon-description-has-icon'
-                  )}
+                  className='unbound-addon-description'
                >
                   <Markdown>
                      {description}
                   </Markdown>
                </FormText>
-               <RelativeTooltip
-                  text={`${capitalize(this.props.type)} Addon`}
-                  hideOnClick={false}
-               >
-                  {p => this.renderType({ ...p })}
-               </RelativeTooltip>
             </div>
          </div>
       );
@@ -193,7 +230,7 @@ module.exports = class AddonCard extends React.Component {
    }
 
    get isEnabled() {
-      const name = this.props.entity.entityID ?? this.props.entity.id ?? this.props.entity.name;
+      const name = this.getName();
       const global = this.getGlobal();
       const type = this.getType();
 
@@ -201,14 +238,37 @@ module.exports = class AddonCard extends React.Component {
       return manager?.isEnabled?.(name);
    }
 
+   delete() {
+      const name = this.getName();
+      const global = this.getGlobal();
+      const type = this.getType();
+
+      const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
+      return manager?.delete?.(name);
+   }
+
    toggle() {
-      const name = this.props.entity.entityID ?? this.props.entity.id ?? this.props.entity.name;
+      const name = this.getName();
       const global = this.getGlobal();
       const type = this.getType();
 
       const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
 
       return manager?.toggle?.(name);
+   }
+
+   reload() {
+      const name = this.getName();
+      const global = this.getGlobal();
+      const type = this.getType();
+
+      const manager = (window[global]?.[type] ?? window[global]?.managers?.[type]);
+
+      if (manager?.reload) {
+         return manager.reload(name);
+      } else if (manager?.remount) {
+         return manager.remount(name);
+      }
    }
 
    onToggle(name) {
@@ -242,5 +302,18 @@ module.exports = class AddonCard extends React.Component {
          case 'unbound':
             return 'unbound';
       }
+   }
+
+   getSettings() {
+      return true;
+   }
+
+   getName() {
+      return (
+         this.props.entity.entityID ??
+         this.props.entity.id ??
+         this.props.entity.manifest?.name ??
+         this.props.entity.name
+      );
    }
 };

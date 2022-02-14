@@ -1,5 +1,5 @@
 const { React, Locale: { Messages } } = require('@webpack/common');
-const { capitalize } = require('@utilities');
+const { capitalize, classnames } = require('@utilities');
 const { getByProps } = require('@webpack');
 
 
@@ -63,7 +63,9 @@ class Manager extends React.Component {
             <div className='unbound-manager-page-header'>
                {this.renderHeader()}
             </div>
-            {this.renderEntities(entities)}
+            <div className={classnames('unbound-manager-entities', `unbound-manager-${this.props.type}`)}>
+               {this.renderEntities(entities)}
+            </div>
          </ErrorBoundary>
       );
    }
@@ -149,7 +151,7 @@ class Manager extends React.Component {
          version: true
       });
 
-      const res = Object.entries(entities).flatMap(([key, value]) => {
+      const res = Object.entries(entities).flatMap(([client, value]) => {
          const entities = value.sort((a, b) => {
             const first = this.resolve(a, 'name').toUpperCase();
             const second = this.resolve(b, 'name').toUpperCase();
@@ -182,7 +184,7 @@ class Manager extends React.Component {
             res.push(
                <AddonCard
                   manager={this.props.type}
-                  type={key}
+                  type={client}
                   entity={entity}
                   key={this.resolve(entity, 'name')}
                />
