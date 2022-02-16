@@ -305,7 +305,9 @@ module.exports = class AddonCard extends React.Component {
    }
 
    getSettings() {
-      return true;
+      // return (
+      //    this.props.entity.instance?.getSettingsPanel ??
+      // );
    }
 
    getName() {

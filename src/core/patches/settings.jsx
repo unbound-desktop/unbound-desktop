@@ -1,5 +1,5 @@
+const { getLazy, filters: { byDisplayName } } = require('@webpack');
 const { after, unpatchAll } = require('@patcher');
-const { getByDisplayName } = require('@webpack');
 const { capitalize } = require('@utilities');
 const Patch = require('@structures/patch');
 
@@ -11,8 +11,12 @@ const blacklisted = {
 };
 
 module.exports = class Settings extends Patch {
-   apply() {
-      const SettingsView = getByDisplayName('SettingsView');
+   async apply() {
+      this.promises = { cancelled: false };
+
+      const SettingsView = await getLazy(byDisplayName('SettingsView'));
+      if (this.promises.cancelled) return;
+
       after('unbound-settings', SettingsView.prototype, 'getPredicateSections', (_, args, sections) => {
          // Remove integrated settings views
          sections = sections.filter(s => {
@@ -75,6 +79,7 @@ module.exports = class Settings extends Patch {
    }
 
    remove() {
+      this.promises.cancelled = false;
       unpatchAll('unbound-settings');
    }
 };

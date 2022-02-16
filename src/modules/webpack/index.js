@@ -5,20 +5,39 @@
 *  @link https://github.com/strencher-kernel/pc-compat/blob/dev/src/renderer/modules/webpack.ts
 */
 
-const { uuid } = require('@utilities');
+const logger = require('@modules/logger');
 const modules = require('@data/modules');
+const { uuid } = require('@utilities');
 
+const Logger = new logger('Webpack');
 const common = {};
 
 module.exports = class Webpack {
-   instance = null;
+   static instance = null;
+   static listeners = new Set();
 
    static get common() {
       return common;
    }
 
    static async init() {
+      Webpack.onPush = Webpack.onPush.bind(this);
       return await Webpack.#available.then(() => new Promise(async ready => {
+         Webpack.push = window[Webpack.#global].push;
+         Object.defineProperty(window[Webpack.#global], 'push', {
+            configurable: true,
+            get: () => Webpack.onPush,
+            set: (push) => {
+               Webpack.push = push;
+
+               Object.defineProperty(window[Webpack.#global], 'push', {
+                  value: Webpack.onPush,
+                  configurable: true,
+                  writable: true
+               });
+            }
+         });
+
          const [Dispatcher, { ActionTypes } = {}, { getCurrentUser } = {}] = await Webpack.getByProps(
             ['dirtyDispatch'], ['API_HOST', 'ActionTypes'], ['getCurrentUser', 'getUser'],
             { cache: false, bulk: true, wait: true, forever: true }
@@ -81,6 +100,66 @@ module.exports = class Webpack {
          if (getCurrentUser?.() != void 0) return listener();
          Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
       }));
+   }
+
+   static addListener(listener) {
+      Webpack.listeners.add(listener);
+      return Webpack.removeListener.bind(this, listener);
+   }
+
+   static removeListener(listener) {
+      return Webpack.listeners.delete(listener);
+   }
+
+   static onPush(chunk) {
+      const [, modules] = chunk;
+
+      for (const id in modules) {
+         const orig = modules[id];
+
+         modules[id] = (module, exports, require) => {
+            Reflect.apply(orig, null, [module, exports, require]);
+
+            const listeners = [...Webpack.listeners];
+            for (let i = 0; i < listeners.length; i++) {
+               try {
+                  listeners[i](exports);
+               } catch (e) {
+                  Logger.error('Failed to firecallback listener:', e);
+               }
+            }
+         };
+
+         Object.assign(modules[id], orig, {
+            toString: () => orig.toString()
+         });
+      }
+
+      return Reflect.apply(Webpack.push, window[Webpack.#global], [chunk]);
+   }
+
+   static getLazy(filter) {
+      const cache = Webpack.getModule(filter);
+      if (cache) return Promise.resolve(cache);
+
+      return new Promise(resolve => {
+         const listener = (m) => {
+            const direct = filter(m);
+            if (direct) {
+               resolve(m);
+               return void remove();
+            }
+
+            if (!m.default) return;
+            const defaultMatch = filter(m.default);
+            if (!defaultMatch) return;
+
+            resolve(m.default);
+            remove();
+         };
+
+         const remove = Webpack.addListener(listener);
+      });
    }
 
    static #request(cache = true) {
@@ -196,6 +275,26 @@ module.exports = class Webpack {
       return null;
    }
 
+   static getByString(...options) {
+      const [props, { bulk = false, wait = false, ...rest }] = Webpack.#parseOptions(options);
+
+      if (!bulk && !wait) {
+         return Webpack.getModule(Webpack.filters.byString(...props), rest);
+      }
+
+      if (wait && !bulk) {
+         return Webpack.#waitFor(Webpack.filters.byString(...props), rest);
+      }
+
+      if (bulk) {
+         const filters = props.map((propsArray) => Webpack.filters.byString(...propsArray)).concat({ wait, ...rest });
+
+         return Webpack.bulk(...filters);
+      }
+
+      return null;
+   }
+
    static getByDefaultString(...options) {
       const [props, { bulk = false, wait = false, ...rest }] = Webpack.#parseOptions(options);
 
@@ -262,7 +361,10 @@ module.exports = class Webpack {
          },
          byDefaultString: (...strings) => (mdl) => {
             if (!mdl?.default) return false;
-            return strings.every(s => mdl.default.toString().includes(s));
+            return strings.every(s => mdl.default.toString?.()?.includes?.(s));
+         },
+         byString: (...strings) => (mdl) => {
+            return strings.every(s => mdl.toString?.()?.includes?.(s));
          }
       };
    }
@@ -281,6 +383,14 @@ module.exports = class Webpack {
       return 'webpackChunkdiscord_app';
    }
 
+   static get get() {
+      return Webpack.getModule;
+   }
+
+   static get find() {
+      return Webpack.getModule;
+   }
+
    static get findByProps() {
       return Webpack.getByProps;
    }
@@ -291,6 +401,10 @@ module.exports = class Webpack {
 
    static get findByDefaultString() {
       return Webpack.getByDefaultString;
+   }
+
+   static get findByString() {
+      return Webpack.getByString;
    }
 
    static get findModule() {

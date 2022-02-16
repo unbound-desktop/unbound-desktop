@@ -21,22 +21,26 @@ module.exports = class Patches {
             const instance = new this.patches[patch]();
             instance.id = patch;
 
-            await instance.apply();
+            instance.apply();
             this.entities.set(patch, instance);
          } catch (e) {
             Logger.error(`Could not apply the ${patch} patch.`, e);
          }
       }
+
+      Logger.log('Internal patches applied.');
    }
 
    async remove() {
       for (const patch of [...this.entities.values()]) {
          try {
-            await patch.remove();
+            patch.remove();
             this.entities.delete(patch.id);
          } catch (e) {
             Logger.error(`Could not remove the ${patch} patch.`, e);
          }
       }
+
+      Logger.log('Internal patches removed.');
    }
 };
