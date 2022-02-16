@@ -12,10 +12,6 @@ module.exports = class Addon {
 
    load() { }
 
-   get configurator() {
-      return null;
-   }
-
    get color() {
       return colors.primary;
    }

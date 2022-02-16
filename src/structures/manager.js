@@ -222,10 +222,10 @@ module.exports = class Manager extends Emitter {
       let entity = this.resolve(id);
       if (!entity) entity = this.load(id);
 
-      if (entity && entity.instance && !entity.started) {
+      if (entity?.instance && !entity.started) {
          try {
             entity.started = true;
-            entity.instance.start();
+            entity.instance.start?.();
             this.logger.log(`${entity.data.name} was started.`);
          } catch (e) {
             this.logger.error(`Couldn't start ${entity.data.name}`, e);
@@ -235,10 +235,10 @@ module.exports = class Manager extends Emitter {
 
    stop(id) {
       const entity = this.resolve(id);
-      if (entity && entity.instance && entity.started) {
+      if (entity?.instance && entity.started) {
          try {
             entity.started = false;
-            entity.instance.stop();
+            entity.instance.stop?.();
             this.logger.log(`${entity.data.name} was stopped.`);
          } catch (e) {
             this.logger.error(`Couldn't stop ${entity.data.name}`, e);
@@ -250,12 +250,11 @@ module.exports = class Manager extends Emitter {
       const entity = this.resolve(id);
       if (entity) {
          try {
-            entity.instance?.stop?.();
+            this.stop(entity.id);
             const cache = Object.keys(require.cache).filter(c => c.includes(entity.folder));
             cache.map(c => delete require.cache[c]);
             this.entities.delete(entity.id);
             this.emit('updated');
-            this.logger.log(`${entity.data.name} was stopped & unloaded.`);
          } catch (e) {
             this.logger.error(`FATAL: ${entity.id} was not able to unload properly, a reload using CTRL+R is recommended.`, e);
          }

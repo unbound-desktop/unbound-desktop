@@ -1,38 +1,48 @@
 const { basename, resolve } = require('path');
+const Lodash = window._;
 
 const APIManager = require('@structures/apis/manager');
 const Manager = require('@structures/manager');
+
 const PatchManager = require('@core/patches');
-const Logger = require('@modules/logger');
 const Styles = require('@core/styles');
+
+let Patches;
 
 module.exports = class Unbound {
    static #styles = new Styles();
 
-   constructor() {
-      this.logger = new Logger('Core');
+   // hacky, restarts break due to it loading too early
+   static get #patches() {
+      if (Patches) return Patches;
+      return Patches = new PatchManager();
    }
 
    async start() {
       global.unbound = this;
-      this.webpack = require('@webpack');
 
+      // Apply core styles
       Unbound.#styles.apply();
 
+      // Initialize webpack instance & core APIs
+      this.webpack = require('@webpack');
       this.apis = new APIManager();
       await this.apis.start();
 
-      this.patches = new PatchManager();
-      await this.patches.apply();
+      // Apply internal patches
+      await Unbound.#patches.apply();
 
+      // Export miscellaneous
       this.utilities = require('@utilities');
       this.constants = require('@constants');
 
+      // Initialize built-in managers
       this.managers = {
          plugins: new Manager('plugins'),
          themes: new Manager('themes')
       };
 
+      // Load all entities
       this.managers.themes.loadAll();
       this.managers.plugins.loadAll();
    }
@@ -47,28 +57,24 @@ module.exports = class Unbound {
 
       Unbound.#styles?.remove?.();
       await this.apis?.stop?.();
-      await this.patches?.remove?.();
+      await Unbound.#patches?.remove();
 
       Object.keys(this.managers ?? {}).map(m => {
          this.managers[m].unloadAll();
       });
 
-      const temp = [];
-      const callers = Patcher.patches?.filter(e => {
-         if (temp.includes(e.caller)) return false;
-
-         temp.push(e.caller);
-         return true;
-      }).map(p => p.caller);
-
+      // Get all patcher callers for unpatching
+      const callers = Lodash.uniq(Patcher.patches.map(a => a.caller));
       for (const caller of callers) {
          Patcher.unpatchAll(caller);
       }
 
+      // Clear require cache to allow for any code changes to apply
       const parent = basename(resolve(__dirname, '..', '..'));
       const cache = Object.keys(require.cache).filter(c => ~c.indexOf(parent));
       cache.map(c => delete require.cache[c]);
 
+      // Replace the global with a new one
       delete global.unbound;
       global.unbound = {
          start: async () => {
@@ -78,7 +84,9 @@ module.exports = class Unbound {
             const Unbound = require('@structures/unbound');
             global.unbound = new Unbound();
             await unbound.start();
-         }
+         },
+         shutdown: () => { },
+         restart: () => global.unbound.start()
       };
    }
 };
