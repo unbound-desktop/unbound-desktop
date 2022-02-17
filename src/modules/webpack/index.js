@@ -125,7 +125,7 @@ module.exports = class Webpack {
                try {
                   listeners[i](exports);
                } catch (e) {
-                  Logger.error('Failed to firecallback listener:', e);
+                  Logger.error('Failed to fire listener.', e);
                }
             }
          };

@@ -57,3 +57,10 @@
    font-size: .75rem;
    margin-left: 8px;
 }
+
+.unbound-manager-empty-state {
+   background: url(/assets/e0989b9d43cd9ca4417b49f4f8fbebc6.svg);
+   margin-top: 75px !important;
+   width: 404px;
+   height: 202px;
+}

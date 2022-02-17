@@ -21,8 +21,6 @@ const {
 
 const AddonCard = require('./AddonCard');
 
-const classes = getByProps('emptyStateImage', 'emptyStateSubtext');
-
 class Manager extends React.Component {
    constructor(props) {
       super(props);
@@ -196,7 +194,7 @@ class Manager extends React.Component {
 
       return res.length ? res : (
          <div className='unbound-manager-not-found'>
-            <div className={classes.emptyStateImage} />
+            <div className='unbound-manager-empty-state' />
             <Text color={Text.Colors.MUTED}>{Messages.GIFT_CONFIRMATION_HEADER_FAIL}</Text>
             <Text color={Text.Colors.MUTED}>{Messages.SEARCH_NO_RESULTS}</Text>
          </div>
