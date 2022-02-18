@@ -17,11 +17,10 @@ module.exports = class Compiler {
       // If not, compile the file and cache it.
       try {
          const content = readFileSync(join(this.folder, hash));
-
          if (this.shouldInternallyCompile) {
             mdl._compile(content, filename);
          } else {
-            return content;
+            mdl.exports = content;
          }
       } catch {
          const result = this.compile(mdl, filename);
