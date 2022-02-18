@@ -2,12 +2,12 @@ const { readFileSync } = require('fs');
 const Cacher = require('./cacher');
 const sucrase = require('sucrase');
 
-module.exports = new class JSX extends Cacher {
+module.exports = new class JS extends Cacher {
    compile(mdl, filename) {
       const content = readFileSync(filename, 'utf-8');
 
       const { code } = sucrase.transform(content, {
-         transforms: ['jsx', 'flow', 'imports'],
+         transforms: ['flow', 'imports'],
          filePath: filename
       });
 

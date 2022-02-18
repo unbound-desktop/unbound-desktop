@@ -1,10 +1,8 @@
 const { readFileSync } = require('fs');
-const Module = require('module');
+const Cacher = require('./cacher');
 
-Module._extensions['.css'] = (mdl, filename) => {
-   const content = readFileSync(filename, 'utf-8');
-
-   mdl.exports = content;
-
-   return mdl.exports;
+module.exports = new class CSS extends Cacher {
+   compile(mdl, filename) {
+      return readFileSync(filename, 'utf-8');
+   }
 };

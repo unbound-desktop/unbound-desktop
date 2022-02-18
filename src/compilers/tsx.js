@@ -1,16 +1,20 @@
 const { readFileSync } = require('fs');
+const Cacher = require('./cacher');
 const sucrase = require('sucrase');
-const Module = require('module');
 
-Module._extensions['.tsx'] = (mdl, filename) => {
-   const content = readFileSync(filename, 'utf-8');
+module.exports = new class TSX extends Cacher {
+   compile(mdl, filename) {
+      const content = readFileSync(filename, 'utf-8');
 
-   const { code } = sucrase.transform(content, {
-      transforms: ['jsx', 'imports', 'typescript'],
-      filePath: filename
-   });
+      const { code } = sucrase.transform(content, {
+         transforms: ['typescript', 'imports', 'jsx'],
+         filePath: filename
+      });
 
-   mdl._compile(code, filename);
+      return code;
+   }
 
-   return mdl.exports;
+   get shouldInternallyCompile() {
+      return true;
+   }
 };

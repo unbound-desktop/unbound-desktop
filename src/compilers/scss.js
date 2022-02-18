@@ -1,8 +1,8 @@
-const Module = require('module');
+const Cacher = require('./cacher');
 const SASS = require('sass');
 
-Module._extensions['.scss'] = (mdl, filename) => {
-   mdl.exports = SASS.compile(filename, {}).css.toString();
-
-   return mdl.exports;
+module.exports = new class SCSS extends Cacher {
+   compile(mdl, filename) {
+      return SASS.compile(filename, {}).css.toString();
+   };
 };
