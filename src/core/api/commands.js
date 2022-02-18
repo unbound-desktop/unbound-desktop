@@ -147,6 +147,6 @@ module.exports = new class Commands extends API {
    }
 
    unregister(id) {
-      commands.delete(id);
+      this.commands.delete(id);
    };
 };

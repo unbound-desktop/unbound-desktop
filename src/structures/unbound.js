@@ -55,13 +55,13 @@ module.exports = class Unbound {
    async shutdown() {
       const Patcher = require('@patcher');
 
-      Unbound.#styles?.remove?.();
-      await this.apis?.stop?.();
-      await Unbound.#patches?.remove();
-
       Object.keys(this.managers ?? {}).map(m => {
          this.managers[m].unloadAll();
       });
+
+      Unbound.#styles?.remove?.();
+      await this.apis?.stop?.();
+      await Unbound.#patches?.remove();
 
       // Get all patcher callers for unpatching
       const callers = Lodash.uniq(Patcher.patches.map(a => a.caller));
