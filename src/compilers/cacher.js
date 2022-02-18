@@ -1,16 +1,23 @@
 const { readFileSync, mkdirSync, existsSync, writeFileSync } = require('fs');
+const { join, basename } = require('path');
 const { createHash } = require('crypto');
-const { join } = require('path');
+const { paths } = require('@constants');
 const Module = require('module');
 
 module.exports = class Compiler {
    constructor() {
       this.type = this.constructor.name.toLowerCase();
 
+      this.old = Module._extensions[`.${this.type}`];
       Module._extensions[`.${this.type}`] = this.handleFile.bind(this);
    }
 
    handleFile(mdl, filename) {
+      if (this.type === 'js' && !filename.includes(basename(paths.root))) {
+         this.old?.(mdl, filename);
+         return mdl.exports;
+      }
+
       const hash = this.getHash(filename);
 
       // Check if the file is in cache.
