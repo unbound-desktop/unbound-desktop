@@ -1,3 +1,5 @@
+global.isUnbound = true;
+
 const { readdirSync, copyFileSync, existsSync, unlinkSync, readFileSync } = require('fs');
 const { join } = require('path');
 

@@ -8,6 +8,8 @@ Module.globalPaths.push(path.resolve(__dirname, '..', 'node_modules'));
 alias(path.resolve(__dirname, '..'));
 require('./compilers');
 
+global.isUnbound = true;
+
 const Webpack = require('@modules/webpack');
 
 const { windowOptions } = ipcRenderer.sendSync('UNBOUND_GET_WINDOW_DATA');

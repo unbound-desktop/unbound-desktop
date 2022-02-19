@@ -8,10 +8,16 @@ const { send } = require('@api/clyde');
 
 const [
    Channels,
-   Messages
+   Messages,
+   AssetUtils,
+   CommandUtils,
+   CommandsStore
 ] = getByProps(
    ['getLastSelectedChannelId'],
    ['sendMessage'],
+   ['getApplicationIconURL'],
+   ['useApplicationCommandsDiscoveryState'],
+   ['queryCommands'],
    { bulk: true }
 );
 
@@ -23,48 +29,50 @@ module.exports = new class Commands extends API {
       this.section = {
          id: 'unbound',
          type: 1,
-         name: 'Unbound'
+         name: 'Unbound',
+         icon: avatar
       };
 
       bindAll(this, ['register', 'unregister']);
    }
 
    start() {
-      const [AssetUtils, CommandUtils, Commands] = getByProps(
-         ['getApplicationIconURL'],
-         ['useApplicationCommandsDiscoveryState'],
-         ['getBuiltInCommands'],
-         { bulk: true }
-      );
-
-      after('unbound-commands', AssetUtils, 'getApplicationIconURL', (_, [props]) => {
-         if (props.id === 'unbound') return avatar;
+      after('unbound-commands', AssetUtils, 'getApplicationIconURL', (_, [section]) => {
+         if (section.id === 'unbound') return avatar;
       });
 
-      after('unbound-commands', Commands, 'getBuiltInCommands', (_, [, , isChat], res) => {
-         if (isChat !== false) return res;
+      after('unbound-commands', CommandsStore, 'queryCommands', (_, [, , query], res) => {
+         const commands = [...this.commands.values()].filter(e => e.name.includes(query));
 
-         return [...res, ...this.commands.values()];
+         if (commands) {
+            res.push(...commands);
+         }
+      });
+
+      after('unbound-commands', CommandsStore, 'getApplicationCommandSectionName', (_, [section], res) => {
+         if (section.id === 'unbound') return 'Unbound';
       });
 
       after('unbound-commands', CommandUtils, 'useApplicationCommandsDiscoveryState', (_, [, , , isChat], res) => {
          if (isChat !== false) return res;
 
-         if (!res.discoverySections.find(d => d.key == this.section.id) && this.commands.size) {
+         if (!res.discoverySections.find(s => s.key == this.section.id) && this.commands.size) {
             const cmds = [...this.commands.values()];
 
-            res.applicationCommandSections.push(this.section);
-            res.discoveryCommands.push(...cmds);
             res.commands.push(...cmds.filter(cmd => !res.commands.some(e => e.name === cmd.name)));
-
+            res.sectionsOffset.push(this.commands.size);
+            res.discoveryCommands.push(...cmds);
             res.discoverySections.push({
                data: cmds,
                key: this.section.id,
                section: this.section
             });
-
-            res.sectionsOffset.push(this.commands.size);
          }
+
+         if (!res.applicationCommandSections.find(s => s.id == this.section.id)) {
+            res.applicationCommandSections.push(this.section);
+         }
+
 
          const index = res.discoverySections.findIndex(e => e.key === '-2');
          if (res.discoverySections[index]?.data) {
@@ -74,7 +82,7 @@ module.exports = new class Commands extends API {
             if (section.data.length == 0) res.discoverySections.splice(index, 1);
          }
       });
-   }
+   };
 
    stop() {
       unpatchAll('unbound-commands');
