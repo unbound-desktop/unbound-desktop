@@ -26,7 +26,7 @@ module.exports = class Compiler {
       // Check if the file is in cache.
       // If not, compile the file and cache it.
       try {
-         const content = readFileSync(join(this.folder, hash));
+         const content = readFileSync(join(this.folder, hash), 'utf-8');
          if (this.shouldInternallyCompile) {
             mdl._compile(content, filename);
          } else {
@@ -42,7 +42,7 @@ module.exports = class Compiler {
          }
 
          const folder = join(this.folder, hash);
-         this.cache(folder, result);
+         if (this.shouldCache) this.cache(folder, result);
       }
 
       return mdl.exports;
@@ -54,6 +54,10 @@ module.exports = class Compiler {
 
    get shouldInternallyCompile() {
       return false;
+   }
+
+   get shouldCache() {
+      return true;
    }
 
    compile() { }
