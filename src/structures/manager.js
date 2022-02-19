@@ -131,7 +131,12 @@ module.exports = class Manager extends Emitter {
 
       for (const file of files) {
          if (this.resolve(file)) continue;
-         this.load(file);
+
+         try {
+            this.load(file);
+         } catch (e) {
+            this.logger.error(`Failed to load entity.`, e.message);
+         }
       }
    }
 
