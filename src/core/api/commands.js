@@ -69,7 +69,7 @@ module.exports = new class Commands extends API {
             });
          }
 
-         if (!res.applicationCommandSections.find(s => s.id == this.section.id)) {
+         if (!res.applicationCommandSections.find(s => s.id == this.section.id) && this.commands.size) {
             res.applicationCommandSections.push(this.section);
          }
 
