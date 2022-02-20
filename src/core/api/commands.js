@@ -6,7 +6,7 @@ const { avatar } = require('@constants');
 const { create } = require('@patcher');
 const { send } = require('@api/clyde');
 
-const Patcher = create('unboudn-commands');
+const Patcher = create('unbound-commands');
 
 const [
    Channels,
