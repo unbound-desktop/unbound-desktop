@@ -1,10 +1,12 @@
 const API = require('@structures/api');
 
-const { after, unpatchAll } = require('@patcher');
-const { getByProps } = require('@webpack');
-const { bindAll } = require('@utilities');
+const { getByProps, getByDisplayName } = require('@webpack');
+const { bindAll, findInReactTree } = require('@utilities');
 const { avatar } = require('@constants');
+const { create } = require('@patcher');
 const { send } = require('@api/clyde');
+
+const Patcher = create('unboudn-commands');
 
 const [
    Channels,
@@ -37,23 +39,32 @@ module.exports = new class Commands extends API {
    }
 
    start() {
-      after('unbound-commands', AssetUtils, 'getApplicationIconURL', (_, [section]) => {
-         if (section.id === 'unbound') return avatar;
-      });
-
-      after('unbound-commands', CommandsStore, 'queryCommands', (_, [, , query], res) => {
-         const commands = [...this.commands.values()].filter(e => e.name.includes(query));
-
-         if (commands) {
-            res.push(...commands);
+      const CommandsIcon = getByDisplayName('ApplicationCommandDiscoveryApplicationIcon', { default: false });
+      Patcher.after(CommandsIcon, 'default', (_, [props], res) => {
+         if (props.section.id === this.section.id) {
+            const img = findInReactTree(res, r => r.props.src);
+            img.props.src = this.section.icon;
          }
       });
 
-      after('unbound-commands', CommandsStore, 'getApplicationCommandSectionName', (_, [section], res) => {
-         if (section.id === 'unbound') return 'Unbound';
+      Patcher.after(AssetUtils, 'getApplicationIconURL', (_, [section]) => {
+         if (section.id === this.section.id) {
+            return this.section.icon;
+         }
       });
 
-      after('unbound-commands', CommandUtils, 'useApplicationCommandsDiscoveryState', (_, [, , , isChat], res) => {
+      Patcher.after(CommandsStore, 'queryCommands', (_, [, , query], res) => {
+         const commands = [...this.commands.values()].filter(e => e.name.includes(query));
+         res.push(...commands);
+      });
+
+      Patcher.after(CommandsStore, 'getApplicationCommandSectionName', (_, [section], res) => {
+         if (section.id === this.section.id) {
+            return this.section.name;
+         }
+      });
+
+      Patcher.after(CommandUtils, 'useApplicationCommandsDiscoveryState', (_, [, , , isChat], res) => {
          if (isChat !== false) return res;
 
          if (!res.discoverySections.find(s => s.key == this.section.id) && this.commands.size) {
@@ -85,7 +96,7 @@ module.exports = new class Commands extends API {
    };
 
    stop() {
-      unpatchAll('unbound-commands');
+      Patcher.unpatchAll();
    }
 
    register(options) {
