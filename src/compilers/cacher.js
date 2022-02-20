@@ -21,7 +21,7 @@ module.exports = class Compiler {
          return mdl.exports;
       }
 
-      const hash = this.getHash(filename);
+      const { hash, content } = this.getHash(filename);
 
       // Check if the file is in cache.
       // If not, compile the file and cache it.
@@ -33,7 +33,7 @@ module.exports = class Compiler {
             mdl.exports = content;
          }
       } catch {
-         const result = this.compile(mdl, filename);
+         const result = this.compile(mdl, filename, content);
 
          if (this.shouldInternallyCompile) {
             mdl._compile(result, filename);
@@ -63,10 +63,14 @@ module.exports = class Compiler {
    compile() { }
 
    getHash(path) {
+      const content = readFileSync(path);
       const hash = createHash('sha1');
-      hash.update(readFileSync(path));
+      hash.update(content);
 
-      return hash.digest('hex');
+      return {
+         hash: hash.digest('hex'),
+         content: content.toString()
+      };
    }
 
    get folder() {
