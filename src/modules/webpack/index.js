@@ -12,7 +12,7 @@ const { uuid } = require('@utilities');
 const Logger = new logger('Webpack');
 const common = {};
 
-module.exports = class Webpack {
+class Webpack {
    static instance = null;
    static listeners = new Set();
 
@@ -382,36 +382,26 @@ module.exports = class Webpack {
    static get #global() {
       return 'webpackChunkdiscord_app';
    }
+};
 
-   static get get() {
-      return Webpack.getModule;
-   }
-
-   static get find() {
-      return Webpack.getModule;
-   }
-
-   static get findByProps() {
-      return Webpack.getByProps;
-   }
-
-   static get findByDisplayName() {
-      return Webpack.getByDisplayName;
-   }
-
-   static get findByDefaultString() {
-      return Webpack.getByDefaultString;
-   }
-
-   static get findByString() {
-      return Webpack.getByString;
-   }
-
-   static get findModule() {
-      return Webpack.getModule;
-   }
-
-   static get findModules() {
-      return Webpack.getModules;
-   }
+module.exports = {
+   get: Webpack.getModule,
+   getModule: Webpack.getModule,
+   getModules: Webpack.getModules,
+   getLazy: Webpack.getLazy,
+   getByProps: Webpack.getByProps,
+   getByDefaultString: Webpack.getByDefaultString,
+   getByDisplayName: Webpack.getByDisplayName,
+   getByString: Webpack.getByString,
+   filters: Webpack.filters,
+   find: Webpack.getModule,
+   findByProps: Webpack.getByProps,
+   findByDisplayName: Webpack.getByDisplayName,
+   findByDefaultString: Webpack.getByDefaultString,
+   findByString: Webpack.getByString,
+   findModule: Webpack.getModule,
+   findModules: Webpack.getModules,
+   bulk: Webpack.bulk,
+   init: Webpack.init,
+   common: Webpack.common
 };

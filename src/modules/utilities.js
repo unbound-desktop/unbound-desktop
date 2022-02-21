@@ -27,6 +27,14 @@ module.exports = new class Util {
       return this.findInTree(tree, filter, { ...options, walkable: ['props', 'children'] });
    };
 
+   memoize(func) {
+      let cache;
+
+      return (...args) => {
+         return cache ??= func.apply(null, args);
+      };
+   }
+
    getReactInstance(element) {
       if (!element) return null;
 

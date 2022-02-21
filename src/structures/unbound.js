@@ -3,19 +3,19 @@ const Lodash = window._;
 
 const APIManager = require('@structures/apis/manager');
 const Manager = require('@structures/manager');
+const { memoize } = require('@utilities');
+const Patcher = require('@patcher');
 
 const PatchManager = require('@core/patches');
 const Styles = require('@core/styles');
 
-let Patches;
+const getPatches = memoize(() => new PatchManager());
 
 module.exports = class Unbound {
    static #styles = new Styles();
 
-   // hacky, restarts break due to it loading too early
    static get #patches() {
-      if (Patches) return Patches;
-      return Patches = new PatchManager();
+      return getPatches();
    }
 
    async start() {
@@ -49,12 +49,14 @@ module.exports = class Unbound {
 
    async restart() {
       await this.shutdown();
+
+      // Use global instead which has the "require" inside so
+      // that way, the cache gets refreshed and any edited code
+      // is applied on this restartart
       await global.unbound.start();
    }
 
    async shutdown() {
-      const Patcher = require('@patcher');
-
       Object.keys(this.managers ?? {}).map(m => {
          this.managers[m].unloadAll();
       });
@@ -82,8 +84,8 @@ module.exports = class Unbound {
             await Webpack.init();
 
             const Unbound = require('@structures/unbound');
-            global.unbound = new Unbound();
-            await unbound.start();
+            const instance = new Unbound();
+            await instance.start();
          },
          shutdown: () => { },
          restart: () => global.unbound.start()
