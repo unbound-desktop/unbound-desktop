@@ -4,19 +4,14 @@ const { getByProps, getByDisplayName } = require('@webpack');
 const { bindAll, findInReactTree } = require('@utilities');
 const { avatar } = require('@constants');
 const { create } = require('@patcher');
-const { send } = require('@api/clyde');
 
 const Patcher = create('unbound-commands');
 
 const [
-   Channels,
-   Messages,
    AssetUtils,
    CommandUtils,
    CommandsStore
 ] = getByProps(
-   ['getLastSelectedChannelId'],
-   ['sendMessage'],
    ['getApplicationIconURL'],
    ['useApplicationCommandsDiscoveryState'],
    ['queryCommands'],
@@ -110,7 +105,7 @@ module.exports = new class Commands extends API {
          applicationId: this.section.id,
          options: [],
          __unbound: true,
-         execute: () => {},
+         execute: () => { },
          ...cmd
       });
    }
