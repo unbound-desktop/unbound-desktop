@@ -1,5 +1,5 @@
 module.exports = {
-   Messages: {
+   messages: {
       props: [
          'sendMessage',
          'receiveMessage'
@@ -34,26 +34,26 @@ module.exports = {
          'dirtyDispatch'
       ]
    },
-   Modal: {
+   modal: {
       props: [
          'openModal',
          'openModalLazy'
       ]
    },
-   ContextMenu: {
+   contextMenu: {
       props: [
          'openContextMenu',
          'closeContextMenu'
       ]
    },
-   Channels: {
+   channels: {
       props: [
          'getChannelId',
          'getLastSelectedChannelId',
          'getVoiceChannelId'
       ]
    },
-   Constants: {
+   constants: {
       props: [
          'Endpoints',
          'API_HOST'
@@ -70,5 +70,8 @@ module.exports = {
          'highlight',
          'NUMBER_MODE'
       ]
+   },
+   zustand: {
+      filter: m => typeof m === 'function' && m.toString().includes('[useStore, api]')
    }
 }

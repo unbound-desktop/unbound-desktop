@@ -84,6 +84,11 @@ class Webpack {
                      id: name,
                      filter: Webpack.filters.byDisplayName(m.displayName)
                   });
+               } else if (m.filter) {
+                  filters.push({
+                     id: name,
+                     filter: m.filter
+                  });
                }
             });
 
