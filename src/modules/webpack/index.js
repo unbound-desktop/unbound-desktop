@@ -117,8 +117,9 @@ class Webpack {
       for (const id in modules) {
          const orig = modules[id];
 
-         modules[id] = (module, exports, require) => {
-            Reflect.apply(orig, null, [module, exports, require]);
+         modules[id] = (...args) => {
+            const [, exports] = args;
+            Reflect.apply(orig, null, args);
 
             const listeners = [...Webpack.listeners];
             for (let i = 0; i < listeners.length; i++) {
@@ -131,7 +132,8 @@ class Webpack {
          };
 
          Object.assign(modules[id], orig, {
-            toString: () => orig.toString()
+            toString: orig.toString.bind(orig),
+            __original: orig
          });
       }
 
@@ -385,23 +387,24 @@ class Webpack {
 };
 
 module.exports = {
-   get: Webpack.getModule,
-   getModule: Webpack.getModule,
-   getModules: Webpack.getModules,
-   getLazy: Webpack.getLazy,
-   getByProps: Webpack.getByProps,
-   getByDefaultString: Webpack.getByDefaultString,
-   getByDisplayName: Webpack.getByDisplayName,
-   getByString: Webpack.getByString,
-   filters: Webpack.filters,
-   find: Webpack.getModule,
-   findByProps: Webpack.getByProps,
-   findByDisplayName: Webpack.getByDisplayName,
-   findByDefaultString: Webpack.getByDefaultString,
-   findByString: Webpack.getByString,
-   findModule: Webpack.getModule,
-   findModules: Webpack.getModules,
    bulk: Webpack.bulk,
    init: Webpack.init,
-   common: Webpack.common
+   common: Webpack.common,
+   get: Webpack.getModule,
+   find: Webpack.getModule,
+   getLazy: Webpack.getLazy,
+   filters: Webpack.filters,
+   findLazy: Webpack.getLazy,
+   getModule: Webpack.getModule,
+   findModule: Webpack.getModule,
+   getModules: Webpack.getModules,
+   getByProps: Webpack.getByProps,
+   findByProps: Webpack.getByProps,
+   findModules: Webpack.getModules,
+   getByString: Webpack.getByString,
+   findByString: Webpack.getByString,
+   getByDisplayName: Webpack.getByDisplayName,
+   findByDisplayName: Webpack.getByDisplayName,
+   getByDefaultString: Webpack.getByDefaultString,
+   findByDefaultString: Webpack.getByDefaultString
 };
