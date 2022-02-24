@@ -19,22 +19,22 @@ module.exports = class Settings extends Patch {
 
       after('unbound-settings', SettingsView.prototype, 'getPredicateSections', (_, args, sections) => {
          // Remove integrated settings views
-         sections = sections.filter(s => {
-            const index = sections.indexOf(s);
-            if (s.section == 'DIVIDER' && sections[index + 1]?.label == 'BetterDiscord') {
-               return false;
-            }
+         // sections = sections.filter(s => {
+         //    const index = sections.indexOf(s);
+         //    if (s.section == 'DIVIDER' && sections[index + 1]?.label == 'BetterDiscord') {
+         //       return false;
+         //    }
 
-            if (blacklisted.labels.includes(s.label)) {
-               return false;
-            }
+         //    if (blacklisted.labels.includes(s.label)) {
+         //       return false;
+         //    }
 
-            if (blacklisted.sections.some(e => s.section?.includes(e) || s.id?.includes(e))) {
-               return false;
-            }
+         //    if (blacklisted.sections.some(e => s.section?.includes(e) || s.id?.includes(e))) {
+         //       return false;
+         //    }
 
-            return true;
-         });
+         //    return true;
+         // });
 
          const changelog = sections.find(c => c.section === 'changelog');
          if (changelog) {
@@ -61,17 +61,17 @@ module.exports = class Settings extends Patch {
                { section: 'DIVIDER' }
             );
 
-            sections._splice = sections.splice;
-            sections.splice = function (...args) {
-               const items = args.slice(2);
+            // sections._splice = sections.splice;
+            // sections.splice = function (...args) {
+            //    const items = args.slice(2);
 
-               if (
-                  items?.length &&
-                  items.some(i => blacklisted.labels.some(l => i.label?.includes(l)))
-               ) return sections;
+            //    if (
+            //       items?.length &&
+            //       items.some(i => blacklisted.labels.some(l => i.label?.includes(l)))
+            //    ) return sections;
 
-               return sections._splice(...args);
-            };
+            //    return sections._splice(...args);
+            // };
 
             return sections;
          }
