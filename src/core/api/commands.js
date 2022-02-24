@@ -108,61 +108,11 @@ module.exports = new class Commands extends API {
          id: command,
          name: command,
          applicationId: this.section.id,
-         options: [
-            {
-               type: 3,
-               required: false,
-               description: `Usage: ${cmd.usage?.replace?.(/{c}/g, command) ?? command}`,
-               name: 'args'
-            }
-         ],
+         options: [],
          __unbound: true,
-         execute: async (result) => {
-            try {
-               this.handle(options, Object.values(result).map((e) => e.value) ?? []);
-            } catch (error) {
-               this.logger.error(error);
-            }
-         },
+         execute: () => {},
          ...cmd
       });
-   }
-
-   async handle(options, args) {
-      const { command, executor } = options;
-
-      try {
-         const channel = Channels.getChannelId();
-
-         const res = await executor(args);
-
-         if (!res || !res.result) return;
-
-         if (!res.send) {
-            const options = { embeds: [] };
-
-            if (typeof res.result === 'string') {
-               options.content = res.result;
-            } else {
-               options.embeds.push(res.result);
-            }
-
-            send(channel, options);
-         } else {
-            Messages.sendMessage(channel, {
-               content: res.result,
-               invalidEmojis: [],
-               validNonShortcutEmojis: [],
-               tts: false
-            });
-         };
-      } catch (error) {
-         this.logger.error(`Could not executor for ${options.command}-${command}:`, error);
-
-         send(void 0, {
-            content: ":x: An error occurred while running this command. Check your console."
-         });
-      }
    }
 
    unregister(id) {
