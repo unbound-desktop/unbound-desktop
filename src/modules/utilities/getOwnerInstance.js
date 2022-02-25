@@ -1,5 +1,5 @@
-const getReactInstance = require('@utilities/getReactInstance');
-const getNestedType = require('@utilities/getNestedType');
+const getReactInstance = require('./getReactInstance');
+const getNestedType = require('./getNestedType');
 
 /**
  * @name getOwnerInstance

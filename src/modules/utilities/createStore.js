@@ -6,8 +6,7 @@
  */
 
 module.exports = (data) => {
-   // Require this here as we don't have it before webpack inits so the client dies
-   // require caches it anyway
+   /* Require this here as require caches it and we don't have it before webpack inits so the client dies */
    const { Flux, Dispatcher } = require('@webpack/common');
 
    class Store extends Flux.Store {

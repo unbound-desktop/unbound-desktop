@@ -1,4 +1,4 @@
-const sleep = require('@utilities/sleep');
+const sleep = require('./sleep');
 
 /**
  * @name waitFor

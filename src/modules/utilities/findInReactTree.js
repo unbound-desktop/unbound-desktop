@@ -1,4 +1,4 @@
-const findInTree = require('@utilities/findInTree');
+const findInTree = require('./findInTree');
 
 /**
  * @name findInReactTree
