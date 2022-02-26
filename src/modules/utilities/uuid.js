@@ -5,7 +5,7 @@
  * @return {string} Returns the randomized UUID.
  */
 
-module.exports = (length) => {
+module.exports = (length = 30) => {
    let uuid = '';
 
    do {
