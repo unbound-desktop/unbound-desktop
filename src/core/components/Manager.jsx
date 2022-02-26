@@ -1,9 +1,6 @@
 const { React, Locale: { Messages } } = require('@webpack/common');
 const { capitalize, classnames } = require('@utilities');
-const { getByProps } = require('@webpack');
 
-
-// merry christmas (christmas tree imports)
 const {
    Text,
    Icon,

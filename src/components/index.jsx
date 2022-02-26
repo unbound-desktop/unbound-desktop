@@ -10,24 +10,14 @@ Object.keys(components).map(name => {
    let map;
 
    if (options.name) {
-      filter = filters.byDisplayName(options.name);
+      const byDefaultDisplayName = (m => m.default?.displayName === options.name);
+      const isDefault = options.default ?? true;
+
+      filter = isDefault ? filters.byDisplayName(options.name) : byDefaultDisplayName;
    } else if (Array.isArray(options.props)) {
-      if (options.type == 'MERGE') {
-         const found = [];
-
-         filter = (m) => {
-            const matches = options.props.some((props) => props.every(p => m[p]));
-            if (matches) found.push(m);
-
-            return matches;
-         };
-
-         map = () => ({ ...found });
-      } else {
-         filter = filters.byProps(...options.props);
-         if (typeof options.prop == 'string') {
-            map = (m) => m[options.prop];
-         }
+      filter = filters.byProps(...options.props);
+      if (typeof options.prop == 'string') {
+         map = (m) => m[options.prop];
       }
    }
 
@@ -45,7 +35,7 @@ Object.keys(components).map(name => {
       };
    }
 
-   if (filter) search.push({ filter, name, map });
+   if (filter) search.push({ filter, name, map, default: options.default ?? false });
 });
 
 const res = bulk(...search.map(s => s.filter));

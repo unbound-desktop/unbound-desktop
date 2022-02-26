@@ -82,5 +82,12 @@
    },
    "Anchor": {
       "name": "Anchor"
+   },
+   "Notices": {
+      "name": "Notice",
+      "default": false,
+      "assign": {
+         "default": "Notice"
+      }
    }
 }

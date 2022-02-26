@@ -1,0 +1,7 @@
+.unbound-announcement {
+   border-radius: 0;
+}
+
+.unbound-announcement:first-child {
+   border-radius: 8px 0 0;
+}
