@@ -64,3 +64,25 @@
    width: 404px;
    height: 202px;
 }
+
+.unbound-manager-title {
+   margin-bottom: 20px;
+}
+
+.unbound-manager-title-has-settings .unbound-manager-title-main {
+   color: var(--text-muted);
+   cursor: pointer;
+}
+
+.unbound-manager-title {
+   display: flex;
+}
+
+.unbound-manager-title>* {
+   flex: unset !important;
+}
+
+.unbound-manager-title-caret {
+   margin-left: -5px;
+   vertical-align: bottom;
+}

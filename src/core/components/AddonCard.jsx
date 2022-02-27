@@ -136,18 +136,16 @@ module.exports = class AddonCard extends React.Component {
                   >
                      {p => this.renderType({ ...p })}
                   </RelativeTooltip>
-                  {this.getSettings() && (
+                  {this.hasSettings() && (
                      <RelativeTooltip text='Settings' hideOnClick={false}>
-                        {props => (
-                           <Icon
-                              {...props}
-                              onClick={() => this.forceUpdate()}
-                              name='Gear'
-                              width={28}
-                              height={28}
-                              className='unbound-addon-control-button'
-                           />
-                        )}
+                        {p => <Icon
+                           {...p}
+                           onClick={() => this.props.openSettings()}
+                           name='Gear'
+                           width={28}
+                           height={28}
+                           className='unbound-addon-control-button'
+                        />}
                      </RelativeTooltip>
                   )}
                   <Switch
@@ -158,9 +156,7 @@ module.exports = class AddonCard extends React.Component {
                </div>
             </div>
             <div className='unbound-addon-footer'>
-               <FormText
-                  className='unbound-addon-description'
-               >
+               <FormText className='unbound-addon-description'>
                   <Markdown>
                      {description}
                   </Markdown>
@@ -304,10 +300,21 @@ module.exports = class AddonCard extends React.Component {
       }
    }
 
-   getSettings() {
-      // return (
-      //    this.props.entity.instance?.getSettingsPanel ??
-      // );
+   hasSettings() {
+      const id = this.getId();
+      const name = this.getName();
+
+      return (
+         this.props.entity.instance?.getSettingsPanel ??
+         this.props.entity.getSettingsPanel ??
+         [...window?.powercord?.api?.settings?.settings?.keys() ?? []].includes(id) ??
+         [...window?.powercord?.api?.settings?.settings?.values() ?? []].find?.(e => {
+            const searchable = [e.label, e.category];
+            if (searchable.includes(id) || searchable.includes(name)) {
+               return true;
+            }
+         })
+      );
    }
 
    getName() {
@@ -315,6 +322,14 @@ module.exports = class AddonCard extends React.Component {
          this.props.entity.entityID ??
          this.props.entity.id ??
          this.props.entity.manifest?.name ??
+         this.props.entity.name
+      );
+   }
+
+   getId() {
+      return (
+         this.props.entity.id ??
+         this.props.entity.entityID ??
          this.props.entity.name
       );
    }

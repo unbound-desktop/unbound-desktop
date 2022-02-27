@@ -1,11 +1,14 @@
 const { React, Locale: { Messages } } = require('@webpack/common');
 const { capitalize, classnames } = require('@utilities');
+const { getByDisplayName } = require('@webpack');
+const logger = require('@modules/logger');
 
 const {
    Text,
    Icon,
    Popout,
    SearchBar,
+   FormTitle,
    ErrorBoundary,
    RelativeTooltip,
    Menu: {
@@ -16,18 +19,61 @@ const {
    }
 } = require('@components');
 
+const Caret = getByDisplayName('Caret');
 const AddonCard = require('./AddonCard');
+const DOMWrapper = require('./DOMWrapper');
+
+const Logger = new logger('Manager');
 
 class Manager extends React.Component {
    constructor(props) {
       super(props);
 
       this.state = {
-         query: ''
+         query: '',
+         settings: null
       };
    }
 
    render() {
+      if (this.state.settings?.entity) {
+         const { client, entity } = this.state.settings;
+         const settings = this.resolve(entity, 'settings');
+
+         try {
+            // If a component instance instance is returned, render it. If not, let them do whatever.
+            const API = unbound.apis.settings;
+            const id = this.resolve(entity, 'id');
+
+            if (typeof settings === 'function') {
+               const res = settings();
+
+               if (res) {
+                  const Component = client === 'unbound' ? API.connectStores(id)(res) : res;
+
+                  return <ErrorBoundary>
+                     {this.renderTitle(null, entity)}
+                     {typeof Component === 'function' ? <Component /> : Component instanceof Element ?
+                        <DOMWrapper>{Component}</DOMWrapper> :
+                        Component
+                     }
+                  </ErrorBoundary>;
+               }
+            } else if (settings?.render) {
+               const Component = client === 'unbound' ?
+                  API.connectStores(id)(settings.render) :
+                  settings.render;
+
+               return <ErrorBoundary>
+                  {this.renderTitle(null, entity)}
+                  <Component />
+               </ErrorBoundary>;
+            }
+         } catch (e) {
+            Logger.error(`Failed to open settings for ${this.resolve(entity, 'name')} (${client} addon)`, e);
+         }
+      }
+
       const entities = {
          unbound: [],
          BetterDiscord: [],
@@ -53,13 +99,14 @@ class Manager extends React.Component {
          if (pc.length) entities.powercord.push(...pc);
       }
 
+      const addons = this.renderEntities(entities);
+
       return (
          <ErrorBoundary>
-            <div className='unbound-manager-page-header'>
-               {this.renderHeader()}
-            </div>
+            {this.renderTitle(addons.amount)}
+            {this.renderHeader()}
             <div className={classnames('unbound-manager-entities', `unbound-manager-${this.props.type}`)}>
-               {this.renderEntities(entities)}
+               {addons.render}
             </div>
          </ErrorBoundary>
       );
@@ -182,6 +229,7 @@ class Manager extends React.Component {
                   type={client}
                   entity={entity}
                   key={this.resolve(entity, 'name')}
+                  openSettings={() => this.setState({ settings: { entity, client } })}
                />
             );
          }
@@ -189,72 +237,96 @@ class Manager extends React.Component {
          return res;
       });
 
-      return res.length ? res : (
-         <div className='unbound-manager-not-found'>
-            <div className='unbound-manager-empty-state' />
-            <Text color={Text.Colors.MUTED}>{Messages.GIFT_CONFIRMATION_HEADER_FAIL}</Text>
-            <Text color={Text.Colors.MUTED}>{Messages.SEARCH_NO_RESULTS}</Text>
+      return {
+         render: res.length ? res : (
+            <div className='unbound-manager-not-found'>
+               <div className='unbound-manager-empty-state' />
+               <Text color={Text.Colors.MUTED}>{Messages.GIFT_CONFIRMATION_HEADER_FAIL}</Text>
+               <Text color={Text.Colors.MUTED}>{Messages.SEARCH_NO_RESULTS}</Text>
+            </div>
+         ),
+         amount: res.length
+      };
+   }
+
+   renderTitle(amount, settings) {
+      return (
+         <div
+            className={classnames('unbound-manager-title', settings && 'unbound-manager-title-has-settings')}
+            onClick={() => settings && this.setState({ settings: null })}
+         >
+            <FormTitle tag='h1' className='unbound-manager-title-main'>
+               {capitalize(this.props.type)} {amount && `- ${amount}`} {settings && <Caret
+                  direction={Caret.Directions.RIGHT}
+                  className='unbound-manager-title-caret'
+               />}
+            </FormTitle>
+            {settings && <FormTitle className='unbound-manager-title-settings' tag='h1'>
+               {this.resolve(settings, 'name')}
+            </FormTitle>}
          </div>
       );
    }
 
    renderHeader() {
-      return (<>
-         <SearchBar
-            onQueryChange={(value) => this.setState({ query: value })}
-            onClear={() => this.setState({ query: '' })}
-            placeholder={`Search ${this.props.type}...`}
-            size={SearchBar.Sizes.MEDIUM}
-            query={this.state.query}
-            className='unbound-manager-search-bar'
-         />
-         <RelativeTooltip text='Store' hideOnClick={false}>
-            {props => (
-               <Icon
-                  {...props}
-                  onClick={() => this.forceUpdate()}
-                  name='StoreTag'
-                  className='unbound-manager-button'
-                  width={32}
-                  height={32}
-               />
-            )}
-         </RelativeTooltip>
-         <RelativeTooltip text='Reload' hideOnClick={false}>
-            {props => (
-               <Icon
-                  {...props}
-                  onClick={() => this.forceUpdate()}
-                  name='Replay'
-                  className='unbound-manager-button'
-                  width={32}
-                  height={32}
-               />
-            )}
-         </RelativeTooltip>
-         <RelativeTooltip text='Options' hideOnClick={false}>
-            {props => (
-               <Popout
-                  position={Popout.Positions.TOP}
-                  animation={Popout.Animation.SCALE}
-                  align={Popout.Align.RIGHT}
-                  spacing={12}
-                  renderPopout={this.renderOverflowMenu.bind(this)}
-               >
-                  {popoutProps => (
-                     <Icon
-                        {...props}
-                        {...popoutProps}
-                        name='OverflowMenu'
-                        className='unbound-manager-button'
-                        width={32}
-                        height={32}
-                     />
-                  )}
-               </Popout>
-            )}
-         </RelativeTooltip>
-      </>);
+      return (
+         <div className='unbound-manager-page-header'>
+            <SearchBar
+               onQueryChange={(value) => this.setState({ query: value })}
+               onClear={() => this.setState({ query: '' })}
+               placeholder={`Search ${this.props.type}...`}
+               size={SearchBar.Sizes.MEDIUM}
+               query={this.state.query}
+               className='unbound-manager-search-bar'
+            />
+            <RelativeTooltip text='Store' hideOnClick={false}>
+               {props => (
+                  <Icon
+                     {...props}
+                     onClick={() => this.forceUpdate()}
+                     name='StoreTag'
+                     className='unbound-manager-button'
+                     width={32}
+                     height={32}
+                  />
+               )}
+            </RelativeTooltip>
+            <RelativeTooltip text='Reload' hideOnClick={false}>
+               {props => (
+                  <Icon
+                     {...props}
+                     onClick={() => this.forceUpdate()}
+                     name='Replay'
+                     className='unbound-manager-button'
+                     width={32}
+                     height={32}
+                  />
+               )}
+            </RelativeTooltip>
+            <RelativeTooltip text='Options' hideOnClick={false}>
+               {props => (
+                  <Popout
+                     position={Popout.Positions.TOP}
+                     animation={Popout.Animation.SCALE}
+                     align={Popout.Align.RIGHT}
+                     spacing={12}
+                     renderPopout={this.renderOverflowMenu.bind(this)}
+                  >
+                     {popoutProps => (
+                        <Icon
+                           {...props}
+                           {...popoutProps}
+                           name='OverflowMenu'
+                           className='unbound-manager-button'
+                           width={32}
+                           height={32}
+                        />
+                     )}
+                  </Popout>
+               )}
+            </RelativeTooltip>
+         </div>
+      );
    }
 
    resolve(entity, filter) {
@@ -267,6 +339,12 @@ class Manager extends React.Component {
                entity.data?.name ??
                entity.name ??
                'No name provided.'
+            );
+         case 'id':
+            return (
+               entity.id ??
+               entity.entityID ??
+               entity.name
             );
          case 'description':
             return (
@@ -299,6 +377,20 @@ class Manager extends React.Component {
                entity.data?.version ??
                entity.version ??
                'No version provided.'
+            );
+         case 'settings':
+            const id = this.resolve(entity, 'id');
+            const name = this.resolve(entity, 'name');
+            return (
+               entity.instance?.getSettingsPanel?.bind?.(entity.instance) ??
+               entity.getSettingsPane?.bind?.(entity) ??
+               window?.powercord?.api?.settings?.settings?.[id] ??
+               [...window?.powercord?.api?.settings?.settings?.values() ?? []].find?.(e => {
+                  const searchable = [e.label, e.category];
+                  if (searchable.includes(id) || searchable.includes(name)) {
+                     return true;
+                  }
+               })
             );
          default:
             return 'Not found.';

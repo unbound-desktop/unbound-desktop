@@ -50,7 +50,6 @@ module.exports = new class Announcements extends API {
       }
    }
 
-   // make it async so it doesn't block the main thread
    async patchClasses() {
       const classes = getByProps('notice', 'colorDefault', 'buttonMinor');
       if (~classes.notice.indexOf('unbound-announcement')) return;
