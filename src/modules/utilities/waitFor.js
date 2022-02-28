@@ -10,7 +10,7 @@ const sleep = require('./sleep');
 module.exports = async (selector) => {
    let element = document.querySelector(selector);
 
-   while (!element && (element = document.querySelector(selector))) {
+   while (!element && !(element = document.querySelector(selector))) {
       await sleep(1);
    };
 

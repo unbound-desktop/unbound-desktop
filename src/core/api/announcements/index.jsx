@@ -30,7 +30,7 @@ module.exports = new class Announcements extends API {
 
    async patchBaseContainer() {
       const { base } = getByProps('base', 'container') ?? { base: 'class-not-found' };
-      const instance = getOwnerInstance(await waitFor(`.${base.split(' ')[0]}`));
+      const instance = getOwnerInstance(await waitFor(`.${base}`));
       if (this.promises.cancelled) return;
 
       try {
