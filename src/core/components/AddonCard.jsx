@@ -10,7 +10,7 @@ const {
 } = require('@components');
 const { bulk, filters: { byProps } } = require('@webpack');
 const { capitalize, classnames } = require('@utilities');
-const { React, ContextMenu } = require('@webpack/common');
+const { React, contextMenu } = require('@webpack/common');
 const { Plug, Bd } = require('./icons');
 
 const [
@@ -90,10 +90,8 @@ module.exports = class AddonCard extends React.Component {
          <div
             className='unbound-addon-card'
             style={{ '--entity-color': color }}
-            onContextMenu={(e) => ContextMenu.openContextMenu(e, () =>
-               <Menu
-                  onClose={ContextMenu.closeContextMenu}
-               >
+            onContextMenu={(e) => contextMenu.openContextMenu(e, () =>
+               <Menu onClose={contextMenu.closeContextMenu}>
                   <MenuItem
                      label='Delete'
                      color='colorDanger'
