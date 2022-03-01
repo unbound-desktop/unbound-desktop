@@ -119,11 +119,12 @@ module.exports = class Manager extends Emitter {
          throw new TypeError('first argument idOrName must be of type string or object');
       }
 
-      const direct = this.entities.get(idOrName.instance ? idOrName.instance.id : idOrName);
+      const direct = this.entities.get(idOrName.instance?.id ?? idOrName);
       if (direct) return direct;
 
-      const folder = [...this.entities.values()].find(e => e.folder == idOrName);
-      if (folder) return folder;
+      const entities = [...this.entities.values()];
+      const other = entities.find(e => e.folder === idOrName || e.id === idOrName);
+      if (other) return other;
    }
 
    loadAll() {
@@ -186,6 +187,8 @@ module.exports = class Manager extends Emitter {
          const data = JSON.parse(readFileSync(manifest, 'utf-8'));
          if (!data?.id || !data?.name) {
             throw new Error(`${id} is missing the manifest keys "name" or "id"`);
+         } else if (this.entities.get(data?.id)) {
+            throw new Error(`${data.id} is a taken ID, not loading entity ${id}.`);
          }
 
          const Entity = require(window.__SPLASH__ && data.splash ?
@@ -211,6 +214,7 @@ module.exports = class Manager extends Emitter {
 
          this.entities.set(data.id, res);
          this.emit('load', data.id, res);
+         this.emit('updated');
 
          if (this.isEnabled(data.id) || this.isEnabled(entry)) {
             this.start(data.id);
