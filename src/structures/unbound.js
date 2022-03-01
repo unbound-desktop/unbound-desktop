@@ -3,20 +3,14 @@ const Lodash = window._;
 
 const APIManager = require('@structures/apis/manager');
 const Manager = require('@structures/manager');
-const { memoize } = require('@utilities');
 const Patcher = require('@patcher');
 
 const PatchManager = require('@core/patches');
 const Styles = require('@core/styles');
 
-const getPatches = memoize(() => new PatchManager());
-
 module.exports = class Unbound {
    static #styles = new Styles();
-
-   static get #patches() {
-      return getPatches();
-   }
+   static #patches = new PatchManager();
 
    async start() {
       global.unbound = this;
@@ -63,7 +57,7 @@ module.exports = class Unbound {
 
       Unbound.#styles?.remove?.();
       await this.apis?.stop?.();
-      await Unbound.#patches?.remove();
+      await Unbound.#patches.remove();
 
       // Get all patcher callers for unpatching
       const callers = Lodash.uniq(Patcher.patches.map(a => a.caller));
