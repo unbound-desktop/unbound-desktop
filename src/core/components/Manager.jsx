@@ -136,17 +136,6 @@ class Manager extends React.Component {
       }
    }
 
-   getGlobal() {
-      switch (this.props.type.toLowerCase()) {
-         case 'powercord':
-            return 'powercord';
-         case 'betterdiscord':
-            return 'BdApi';
-         case 'unbound':
-            return 'unbound';
-      }
-   }
-
    renderOverflowMenu() {
       const { get, set } = this.props;
 
@@ -295,7 +284,14 @@ class Manager extends React.Component {
                {props => (
                   <Icon
                      {...props}
-                     onClick={() => this.forceUpdate()}
+                     onClick={() => {
+                        const powercord = window?.powercord?.[this.getType('powercord')];
+                        if (powercord) {
+                           powercord.loadAll(true);
+                        }
+
+                        unbound.managers[this.getType('unbound')].loadAll();
+                     }}
                      name='Replay'
                      className='unbound-manager-button'
                      width={32}
