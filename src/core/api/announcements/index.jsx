@@ -14,7 +14,6 @@ module.exports = new class Announcements extends API {
    constructor() {
       super();
 
-      this.announcements = announcements;
       this.promises = {
          cancelled: false,
          cancel: () => this.promises.cancelled = true

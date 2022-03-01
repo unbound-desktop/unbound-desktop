@@ -14,4 +14,4 @@ module.exports = class DOMWrapper extends React.Component {
    render() {
       return <div className='react-dom-wrapper' ref={this.ref} />;
    }
-};;
+};
