@@ -178,7 +178,7 @@ module.exports = class Manager extends Emitter {
 
       const entry = resolve(this.path, id);
       const isDir = lstatSync(entry).isDirectory();
-      if (!isDir) throw new Error(`${id} isn't a directory.`);
+      if (!isDir) return;
 
       const manifest = join(entry, 'manifest.json');
       if (!existsSync(manifest)) throw new Error(`${id} is missing a manifest.`);
