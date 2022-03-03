@@ -1,8 +1,8 @@
 const { readFileSync, mkdirSync, existsSync, writeFileSync } = require('fs');
 const { join, basename } = require('path');
-const { createHash } = require('crypto');
 const { paths } = require('@constants');
 const Module = require('module');
+const CRC = require('crc-32');
 
 module.exports = class Compiler {
    constructor() {
@@ -64,11 +64,10 @@ module.exports = class Compiler {
 
    getHash(path) {
       const content = readFileSync(path);
-      const hash = createHash('sha1');
-      hash.update(content);
+      const hash = CRC.buf(content);
 
       return {
-         hash: hash.digest('hex'),
+         hash: hash.toString(),
          content: content.toString()
       };
    }
