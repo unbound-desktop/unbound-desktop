@@ -1,11 +1,5 @@
-const setNow = window.setImmediate;
-
-window.setImmediate = function (callback, ...rest) {
-   return setNow.apply(this, [(...args) => {
-      try {
-         callback(...args);
-      } catch (e) {
-         if (e) console.error('Failed to call callback.', e);
-      }
-   }, ...rest]);
-};
+process.nextTick(() => {
+   const listeners = process.listeners('uncaughtException');
+   const target = listeners.find(l => ~l.toString().indexOf('uncaughtExceptionHandler'));
+   process.off('uncaughtException', target);
+})
