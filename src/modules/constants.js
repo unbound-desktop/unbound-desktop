@@ -41,7 +41,7 @@ exports.colors = {
    primary: '#990000'
 };
 
-exports.avatar = 'https://cdn.discordapp.com/icons/932162644813676615/1a2056355d3a61212042ec5d37dc622a.png?size=1024&quality=lossless';
+exports.avatar = 'https://i.imgur.com/SeDNYyJ.png';
 
 exports.entities = {
    'themes': (instance, data) => {
