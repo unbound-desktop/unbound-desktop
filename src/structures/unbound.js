@@ -52,7 +52,7 @@ module.exports = class Unbound {
 
    async shutdown() {
       Object.keys(this.managers ?? {}).map(m => {
-         this.managers[m].unloadAll();
+         this.managers[m].destroy();
       });
 
       Unbound.#styles?.remove?.();

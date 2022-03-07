@@ -15,6 +15,7 @@ const { watch } = require('chokidar');
 const Emitter = require('events');
 
 const { constants, utilities: { capitalize } } = require('@modules');
+const StacklessError = require('@structures/stacklesserror');
 const Logger = require('@modules/logger');
 const { paths } = require('@constants');
 
@@ -97,9 +98,18 @@ module.exports = class Manager extends Emitter {
          persistent: true
       });
 
+      this.watcher.on('change', (path) => {
+         const [, entity] = path.replace(this.path, '').split(/\\|\//);
+
+         try {
+            this.reload(basename(entity), true);
+            this.emit('changed');
+         } catch { }
+      });
+
       this.watcher.on('addDir', (path) => {
          try {
-            this.reload(basename(path));
+            this.reload(basename(path), true);
             this.emit('changed');
          } catch { }
       });
@@ -112,6 +122,11 @@ module.exports = class Manager extends Emitter {
       });
 
       window.addEventListener('unload', () => this.watcher.close());
+   }
+
+   destroy() {
+      if (this.watcher?.close) this.watcher.close();
+      this.unloadAll();
    }
 
    resolve(idOrName) {
@@ -167,13 +182,13 @@ module.exports = class Manager extends Emitter {
       const missing = keys.filter(k => Array.isArray(k) ? k.every(i => !data[i]) : !data[k]);
 
       if (missing?.length) {
-         throw `${data.name} is missing the following manifest keys: ${missing.join(', ')}`;
+         throw new StacklessError(`${data.name} is missing the following manifest keys: ${missing.join(', ')}`);
       }
    }
 
    load(id) {
       if (!existsSync(resolve(this.path, id))) {
-         throw new Error(`That entity doesn't exist in the ${this.type} folder.`);
+         throw new StacklessError(`That entity doesn't exist in the ${this.type} folder.`);
       }
 
       const entry = resolve(this.path, id);
@@ -181,14 +196,14 @@ module.exports = class Manager extends Emitter {
       if (!isDir) return;
 
       const manifest = join(entry, 'manifest.json');
-      if (!existsSync(manifest)) throw new Error(`${id} is missing a manifest.`);
+      if (!existsSync(manifest)) throw new StacklessError(`${id} is missing a manifest.`);
 
       try {
          const data = JSON.parse(readFileSync(manifest, 'utf-8'));
          if (!data?.id || !data?.name) {
-            throw new Error(`${id} is missing the manifest keys "name" or "id"`);
+            throw new StacklessError(`${id} is missing the manifest keys "name" or "id"`);
          } else if (this.entities.get(data?.id)) {
-            throw new Error(`${data.id} is a taken ID, not loading entity ${id}.`);
+            throw new StacklessError(`${data.id} is a taken ID, not loading entity ${id}.`);
          }
 
          const Entity = require(window.__SPLASH__ && data.splash ?
@@ -199,7 +214,7 @@ module.exports = class Manager extends Emitter {
          try {
             this.validateManifest(data);
          } catch (e) {
-            return this.logger.error(e);
+            throw e;
          }
 
          const type = constants.entities[this.type];
@@ -222,8 +237,7 @@ module.exports = class Manager extends Emitter {
 
          return res;
       } catch (e) {
-         this.logger.error(`Failed to start ${basename(entry)}`, e);
-         return null;
+         throw e;
       }
    }
 
@@ -291,7 +305,7 @@ module.exports = class Manager extends Emitter {
       }
    }
 
-   reload(id) {
+   reload(id, silent = false) {
       const entity = this.resolve(id);
 
       try {
@@ -302,7 +316,7 @@ module.exports = class Manager extends Emitter {
          this.unload(entity.folder);
          this.load(entity.folder);
       } catch (e) {
-         this.logger.error(`Couldn't reload ${id}`, e);
+         if (!silent) this.logger.error(`Couldn't reload ${id}`, e);
       }
 
       return entity;
