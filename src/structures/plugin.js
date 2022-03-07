@@ -6,7 +6,7 @@ module.exports = class Plugin extends Addon {
       super(instance, data);
 
       this.logger = new Logger('Plugin', data.name);
-      this.settings = window.unbound?.apis.settings.makeStore(data.id);
+      this.settings = window.unbound?.apis?.settings?.makeStore?.(data.id);
 
       this.styles = [];
    }

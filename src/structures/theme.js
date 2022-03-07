@@ -6,7 +6,7 @@ module.exports = class Theme extends Addon {
       super(instance, data);
 
       this.logger = new Logger('Theme', data.name);
-      this.settings = window.unbound?.apis.settings.makeStore(data.id);
+      this.settings = window.unbound?.apis?.settings?.makeStore?.(data.id);
    }
 
    start(css) {
