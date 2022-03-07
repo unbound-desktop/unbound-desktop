@@ -10,7 +10,7 @@ const [
    filters.byProps('formText', 'description')
 );
 
-module.exports = class BaseItem extends React.PureComponent {
+module.exports = class SettingsItem extends React.PureComponent {
    render() {
       const hasMargin = this.props.hasMargin && marginTop8;
       return (
