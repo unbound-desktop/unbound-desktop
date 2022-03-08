@@ -1,25 +1,27 @@
-const { copyFileSync, existsSync, unlinkSync, readFileSync } = require('fs');
+const { copyFileSync, existsSync, unlinkSync, readFileSync, readdirSync } = require('fs');
+const { uuid } = require('../src/modules/utilities');
 const { join } = require('path');
 
 const isWindows = process.platform === 'win32';
-
 const instance = `unisolate-${process.platform}.node`;
+const id = uuid(5);
+
 if (!existsSync(join(__dirname, instance))) {
    throw new Error(`${process.platform} is not supported by Unbound.`);
 }
 
 if (isWindows) {
-   const previous = join(__dirname, 'unisolated.node');
+   const files = readdirSync(__dirname);
 
-   if (existsSync(previous)) {
+   for (const previous of files.filter(e => e.includes('running'))) {
       try {
-         unlinkSync(previous);
+         unlinkSync(join(__dirname, previous));
       } catch (e) {
          console.error('Failed to cleanup previous unisolated instance.', e);
       }
    }
 
-   const copy = join(__dirname, 'unisolated.node');
+   const copy = join(__dirname, `running-${id}.node`);
    const original = join(__dirname, instance);
 
    copyFileSync(original, copy);
@@ -28,7 +30,7 @@ if (isWindows) {
 try {
    const data = readFileSync(join(__dirname, 'unisolate.data'));
 
-   const patcher = isWindows ? 'unisolated.node' : instance;
+   const patcher = isWindows ? `running-${id}.node` : instance;
    const path = join(__dirname, patcher);
    const unisolate = require(path);
 

@@ -4,5 +4,5 @@ pnpm-lock.yaml
 plugins
 themes
 settings
-unisolate/unisolated*
+unisolate/running*
 cache
