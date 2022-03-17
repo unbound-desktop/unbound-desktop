@@ -185,7 +185,7 @@ class Webpack {
    }
 
    static getModule(filter, { all = false, cache = true, force = false, defaultExport = true } = {}) {
-      if (typeof (filter) !== 'function') return void 0;
+      if (typeof filter !== 'function') return void 0;
 
       const finder = Webpack.#request(cache);
       const found = [];
@@ -204,15 +204,17 @@ class Webpack {
          const mdl = finder.c[id].exports;
          if (!mdl || mdl === window) continue;
 
-         if (typeof mdl == 'object') {
+         if (typeof mdl === 'object') {
             if (search(mdl, id)) {
                if (!all) return mdl;
                found.push(mdl);
             }
 
-            if (mdl.__esModule && mdl.default != null && search(mdl.default, id)) {
-               if (!all) return defaultExport ? mdl.default : mdl;
-               found.push(defaultExport ? mdl.default : mdl);
+            if (mdl.__esModule && mdl.default && search(mdl.default, id)) {
+               const value = defaultExport ? mdl.default : mdl;
+
+               if (!all) return value;
+               found.push(value);
             }
 
             if (force && mdl.__esModule) for (const key in mdl) {
@@ -223,11 +225,10 @@ class Webpack {
                   found.push(mdl[key]);
                }
             }
-         } else if (typeof mdl == 'function') {
-            if (search(mdl, id)) {
-               if (!all) return mdl;
-               found.push(mdl);
-            }
+         } else if (typeof mdl === 'function') {
+            if (!search(mdl, id)) continue;
+            if (!all) return mdl;
+            found.push(mdl);
          }
       }
 
