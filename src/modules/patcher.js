@@ -48,20 +48,20 @@ module.exports = new class Patcher {
 
          for (const before of patch.patches.filter(e => e.type === 'before')) {
             try {
-               const tempArgs = before.callback(this, args, patch.original.bind(this));
-               if (Array.isArray(tempArgs)) args = tempArgs;
+               const temp = before.callback(this, args, patch.original.bind(this));
+               if (Array.isArray(temp)) args = temp;
             } catch (error) {
                Logger.error(`Could not fire before patch for ${patch.func} of ${before.caller}`, error);
             }
          }
 
          const insteads = patch.patches.filter(e => e.type === 'instead');
-         if (!insteads.length) res = patch.original.apply(this, args);
-
-         else for (const instead of insteads) {
+         if (!insteads.length) {
+            res = patch.original.apply(this, args);
+         } else for (const instead of insteads) {
             try {
                const ret = instead.callback(this, args, patch.original.bind(this));
-               if (typeof (ret) !== 'undefined') res = ret;
+               if (typeof ret !== 'undefined') res = ret;
             } catch (error) {
                Logger.error(`Could not fire instead patch for ${patch.func} of ${instead.caller}`, error);
             }
@@ -70,22 +70,27 @@ module.exports = new class Patcher {
          for (const after of patch.patches.filter(e => e.type === 'after')) {
             try {
                const ret = after.callback(this, args, res, ret => (res = ret));
-               if (typeof (ret) !== 'undefined') res = ret;
+               if (typeof ret !== 'undefined') res = ret;
             } catch (error) {
                Logger.error(`Could not fire after patch for ${patch.func} of ${after.caller}`, error);
             }
+         }
+
+         if (patch.once) {
+            patch.unpatch();
          }
 
          return res;
       };
    };
 
-   push([caller, mdl, func]) {
+   push([caller, mdl, func, cb, type, once]) {
       const patch = {
          caller,
          mdl,
          func,
          original: mdl[func],
+         once,
          unpatch: () => {
             patch.mdl[patch.func] = patch.original;
             patch.patches = [];
@@ -103,14 +108,14 @@ module.exports = new class Patcher {
       return patch;
    }
 
-   get(caller, mdl, func) {
+   get(caller, mdl, func, cb, type, once) {
       const patch = this.patches.find(p => p.mdl == mdl && p.func == func);
       if (patch) return patch;
 
       return this.push(arguments);
    }
 
-   patch(caller, mdl, func, callback, type = 'after') {
+   patch(caller, mdl, func, callback, type = 'after', once = false) {
       if (!caller || typeof caller != 'string') {
          throw new TypeError('first argument "caller" must be of type string');
       } else if (!mdl || !['function', 'object'].includes(typeof mdl)) {
@@ -146,15 +151,15 @@ module.exports = new class Patcher {
       return patch.unpatch;
    }
 
-   after(caller, mdl, func, callback) {
-      return this.patch(caller, mdl, func, callback, 'after');
+   after(caller, mdl, func, callback, once) {
+      return this.patch(caller, mdl, func, callback, 'after', once);
    }
 
-   before(caller, mdl, func, callback) {
-      return this.patch(caller, mdl, func, callback, 'before');
+   before(caller, mdl, func, callback, once) {
+      return this.patch(caller, mdl, func, callback, 'before', once);
    }
 
-   instead(caller, mdl, func, callback) {
-      return this.patch(caller, mdl, func, callback, 'instead');
+   instead(caller, mdl, func, callback, once) {
+      return this.patch(caller, mdl, func, callback, 'instead', once);
    }
 };
