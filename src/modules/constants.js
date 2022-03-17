@@ -41,7 +41,7 @@ exports.colors = {
    primary: '#990000'
 };
 
-exports.avatar = 'https://i.imgur.com/SeDNYyJ.png';
+exports.avatar = 'https://github.com/unbound-mod.png';
 
 exports.entities = {
    'themes': (instance, data) => {
