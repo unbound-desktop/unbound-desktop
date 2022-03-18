@@ -5,34 +5,34 @@
    "compilerOptions": {
       "baseUrl": "./src/",
       "paths": {
-         "@structures": [
+         "@structures/*": [
             "src/structures/*"
          ],
-         "@modules": [
+         "@modules/*": [
             "src/modules/*"
          ],
-         "@webpack": [
+         "@webpack/*": [
             "src/modules/webpack/*"
          ],
-         "@utilities": [
+         "@utilities/*": [
             "src/modules/utilities/*"
          ],
-         "@constants": [
+         "@constants/*": [
             "src/modules/constants/*"
          ],
-         "@patcher": [
+         "@patcher/*": [
             "src/modules/patcher/*"
          ],
-         "@api": [
+         "@api/*": [
             "src/core/api/*"
          ],
-         "@data": [
+         "@data/*": [
             "src/data/*"
          ],
-         "@root": [
+         "@root/*": [
             "./"
          ],
-         "@core": [
+         "@core/*": [
             "src/core"
          ]
       }

@@ -10,4 +10,4 @@ WindowPatcher.patch('unbound', (_, [options]) => {
    options.webPreferences.nodeIntegration = true;
 });
 
-electron.ipcMain.on('UNBOUND_GET_WINDOW_DATA', (e) => e.returnValue = e.sender.kernelWindowData);
+electron.ipcMain.on('UNBOUND_GET_WINDOW_DATA', e => e.returnValue = e.sender.kernelWindowData);
