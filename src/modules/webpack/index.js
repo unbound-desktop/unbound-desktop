@@ -235,6 +235,32 @@ class Webpack {
       return all ? found : found[0];
    }
 
+   static getByKeyword(...options) {
+      const [[keyword], { caseSensitive = false, all = false, ...rest }] = Webpack.#parseOptions(options);
+
+      return Webpack.getModule(mdl => {
+         const mdls = [...Object.keys(mdl), ...Object.keys(mdl.__proto__)];
+
+         for (let i = 0; i < mdls.length; i++) {
+            const instance = mdls[i];
+
+            if (caseSensitive) {
+               if (~instance.indexOf(keyword)) {
+                  return true;
+               }
+            } else {
+               const key = keyword.toLowerCase();
+
+               if (~instance.toLowerCase().indexOf(key)) {
+                  return true;
+               }
+            }
+         }
+
+         return false;
+      }, { all, ...rest });
+   };
+
    static getModules(filter) {
       return Webpack.getModule(filter, { all: true });
    }
@@ -409,6 +435,8 @@ module.exports = {
    findModules: Webpack.getModules,
    getByString: Webpack.getByString,
    findByString: Webpack.getByString,
+   getByKeyword: Webpack.getByKeyword,
+   findByKeyword: Webpack.getByKeyword,
    getByDisplayName: Webpack.getByDisplayName,
    findByDisplayName: Webpack.getByDisplayName,
    getByDefaultString: Webpack.getByDefaultString,
