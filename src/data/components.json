@@ -10,6 +10,9 @@
    "Card": {
       "name": "Card"
    },
+   "Caret": {
+      "name": "Caret"
+   },
    "Clickable": {
       "name": "Clickable"
    },
@@ -89,5 +92,8 @@
       "assign": {
          "default": "Notice"
       }
+   },
+   "TextInput": {
+      "name": "TextInput"
    }
 }
