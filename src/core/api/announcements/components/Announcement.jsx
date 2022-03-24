@@ -15,7 +15,7 @@ module.exports = class Announcement extends React.Component {
 
    render() {
       const Color = this.props.color?.toLowerCase?.();
-      const color = Colors.find(c => c.toLowerCase() === Color) ?? Colors.BRAND_1;
+      const color = Object.values(Colors).find(c => c.toLowerCase() === Color) ?? Colors.BRAND_1;
       const Notice = Notices.Notice;
 
       return (
