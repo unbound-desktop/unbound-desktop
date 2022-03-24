@@ -25,8 +25,8 @@ module.exports = new class Toasts extends API {
    send(options) {
       options.id ??= uuid(5);
 
-      if (toasts.get(options.id)) {
-         options.id = uuid(5);
+      if (toasts.has(options.id)) {
+         return this.send(Object.assign(options, { id: uuid(5) }));
       }
 
       toasts.set(options.id, options);
@@ -35,7 +35,7 @@ module.exports = new class Toasts extends API {
    }
 
    close(id) {
-      if (toasts.get(id)) {
+      if (toasts.has(id)) {
          toasts.delete(id);
       }
    }
