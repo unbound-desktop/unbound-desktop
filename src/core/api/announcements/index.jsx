@@ -59,7 +59,7 @@ module.exports = new class Announcements extends API {
    send(options) {
       options.id ??= uuid(5);
 
-      if (announcements.has(options.id)) {
+      if (announcements.get(options.id)) {
          return this.send(Object.assign(options, { id: uuid(5) }));
       }
 
@@ -69,7 +69,7 @@ module.exports = new class Announcements extends API {
    }
 
    close(id) {
-      if (announcements.has(id)) {
+      if (announcements.get(id)) {
          announcements.delete(id);
       }
    }
