@@ -1,4 +1,4 @@
-const { appendCSS } = require('@utilities');
+const DOM = require('@utilities/dom');
 const { readdirSync } = require('fs');
 const { basename } = require('path');
 
@@ -20,13 +20,13 @@ module.exports = class Styles {
 
    apply() {
       for (const key in this.styles) {
-         this.applied.push(appendCSS(`unbound-core-${key}`, styles[key]));
+         this.applied.push(DOM.appendStyle(`unbound-core-${key}`, styles[key]));
       }
    }
 
    remove() {
-      for (const unstyle of this.applied) {
-         unstyle();
+      for (const style of this.applied) {
+         style.remove();
       }
    }
 };

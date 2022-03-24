@@ -1,5 +1,6 @@
 const Addon = require('@structures/addon');
 const Logger = require('@modules/logger');
+const DOM = require('@utilities/dom');
 
 module.exports = class Theme extends Addon {
    constructor(instance, data) {
@@ -23,16 +24,15 @@ module.exports = class Theme extends Addon {
 
    apply() {
       try {
-         const stylesheet = document.createElement('style');
-         stylesheet.id = this.data.id;
-         stylesheet.innerHTML = this.instance;
-         this.stylesheet = document.head.appendChild(stylesheet);
+         this.stylesheet = DOM.appendStyle(this.data.id, this.instance);
       } catch (e) {
          this.logger.error('Failed to apply theme', e);
       }
    }
 
    stop() {
-      if (this.stylesheet) document.head.removeChild(this.stylesheet);
+      if (this.stylesheet?.remove) {
+         this.stylesheet.remove();
+      }
    }
 };
