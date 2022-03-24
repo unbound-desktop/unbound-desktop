@@ -66,16 +66,13 @@
 }
 
 .unbound-manager-title {
+   display: flex;
    margin-bottom: 20px;
 }
 
 .unbound-manager-title-has-settings .unbound-manager-title-main {
    color: var(--text-muted);
    cursor: pointer;
-}
-
-.unbound-manager-title {
-   display: flex;
 }
 
 .unbound-manager-title>* {

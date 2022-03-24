@@ -1,0 +1,13 @@
+.unbound-settings-title {
+   display: flex;
+   margin-bottom: 20px;
+}
+
+.unbound-settings-category-switch {
+   display: flex;
+   justify-content: space-between;
+   margin-top: 10px;
+   padding: 0 10px;
+}
+
+.unbound-settings-category-inner-switch {}
