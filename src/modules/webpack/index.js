@@ -301,7 +301,10 @@ class Webpack {
       }
 
       if (bulk) {
-         const filters = props.map((propsArray) => Webpack.filters.byProps(...propsArray)).concat({ wait, ...rest });
+         const filters = props.map(p => Array.isArray(p)
+            ? Webpack.filters.byProps(...p)
+            : Webpack.filters.byProps(p)
+         ).concat({ wait, ...rest });
 
          return Webpack.bulk(...filters);
       }
@@ -321,8 +324,12 @@ class Webpack {
       }
 
       if (bulk) {
-         const filters = props.map((propsArray) => Webpack.filters.byString(...propsArray)).concat({ wait, ...rest });
+         const filters = props.map((actualProps) => Array.isArray(actualProps)
+            ? Filters.byProps(...actualProps)
+            : Filters.byProps(actualProps)
+         );
 
+         filters.push({ wait, ...rest });
          return Webpack.bulk(...filters);
       }
 
