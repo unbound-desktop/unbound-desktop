@@ -24,16 +24,19 @@
             "src/modules/patcher/*"
          ],
          "@api/*": [
-            "src/core/api/*"
+            "src/api/*"
          ],
          "@data/*": [
             "src/data/*"
          ],
+         "@src/*": [
+            "src/*"
+         ],
          "@root/*": [
-            "./"
+            "./*"
          ],
          "@core/*": [
-            "src/core"
+            "src/core/*"
          ]
       }
    }

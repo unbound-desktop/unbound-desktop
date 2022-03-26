@@ -24,7 +24,7 @@ module.exports = class Manager extends Emitter {
       super();
 
       this.type = type?.toLowerCase?.();
-      this.path = resolve(__dirname, '..', '..', this.type);
+      this.path = resolve(__dirname, '..', '..', '..', this.type);
 
       this.entities = new Map();
       this.logger = new Logger('Manager', capitalize(this.type));
@@ -225,11 +225,11 @@ module.exports = class Manager extends Emitter {
          this.assignData(data, res, entry);
          this.assignData(data, res.instance, entry);
 
-         res.instance?.load?.();
-
          this.entities.set(data.id, res);
          this.emit('load', data.id, res);
          this.emit('updated');
+
+         res.instance?.load?.();
 
          if (this.isEnabled(data.id) || this.isEnabled(entry)) {
             this.start(data.id);

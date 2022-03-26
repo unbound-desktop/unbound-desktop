@@ -18,7 +18,7 @@ if (!windowOptions.webPreferences.nativeWindowOpen) {
 
    require('./splash');
 
-   const Manager = require('@structures/manager');
+   const Manager = require('@structures/managers/entities');
    const Themes = new Manager('themes');
    Themes.loadAll();
 }

@@ -80,8 +80,8 @@ class Manager extends React.Component {
          powercord: []
       };
 
-      const best = [...unbound.managers[this.props.type]?.entities?.values()] ?? [];
-      if (best.length) entities.unbound.push(...best);
+      const unboundEntities = [...unbound.managers[this.props.type]?.entities?.values()] ?? [];
+      if (unboundEntities.length) entities.unbound.push(...unboundEntities);
 
       if (this.props.type == 'plugins' && window.BdApi?.Plugins) {
          const bd = [...BdApi.Plugins.getAll()] ?? [];

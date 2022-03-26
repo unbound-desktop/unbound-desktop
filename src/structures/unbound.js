@@ -1,15 +1,15 @@
 const { basename, resolve } = require('path');
 const Lodash = window._;
 
-const APIManager = require('@structures/apis/manager');
-const Manager = require('@structures/manager');
+const EntityManager = require('@structures/managers/entities');
+const PatchManager = require('@structures/managers/patches');
+const StyleManager = require('@structures/managers/styles');
+const APIManager = require('@structures/managers/api');
+
 const Patcher = require('@patcher');
 
-const PatchManager = require('@core/patches');
-const Styles = require('@core/styles');
-
 module.exports = class Unbound {
-   static #styles = new Styles();
+   static #styles = new StyleManager();
    static #patches = new PatchManager();
 
    async start() {
@@ -32,8 +32,8 @@ module.exports = class Unbound {
 
       // Initialize built-in managers
       this.managers = {
-         plugins: new Manager('plugins'),
-         themes: new Manager('themes')
+         plugins: new EntityManager('plugins'),
+         themes: new EntityManager('themes')
       };
 
       // Load all entities

@@ -42,8 +42,6 @@ module.exports = new class Announcements extends API {
                return this.logger.error(error);
             }
          });
-
-         instance.forceUpdate();
       } catch (e) {
          this.logger.error('Failed to patch announcements container', e);
       }

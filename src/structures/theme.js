@@ -1,4 +1,5 @@
 const Addon = require('@structures/addon');
+const { bindAll } = require('@utilities');
 const Logger = require('@modules/logger');
 const DOM = require('@utilities/dom');
 
@@ -8,6 +9,8 @@ module.exports = class Theme extends Addon {
 
       this.logger = new Logger('Theme', data.name);
       this.settings = window.unbound?.apis?.settings?.makeStore?.(data.id);
+
+      bindAll(this, ['apply']);
    }
 
    start(css) {
@@ -16,7 +19,7 @@ module.exports = class Theme extends Addon {
       }
 
       if (document.readyState === 'loading') {
-         return window.addEventListener('load', this.apply.bind(this));
+         return window.addEventListener('load', this.apply);
       }
 
       this.apply();

@@ -21,8 +21,9 @@
       "@utilities": "src/modules/utilities",
       "@constants": "src/modules/constants",
       "@patcher": "src/modules/patcher",
-      "@api": "src/core/api",
+      "@api": "src/api",
       "@data": "src/data",
+      "@src": "src",
       "@root": "./",
       "@core": "src/core"
    }

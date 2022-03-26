@@ -2,7 +2,7 @@ const { FormTitle, FormText, Caret, Text, Divider } = require('@components');
 const { React } = require('@webpack/common');
 const { classnames } = require('@utilities');
 
-module.exports = class Category extends React.Component {
+module.exports = class Category extends React.PureComponent {
    render() {
       const { title, description, opened, onChange, children, icon } = this.props;
 
