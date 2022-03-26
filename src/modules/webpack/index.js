@@ -324,12 +324,11 @@ class Webpack {
       }
 
       if (bulk) {
-         const filters = props.map((actualProps) => Array.isArray(actualProps)
-            ? Filters.byProps(...actualProps)
-            : Filters.byProps(actualProps)
-         );
+         const filters = props.map(p => Array.isArray(p)
+            ? Webpack.filters.byString(...p)
+            : Webpack.filters.byString(p)
+         ).concat({ wait, ...rest });
 
-         filters.push({ wait, ...rest });
          return Webpack.bulk(...filters);
       }
 
@@ -348,7 +347,10 @@ class Webpack {
       }
 
       if (bulk) {
-         const filters = props.map((propsArray) => Webpack.filters.byDefaultString(...propsArray)).concat({ wait, ...rest });
+         const filters = props.map(p => Array.isArray(p)
+            ? Webpack.filters.byDefaultString(...p)
+            : Webpack.filters.byDefaultString(p)
+         ).concat({ wait, ...rest });
 
          return Webpack.bulk(...filters);
       }
