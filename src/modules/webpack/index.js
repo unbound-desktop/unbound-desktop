@@ -297,7 +297,7 @@ class Webpack {
       }
 
       if (wait && !bulk) {
-         return Webpack.waitFor(Webpack.filters.byProps(...props), rest);
+         return Webpack.#waitFor(Webpack.filters.byProps(...props), rest);
       }
 
       if (bulk) {
