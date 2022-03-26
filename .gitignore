@@ -1,8 +1,8 @@
-node_modules
-package-lock.json
-pnpm-lock.yaml
-plugins
-themes
-settings
-unisolate/running*
-cache
+/node_modules
+/package-lock.json
+/pnpm-lock.yaml
+/plugins
+/themes
+/settings
+/unisolate/running*
+/cache
