@@ -5,11 +5,9 @@ const { getByDisplayName } = require('@webpack');
 const Settings = require('@api/settings');
 const logger = require('@modules/logger');
 
-
 const Caret = getByDisplayName('Caret');
 const AddonCard = require('./AddonCard');
 const DOMWrapper = require('./DOMWrapper');
-const { bindAll } = require('@utilities');
 
 const Logger = new logger('Manager');
 
@@ -23,8 +21,6 @@ module.exports = class Manager extends React.Component {
       };
 
       this.settings = Settings.makeStore('manager-tab-settings');
-
-      bindAll(this, ['onChange']);
    }
 
    render() {
@@ -127,10 +123,6 @@ module.exports = class Manager extends React.Component {
       window.powercord && powercord[this.getType('powercord')].off('updated', forceUpdate);
       window.BdApi && BdApi[this.getType('betterdiscord')].off('updated', forceUpdate);
       unbound.managers[this.props.type].off('updated', forceUpdate);
-   }
-
-   onChange() {
-      this.forceUpdate();
    }
 
    getType(client) {
