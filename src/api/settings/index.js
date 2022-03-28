@@ -1,4 +1,4 @@
-const { Dispatcher, Flux } = require('@webpack/common');
+const { Dispatcher, Flux, React } = require('@webpack/common');
 const { bindAll } = require('@utilities');
 const API = require('@structures/api');
 const Store = require('./flux');
@@ -93,6 +93,47 @@ module.exports = new class Settings extends API {
       });
    }
 
+   connectComponent(component, file) {
+      if (!component || typeof component !== 'function') {
+         throw new TypeError('the first argument component must be of type function');
+      } else if (!file || typeof file !== 'string') {
+         throw new TypeError('the second argument file must be of type string');
+      }
+
+      const _this = this;
+      return class extends React.Component {
+         displayName = component.displayName;
+         name = component.name;
+
+         constructor() {
+            super();
+
+            this.state = {
+               settings: Store.get(file)
+            };
+         }
+
+         componentWillMount() {
+            _this.subscribe(file, this.onChange.bind(this));
+         }
+
+         componentWillUnmount() {
+            _this.unsubscribe(file, this.onChange.bind(this));
+         }
+
+         onChange() {
+            this.setState({ settings: Store.get(file) });
+         }
+
+         render() {
+            return React.createElement(component, {
+               ...this.props,
+               settings: _this.makeStore(file)
+            });
+         }
+      };
+   };
+
    makeStore(file) {
       if (!file || typeof file !== 'string') {
          throw new TypeError('the first argument file must be of type string');
@@ -131,6 +172,6 @@ module.exports = new class Settings extends API {
    }
 
    connectStores(file) {
-      return Flux.connectStores([this.store], () => this.makeStore(file));
+      return Flux.connectStores([this.store], () => ({ settings: this.makeStore(file) }));
    }
 };

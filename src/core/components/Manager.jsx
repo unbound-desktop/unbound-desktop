@@ -11,7 +11,7 @@ const DOMWrapper = require('./DOMWrapper');
 
 const Logger = new logger('Manager');
 
-module.exports = class Manager extends React.Component {
+class Manager extends React.Component {
    constructor(props) {
       super(props);
 
@@ -20,7 +20,7 @@ module.exports = class Manager extends React.Component {
          settings: null
       };
 
-      this.settings = Settings.makeStore('manager-tab-settings');
+      this.settings = props.settings;
    }
 
    render() {
@@ -103,9 +103,6 @@ module.exports = class Manager extends React.Component {
    componentWillMount() {
       const forceUpdate = this.forceUpdate.bind(this, null);
 
-      // Settings
-      Settings.subscribe('manager-tab-settings', forceUpdate);
-
       // Compatibility Layers
       window.powercord && powercord[this.getType('powercord')].on('updated', forceUpdate);
       window.BdApi && BdApi[this.getType('betterdiscord')].on('updated', forceUpdate);
@@ -114,9 +111,6 @@ module.exports = class Manager extends React.Component {
 
    componentWillUnmount() {
       const forceUpdate = this.forceUpdate.bind(this, null);
-
-      // Settings
-      Settings.unsubscribe('manager-tab-settings', forceUpdate);
 
       // Compatibility Layers
       window.powercord && powercord[this.getType('powercord')].off('updated', forceUpdate);
@@ -393,3 +387,5 @@ module.exports = class Manager extends React.Component {
       }
    }
 };
+
+module.exports = Settings.connectComponent(Manager, 'manager-tab-settings');

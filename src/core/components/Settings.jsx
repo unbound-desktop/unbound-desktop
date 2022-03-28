@@ -1,13 +1,16 @@
 const { React } = require('@webpack/common');
 
 const { Text, ErrorBoundary, Category, FormTitle, Icon, Switch } = require('@components');
+const Settings = require('@api/settings');
 const Icons = require('./icons');
 
-class Settings extends React.PureComponent {
-   constructor() {
-      super();
+class GeneralSettings extends React.PureComponent {
+   constructor(props) {
+      super(props);
 
       this.state = {};
+
+      this.settings = props.settings;
    }
 
    renderSwitch(options) {
@@ -26,10 +29,10 @@ class Settings extends React.PureComponent {
          </Text>
          <Switch
             className='unbound-settings-category-inner-switch'
-            checked={id && this.props.get(id, defaultValue)}
+            checked={id && this.settings.get(id, defaultValue)}
             onChange={(v) => {
                if (!id) return;
-               this.props.set(id, v);
+               this.settings.set(id, v);
 
                typeof onChange === 'function' && onChange(v);
 
@@ -117,4 +120,4 @@ class Settings extends React.PureComponent {
    }
 };
 
-module.exports = unbound.apis.settings.connectStores('unbound-general-settings')(Settings);
+module.exports = Settings.connectComponent(GeneralSettings, 'unbound-general-settings');
