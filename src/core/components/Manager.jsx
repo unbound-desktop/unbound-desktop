@@ -1,31 +1,19 @@
+const { Text, Icon, Popout, SearchBar, FormTitle, ErrorBoundary, RelativeTooltip, Menu } = require('@components');
 const { React, Locale: { Messages } } = require('@webpack/common');
 const { capitalize, classnames } = require('@utilities');
 const { getByDisplayName } = require('@webpack');
+const Settings = require('@api/settings');
 const logger = require('@modules/logger');
 
-const {
-   Text,
-   Icon,
-   Popout,
-   SearchBar,
-   FormTitle,
-   ErrorBoundary,
-   RelativeTooltip,
-   Menu: {
-      Menu,
-      MenuSeparator,
-      MenuControlItem,
-      MenuCheckboxItem,
-   }
-} = require('@components');
 
 const Caret = getByDisplayName('Caret');
 const AddonCard = require('./AddonCard');
 const DOMWrapper = require('./DOMWrapper');
+const { bindAll } = require('@utilities');
 
 const Logger = new logger('Manager');
 
-class Manager extends React.Component {
+module.exports = class Manager extends React.Component {
    constructor(props) {
       super(props);
 
@@ -33,6 +21,10 @@ class Manager extends React.Component {
          query: '',
          settings: null
       };
+
+      this.settings = Settings.makeStore('manager-tab-settings');
+
+      bindAll(this, ['onChange']);
    }
 
    render() {
@@ -64,6 +56,7 @@ class Manager extends React.Component {
                   API.connectStores(id)(settings.render) :
                   settings.render;
 
+               console.log(settings);
                return <ErrorBoundary>
                   {this.renderTitle(null, entity)}
                   <Component />
@@ -113,15 +106,31 @@ class Manager extends React.Component {
    }
 
    componentWillMount() {
-      window.powercord && powercord[this.getType('powercord')].on('updated', this.forceUpdate.bind(this));
-      window.BdApi && BdApi[this.getType('betterdiscord')].on('updated', this.forceUpdate.bind(this));
-      unbound.managers[this.props.type].on('updated', this.forceUpdate.bind(this));
+      const forceUpdate = this.forceUpdate.bind(this, null);
+
+      // Settings
+      Settings.subscribe('manager-tab-settings', forceUpdate);
+
+      // Compatibility Layers
+      window.powercord && powercord[this.getType('powercord')].on('updated', forceUpdate);
+      window.BdApi && BdApi[this.getType('betterdiscord')].on('updated', forceUpdate);
+      unbound.managers[this.props.type].on('updated', forceUpdate);
    }
 
    componentWillUnmount() {
-      window.powercord && powercord[this.getType('powercord')].off('updated', this.forceUpdate.bind(this));
-      window.BdApi && BdApi[this.getType('betterdiscord')].off('updated', this.forceUpdate.bind(this));
-      unbound.managers[this.props.type].off('updated', this.forceUpdate.bind(this));
+      const forceUpdate = this.forceUpdate.bind(this, null);
+
+      // Settings
+      Settings.unsubscribe('manager-tab-settings', forceUpdate);
+
+      // Compatibility Layers
+      window.powercord && powercord[this.getType('powercord')].off('updated', forceUpdate);
+      window.BdApi && BdApi[this.getType('betterdiscord')].off('updated', forceUpdate);
+      unbound.managers[this.props.type].off('updated', forceUpdate);
+   }
+
+   onChange() {
+      this.forceUpdate();
    }
 
    getType(client) {
@@ -137,7 +146,7 @@ class Manager extends React.Component {
    }
 
    renderOverflowMenu() {
-      const { get, set } = this.props;
+      const { get, set } = this.settings;
 
       const filters = get('filters', {
          name: true,
@@ -147,8 +156,8 @@ class Manager extends React.Component {
       });
 
       return (
-         <Menu>
-            <MenuControlItem
+         <Menu.Menu>
+            <Menu.MenuControlItem
                id='filters'
                control={() => (
                   <h5 className='unbound-manager-overflow-title'>
@@ -156,9 +165,9 @@ class Manager extends React.Component {
                   </h5>
                )}
             />
-            <MenuSeparator key='separator' />
+            <Menu.MenuSeparator key='separator' />
             {Object.keys(filters).map(f =>
-               <MenuCheckboxItem
+               <Menu.MenuCheckboxItem
                   key={`filter-${f}`}
                   id={`filter-${f}`}
                   label={capitalize(f)}
@@ -169,12 +178,12 @@ class Manager extends React.Component {
                   }}
                />
             )}
-         </Menu>
+         </Menu.Menu>
       );
    }
 
    renderEntities(entities) {
-      const { get } = this.props;
+      const { get } = this.settings;
       const filterable = get('filters', {
          name: true,
          description: true,
@@ -393,5 +402,3 @@ class Manager extends React.Component {
       }
    }
 };
-
-module.exports = unbound.apis.settings.connectStores('manager-tab-settings')(Manager);
