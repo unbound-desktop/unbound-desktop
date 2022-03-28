@@ -18,7 +18,6 @@ const Updater = {
 
 function forceUpdateElement(selector, all = false) {
    if (!Updater.initialized) {
-      console.log('not initialized');
       const { ReactDOM, React } = require('@webpack/common');
       const element = document.createElement('div');
 
@@ -31,14 +30,12 @@ function forceUpdateElement(selector, all = false) {
          ReactDOM.render(React.createElement(() => {
             /*
              * Prototype "pollute" the bind function to grab React's state manager.
-             * Once grabbed, the patcher will unpatch the function by itself due to
-             * the last argument being true (one-time patch).
+             * Once grabbed, restore the bind function to its original state
              */
 
             const bind = Function.prototype.bind;
             try {
                Function.prototype.bind = function (...args) {
-                  console.log(this);
                   Updater.action = this;
                   return bind.call(this, args);
                };
@@ -47,7 +44,7 @@ function forceUpdateElement(selector, all = false) {
                 * Initialize a state to allow this component to have
                 * a state ReactDOM's dispatcher can update.
                 */
-               React.useState(null);
+               React.useState(true);
             } finally {
                Function.prototype.bind = bind;
             }
@@ -93,25 +90,26 @@ function forceUpdateElement(selector, all = false) {
 
       const fiber = findInTree(instance, find, { walkable: ['return'] }) || findInTree(instance, find, { walkable: ['child', 'sibling'] });
 
+      console.log(fiber);
       if (!fiber.stateNode?.forceUpdate) {
-         console.log('hi');
-         // if (typeof fiber.type === 'function') {
-         //    fiber.type = traverseType(fiber.elementType);
+         console.log('Functional component detected, proceeding to use custom forceUpdate.');
 
-         //    if (fiber.alternate) {
-         //       fiber.alternate.type = traverseType(fiber.alternate.elementType);
-         //    }
-         // }
+         if (typeof fiber.type === 'function') {
+            fiber.type = traverseType(fiber.elementType);
 
-         console.log(fiber);
+            if (fiber.alternate) {
+               fiber.alternate.type = traverseType(fiber.alternate.elementType);
+            }
+         }
+
          Updater.action.call(null, fiber, {
             last: null,
             lastRenderedState: {},
             lastRenderedReducer: () => true,
-            pending: { next: () => { } }
+            pending: { next: function () { console.log(this); } }
          });
       } else {
-         console.log('hi');
+         console.log('Class component detected, proceeding to use built-in forceUpdate.');
          fiber.stateNode.forceUpdate();
       }
    }
