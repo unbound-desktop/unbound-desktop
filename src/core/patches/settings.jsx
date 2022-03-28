@@ -54,7 +54,7 @@ module.exports = class Settings extends Patch {
                   return {
                      section: capitalize(m),
                      label: capitalize(m),
-                     element: Manager.panel
+                     element: () => <Manager.panel type={m} />
                   };
                }),
                { section: 'DIVIDER' }
