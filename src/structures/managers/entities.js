@@ -83,15 +83,6 @@ module.exports = class Manager extends Emitter {
          };
       })();
 
-      this.panel = () => {
-         const { Manager } = require('@core/components');
-         const { React } = require('@webpack/common');
-
-         return React.createElement(Manager, {
-            type: this.type,
-         });
-      };
-
       this.watcher = watch(this.path, {
          ignored: /((^|[\/\\])\..|.git|node_modules)/,
          ignoreInitial: true,
@@ -122,6 +113,13 @@ module.exports = class Manager extends Emitter {
       });
 
       window.addEventListener('unload', () => this.watcher.close());
+   }
+
+   get panel() {
+      const Components = require('@core/components');
+      const { React } = require('@webpack/common');
+
+      return Components.Manager;
    }
 
    destroy() {

@@ -7,8 +7,7 @@ const call = Function.prototype.call;
 Function.prototype.call = function (...args) {
    try {
       if (args.length === 4 && typeof args[1] === 'object' && args[3].name !== '__webpack_require__') {
-         const [, , , req] = args;
-         Webpack.instance = req;
+         Webpack.instance = args[3];
          Function.prototype.call = call;
          const res = call.apply(this, args);
          try {

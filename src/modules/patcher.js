@@ -1,5 +1,5 @@
-const { bindAll } = require('@utilities');
-const { logger } = require('@modules');
+const bindAll = require('./utilities/bindAll');
+const logger = require('./logger');
 
 const Logger = new logger('Patcher');
 

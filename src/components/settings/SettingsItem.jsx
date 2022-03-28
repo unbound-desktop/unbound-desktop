@@ -32,7 +32,7 @@ module.exports = class SettingsItem extends React.PureComponent {
                </FormText>
             )}
             <Divider />
-         </FormItem >
+         </FormItem>
       );
    }
 };

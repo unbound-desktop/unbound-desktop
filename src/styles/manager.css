@@ -71,7 +71,7 @@
 }
 
 .unbound-manager-title-has-settings .unbound-manager-title-main {
-   color: var(--text-muted);
+   color: var(--header-secondary);
    cursor: pointer;
 }
 

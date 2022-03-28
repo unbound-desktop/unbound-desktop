@@ -1,5 +1,5 @@
-const { parseStyleObject } = require('@utilities');
-const { console } = require('@constants');
+const parseStyleObject = require('./utilities/parseStyleObject');
+const { console } = require('./constants');
 
 module.exports = class Logger {
    constructor(...name) {
@@ -22,7 +22,7 @@ module.exports = class Logger {
             styles.push(parseStyleObject(style));
          });
 
-         const stdout = window.console;
+         const stdout = global.console;
          const handler = (...args) => (stdout[type] ?? stdout.log)(
             tag.join(''),
             ...styles,
