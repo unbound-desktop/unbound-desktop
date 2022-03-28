@@ -16,7 +16,7 @@ Object.keys(components).map(name => {
       filter = isDefault ? filters.byDisplayName(options.name) : byDefaultDisplayName;
    } else if (Array.isArray(options.props)) {
       filter = filters.byProps(...options.props);
-      if (typeof options.prop == 'string') {
+      if (typeof options.prop === 'string') {
          map = (m) => m[options.prop];
       }
    }

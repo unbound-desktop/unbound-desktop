@@ -200,7 +200,7 @@ module.exports = class AddonCard extends React.Component {
       return res.map((author, index) => {
          const isLast = index + 1 === res.length;
 
-         if (typeof author == 'string') {
+         if (typeof author === 'string') {
             return isLast ? author : `${author}, `;
          } else {
             return [author, isLast ? '' : ', '];

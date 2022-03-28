@@ -52,9 +52,9 @@ module.exports = new class Settings extends API {
    }
 
    set(file, setting, value) {
-      if (!file || typeof file != 'string') {
+      if (!file || typeof file !== 'string') {
          throw new TypeError('the first argument file must be of type string');
-      } else if (!setting || typeof setting != 'string') {
+      } else if (!setting || typeof setting !== 'string') {
          throw new TypeError('the second argument setting must be of type string');
       }
 
@@ -67,9 +67,9 @@ module.exports = new class Settings extends API {
    }
 
    get(file, setting, defaults) {
-      if (!file || typeof file != 'string') {
+      if (!file || typeof file !== 'string') {
          throw new TypeError('the first argument file must be of type string');
-      } else if (!setting || typeof setting != 'string') {
+      } else if (!setting || typeof setting !== 'string') {
          throw new TypeError('the second argument setting must be of type string');
       }
 
@@ -77,11 +77,11 @@ module.exports = new class Settings extends API {
    }
 
    toggle(file, setting, defaults) {
-      if (!file || typeof file != 'string') {
+      if (!file || typeof file !== 'string') {
          throw new TypeError('the first argument file must be of type string');
-      } else if (!setting || typeof setting != 'string') {
+      } else if (!setting || typeof setting !== 'string') {
          throw new TypeError('the second argument setting must be of type string');
-      } else if (!defaults || typeof defaults != 'boolean') {
+      } else if (!defaults || typeof defaults !== 'boolean') {
          throw new TypeError('the third argument defaults must be of type boolean');
       }
 
@@ -94,6 +94,10 @@ module.exports = new class Settings extends API {
    }
 
    makeStore(file) {
+      if (!file || typeof file !== 'string') {
+         throw new TypeError('the first argument file must be of type string');
+      }
+
       return {
          settings: Store.get(file),
          set: (key, value) => this.set(file, key, value),
@@ -103,9 +107,9 @@ module.exports = new class Settings extends API {
    }
 
    subscribe(file, callback) {
-      if (!file || typeof file != 'string') {
+      if (!file || typeof file !== 'string') {
          throw new TypeError('the first argument file must be of type string');
-      } else if (!callback || typeof callback != 'function') {
+      } else if (!callback || typeof callback !== 'function') {
          throw new TypeError('the second argument callback must be of type function');
       }
 
@@ -114,9 +118,9 @@ module.exports = new class Settings extends API {
    }
 
    unsubscribe(file, callback) {
-      if (!file || typeof file != 'string') {
+      if (!file || typeof file !== 'string') {
          throw new TypeError('the first argument file must be of type string');
-      } else if (!callback || typeof callback != 'function') {
+      } else if (!callback || typeof callback !== 'function') {
          throw new TypeError('the second argument callback must be of type function');
       }
 

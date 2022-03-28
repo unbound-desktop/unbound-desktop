@@ -12,7 +12,7 @@ module.exports = (ctx, names) => {
       throw new TypeError('bindAll\'s second argument must be of type array');
    }
 
-   names = names.filter(item => typeof item == 'string' && item != 'constructor');
+   names = names.filter(item => typeof item === 'string' && item !== 'constructor');
 
    for (const item of names) {
       try {

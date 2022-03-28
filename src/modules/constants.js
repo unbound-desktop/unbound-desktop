@@ -45,7 +45,7 @@ exports.avatar = 'https://github.com/unbound-mod.png';
 
 exports.entities = {
    'themes': (instance, data) => {
-      const isJS = typeof instance == 'function';
+      const isJS = typeof instance === 'function';
       if (isJS) return new instance(instance, data);
 
       const Theme = require('@structures/theme');

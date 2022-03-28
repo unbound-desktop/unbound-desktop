@@ -6,7 +6,7 @@
  */
 
 module.exports = (string) => {
-   if (typeof string != 'string') {
+   if (typeof string !== 'string') {
       throw new TypeError('capitalize\'s first argument must be of type string');
    }
 

@@ -265,7 +265,7 @@ class Webpack {
       return Webpack.getModule(filter, { all: true });
    }
 
-   static #parseOptions(args, filter = o => typeof (o) === 'object' && !Array.isArray(o)) {
+   static #parseOptions(args, filter = o => typeof o === 'object' && !Array.isArray(o)) {
       return [args, filter(args[args.length - 1]) ? args.pop() : {}];
    }
 
@@ -414,7 +414,7 @@ class Webpack {
 
    static get #available() {
       return new Promise(async cb => {
-         while (typeof window[Webpack.#global] == 'undefined' || window[Webpack.#global].length < 1) {
+         while (typeof window[Webpack.#global] === 'undefined' || window[Webpack.#global].length < 1) {
             await new Promise(setImmediate);
          }
 

@@ -48,7 +48,7 @@ module.exports = class Manager extends Emitter {
          return {
             settings: store,
             set: (setting, value) => {
-               if (!setting || typeof setting != 'string') {
+               if (!setting || typeof setting !== 'string') {
                   throw new TypeError('the second argument setting must be of type string');
                }
 
@@ -62,7 +62,7 @@ module.exports = class Manager extends Emitter {
             },
 
             get: (setting, defaults) => {
-               if (!setting || typeof setting != 'string') {
+               if (!setting || typeof setting !== 'string') {
                   throw new TypeError('the second argument setting must be of type string');
                }
 
@@ -70,9 +70,9 @@ module.exports = class Manager extends Emitter {
             },
 
             toggle: (setting, defaults) => {
-               if (!setting || typeof setting != 'string') {
+               if (!setting || typeof setting !== 'string') {
                   throw new TypeError('the second argument setting must be of type string');
-               } else if (!defaults || typeof defaults != 'boolean') {
+               } else if (!defaults || typeof defaults !== 'boolean') {
                   throw new TypeError('the third argument defaults must be of type boolean');
                }
 

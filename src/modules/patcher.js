@@ -116,15 +116,15 @@ module.exports = new class Patcher {
    }
 
    patch(caller, mdl, func, callback, type = 'after', once = false) {
-      if (!caller || typeof caller != 'string') {
+      if (!caller || typeof caller !== 'string') {
          throw new TypeError('first argument "caller" must be of type string');
       } else if (!mdl || !['function', 'object'].includes(typeof mdl)) {
          throw new TypeError('second argument "mdl" must be of type function or object');
-      } else if (!func || typeof func != 'string') {
+      } else if (!func || typeof func !== 'string') {
          throw new TypeError('third argument "func" must be of type string');
-      } else if (!callback || typeof callback != 'function') {
+      } else if (!callback || typeof callback !== 'function') {
          throw new TypeError('fourth argument "callback" must be of type function');
-      } else if (!type || typeof type != 'string' || !['after', 'before', 'instead'].includes(type)) {
+      } else if (!type || typeof type !== 'string' || !['after', 'before', 'instead'].includes(type)) {
          throw new TypeError('fifth argument "type" must be of type string and any of the three: after, before, instead');
       }
 
