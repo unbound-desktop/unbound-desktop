@@ -52,7 +52,6 @@ module.exports = class Manager extends React.Component {
                   API.connectStores(id)(settings.render) :
                   settings.render;
 
-               console.log(settings);
                return <ErrorBoundary>
                   {this.renderTitle(null, entity)}
                   <Component />
