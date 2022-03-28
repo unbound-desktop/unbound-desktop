@@ -1,5 +1,5 @@
 const getReactInstance = require('./getReactInstance');
-const getNestedType = require('./getNestedType');
+const traverseType = require('./traverseType');
 
 /**
  * @name getOwnerInstance
@@ -15,7 +15,7 @@ module.exports = (node, filter = _ => true) => {
 
    const matches = () => {
       if (!current?.stateNode || typeof current.type === 'string') return false;
-      const type = getNestedType(current);
+      const type = traverseType(current);
       if (!type) return false;
 
       return type && filter(current?.stateNode);

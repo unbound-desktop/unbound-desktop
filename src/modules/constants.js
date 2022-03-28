@@ -53,3 +53,9 @@ exports.entities = {
    },
    'plugins': (...args) => new args[0](...args)
 };
+
+exports.ReactSymbols = {
+   Ref: Symbol.for('react.forward_ref'),
+   Element: Symbol.for('react.element'),
+   Memo: Symbol.for('react.memo')
+};
