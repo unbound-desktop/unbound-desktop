@@ -5,10 +5,8 @@
  * @param {boolean} all - Whether all elements matching that selector should be force updated
  */
 
-const getOwnerInstance = require('./getOwnerInstance');
-const traverseType = require('./traverseType');
-const Patcher = require('../patcher');
 const getReactInstance = require('./getReactInstance');
+const traverseType = require('./traverseType');
 const findInTree = require('./findInTree');
 
 const Updater = {
@@ -17,6 +15,8 @@ const Updater = {
 };
 
 function forceUpdateElement(selector, all = false) {
+   return;
+
    if (!Updater.initialized) {
       const { ReactDOM, React } = require('@webpack/common');
       const element = document.createElement('div');
@@ -90,7 +90,6 @@ function forceUpdateElement(selector, all = false) {
 
       const fiber = findInTree(instance, find, { walkable: ['return'] }) || findInTree(instance, find, { walkable: ['child', 'sibling'] });
 
-      console.log(fiber);
       if (!fiber.stateNode?.forceUpdate) {
          console.log('Functional component detected, proceeding to use custom forceUpdate.');
 
