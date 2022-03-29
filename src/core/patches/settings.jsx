@@ -1,5 +1,6 @@
 const { getLazy, filters: { byDisplayName } } = require('@webpack');
 const { after, unpatchAll } = require('@patcher');
+const { React } = require('@webpack/common');
 const { capitalize } = require('@utilities');
 const Patch = require('@structures/patch');
 
