@@ -1,8 +1,8 @@
 const { getOwnerInstance } = require('@utilities');
 const Webpack = require('@webpack');
 
-const logger = require('@modules/logger');
-const Logger = new logger('Splash', 'Updater');
+const { createLogger } = require('@modules/logger');
+const Logger = createLogger('Splash', 'Updater');
 
 const { create } = require('@patcher');
 const Patcher = create('unbound-splash');

@@ -1,9 +1,9 @@
 const bindAll = require('./utilities/bindAll');
-const logger = require('./logger');
+const { createLogger } = require('./logger');
 
-const Logger = new logger('Patcher');
+const Logger = createLogger('Patcher');
 
-module.exports = new class Patcher {
+class Patcher {
    constructor() {
       this.patches = [];
 
@@ -163,3 +163,5 @@ module.exports = new class Patcher {
       return this.patch(caller, mdl, func, callback, 'instead', once);
    }
 };
+
+module.exports = new Patcher();

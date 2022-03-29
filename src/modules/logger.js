@@ -32,4 +32,8 @@ module.exports = class Logger {
          this[type] = handler.bind(this);
       });
    }
+
+   static createLogger(...args) {
+      return new Logger(...args);
+   }
 };

@@ -5,11 +5,11 @@
 *  @link https://github.com/strencher-kernel/pc-compat/blob/dev/src/renderer/modules/webpack.ts
 */
 
-const logger = require('@modules/logger');
+const { createLogger } = require('@modules/logger');
 const modules = require('@data/modules');
 const { uuid } = require('@utilities');
 
-const Logger = new logger('Webpack');
+const Logger = createLogger('Webpack');
 const common = {};
 
 class Webpack {

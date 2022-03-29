@@ -1,15 +1,15 @@
 const { Text, Icon, Popout, SearchBar, FormTitle, ErrorBoundary, RelativeTooltip, Menu } = require('@components');
 const { React, Locale: { Messages } } = require('@webpack/common');
 const { capitalize, classnames } = require('@utilities');
+const { createLogger } = require('@modules/logger');
 const { getByDisplayName } = require('@webpack');
 const Settings = require('@api/settings');
-const logger = require('@modules/logger');
 
 const Caret = getByDisplayName('Caret');
 const AddonCard = require('./AddonCard');
 const DOMWrapper = require('./DOMWrapper');
 
-const Logger = new logger('Manager');
+const Logger = createLogger('Manager');
 
 class Manager extends React.Component {
    constructor(props) {

@@ -1,7 +1,7 @@
 const Webpack = require('@webpack');
 
-const { logger } = require('@modules');
-const Logger = new logger('Splash', 'Webpack');
+const { createLogger } = require('@modules/logger');
+const Logger = createLogger('Splash', 'Webpack');
 
 const call = Function.prototype.call;
 Function.prototype.call = function (...args) {

@@ -1,8 +1,8 @@
-const { logger } = require('@modules');
+const { createLogger } = require('@modules/logger');
 const { readdirSync } = require('fs');
 const { resolve } = require('path');
 
-const Logger = new logger('Core', 'Patches');
+const Logger = createLogger('Core', 'Patches');
 
 module.exports = class Patches {
    constructor() {
