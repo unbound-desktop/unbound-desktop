@@ -15,7 +15,7 @@ const [
    { bulk: true }
 );
 
-module.exports = new class Clyde extends API {
+class Clyde extends API {
    constructor() {
       super();
 
@@ -54,3 +54,5 @@ module.exports = new class Clyde extends API {
       ));
    }
 };
+
+module.exports = new Clyde();

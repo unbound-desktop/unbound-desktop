@@ -3,7 +3,7 @@ const { bindAll } = require('@utilities');
 const API = require('@structures/api');
 const Store = require('./flux');
 
-module.exports = new class Settings extends API {
+class Settings extends API {
    constructor() {
       super();
 
@@ -175,3 +175,5 @@ module.exports = new class Settings extends API {
       return Flux.connectStores([this.store], () => ({ settings: this.makeStore(file) }));
    }
 };
+
+module.exports = new Settings();

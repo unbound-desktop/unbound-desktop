@@ -1,11 +1,11 @@
 const { Flux, Dispatcher } = require('@webpack/common');
-const { logger } = require('@modules');
+const { createLogger } = require('@modules/logger');
 const { resolve, join } = require('path');
 const { writeFileSync } = require('fs');
 const { paths } = require('@constants');
 const fs = require('fs');
 
-const Logger = new logger('Settings', 'Store');
+const Logger = createLogger('Settings', 'Store');
 
 const settings = {};
 

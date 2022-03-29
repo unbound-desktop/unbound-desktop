@@ -18,7 +18,7 @@ const [
    { bulk: true }
 );
 
-module.exports = new class Commands extends API {
+class Commands extends API {
    constructor() {
       super();
 
@@ -49,7 +49,7 @@ module.exports = new class Commands extends API {
       });
 
       Patcher.after(CommandsStore, 'queryCommands', (_, [, , query], res) => {
-         const commands = [...this.commands.values()].filter(e => e.name.includes(query));
+         const commands = [...this.commands.values()].filter(e => ~e.name?.indexOf(query));
          res.push(...commands);
       });
 
@@ -96,6 +96,7 @@ module.exports = new class Commands extends API {
 
    register(options) {
       const { command, executor, ...cmd } = options;
+      if (!command) return;
 
       this.commands.set(command, {
          type: 3,
@@ -114,3 +115,5 @@ module.exports = new class Commands extends API {
       this.commands.delete(id);
    };
 };
+
+module.exports = new Commands();

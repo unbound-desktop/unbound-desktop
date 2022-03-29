@@ -1,18 +1,21 @@
-const { logger } = require('@modules');
-const Logger = new logger('APIs');
-const Lodash = window._;
+const { createLogger } = require('@modules/logger');
+const { memoize } = require('@utilities/');
+const Logger = createLogger('APIs');
+
+const getEntities = memoize(() => require('@api'));
 
 module.exports = class APIs {
-   constructor() {
-      this.entities = require('@api');
-   }
-
    async start() {
-      const apis = Lodash.cloneDeep(this.entities);
-      for (const api in apis) {
+      const entities = getEntities();
+
+      for (const api in entities) {
          try {
-            await this.entities[api].start?.();
-            this[api] = apis[api];
+            await entities[api].start?.();
+
+            Object.defineProperty(this, api, {
+               get: () => entities[api],
+               configurable: true
+            });
          } catch (e) {
             Logger.error(`Could not start the ${api} API.`, e);
          }
@@ -22,14 +25,17 @@ module.exports = class APIs {
    }
 
    async stop() {
-      const apis = Lodash.cloneDeep(this.entities);
-      for (const api in apis) {
+      const entities = getEntities();
+
+      for (const api in entities) {
          try {
-            await this.entities[api].stop?.();
+            await entities[api].stop?.();
             delete this[api];
          } catch (e) {
             Logger.error(`Could not stop the ${api} API.`, e);
          }
       }
+
+      Logger.log('Finished unloading.');
    }
 };

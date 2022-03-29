@@ -3,10 +3,9 @@ const API = require('@structures/api');
 const { bindAll, createStore, uuid } = require('@utilities');
 const { create } = require('@patcher');
 
-const toasts = createStore();
 const Patcher = create('unbound-toasts');
 
-module.exports = new class Toasts extends API {
+class Toasts extends API {
    constructor() {
       super();
 
@@ -14,6 +13,8 @@ module.exports = new class Toasts extends API {
          cancelled: false,
          cancel: () => this.promises.cancelled = true
       };
+
+      this.toasts = createStore();
 
       bindAll(this, ['send', 'close']);
    }
@@ -25,18 +26,18 @@ module.exports = new class Toasts extends API {
    send(options) {
       options.id ??= uuid(5);
 
-      if (toasts.get(options.id)) {
+      if (this.toasts.get(options.id)) {
          return this.send(Object.assign(options, { id: uuid(5) }));
       }
 
-      toasts.set(options.id, options);
+      this.toasts.set(options.id, options);
 
       return options.id;
    }
 
    close(id) {
-      if (toasts.get(id)) {
-         toasts.delete(id);
+      if (this.toasts.get(id)) {
+         this.toasts.delete(id);
       }
    }
 
@@ -45,3 +46,5 @@ module.exports = new class Toasts extends API {
       Patcher.unpatchAll();
    }
 };
+
+module.exports = new Toasts();
