@@ -31,7 +31,7 @@ module.exports = class SettingsItem extends React.PureComponent {
                   {this.props.description}
                </FormText>
             )}
-            <Divider />
+            <Divider className={hasMargin} />
          </FormItem>
       );
    }
