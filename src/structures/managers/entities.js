@@ -245,8 +245,8 @@ module.exports = class Manager extends Emitter {
 
       if (entity?.instance && !entity.started) {
          try {
-            entity.started = true;
             entity.instance.start?.();
+            entity.started = true;
             this.logger.log(`${entity.data.name} was started.`);
          } catch (e) {
             this.logger.error(`Couldn't start ${entity.data.name}`, e);
@@ -258,8 +258,8 @@ module.exports = class Manager extends Emitter {
       const entity = this.resolve(id);
       if (entity?.instance && entity.started) {
          try {
-            entity.started = false;
             entity.instance.stop?.();
+            entity.started = false;
             this.logger.log(`${entity.data.name} was stopped.`);
          } catch (e) {
             this.logger.error(`Couldn't stop ${entity.data.name}`, e);

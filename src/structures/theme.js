@@ -1,5 +1,5 @@
+const { bindAll, debounce } = require('@utilities');
 const Addon = require('@structures/addon');
-const { bindAll } = require('@utilities');
 const Logger = require('@modules/logger');
 const DOM = require('@utilities/dom');
 
@@ -10,7 +10,9 @@ module.exports = class Theme extends Addon {
       this.logger = new Logger('Theme', data.name);
       this.settings = window.unbound?.apis?.settings?.makeStore?.(data.id);
 
-      bindAll(this, ['apply']);
+      bindAll(this, ['apply', 'onSettingsChange']);
+
+      this.onSettingsChange = debounce(this.onSettingsChange, 500);
    }
 
    start(css) {
@@ -22,7 +24,22 @@ module.exports = class Theme extends Addon {
          return window.addEventListener('load', this.apply);
       }
 
+      /*
+       * Try accessing settings, if not accessible due to
+       * limitations on the splash screen, do nothing
+       */
+      try {
+         const Settings = require('@api/settings');
+         Settings.subscribe(this.data.id, this.onSettingsChange);
+      } catch (e) { console.log(e); }
+
       this.apply();
+   }
+
+   onSettingsChange() {
+      try {
+         unbound.managers.themes.reload(this.data.id);
+      } catch { }
    }
 
    apply() {
@@ -37,5 +54,14 @@ module.exports = class Theme extends Addon {
       if (this.stylesheet?.remove) {
          this.stylesheet.remove();
       }
+
+      /*
+       * Try accessing settings, if not accessible due to
+       * limitations on the splash screen, do nothing
+       */
+      try {
+         const Settings = require('@api/settings');
+         Settings.unsubscribe(this.data.id, this.onSettingsChange);
+      } catch (e) { console.log(e); }
    }
 };
