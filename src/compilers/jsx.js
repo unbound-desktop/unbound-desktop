@@ -1,7 +1,7 @@
 const Cacher = require('./cacher');
 const sucrase = require('sucrase');
 
-module.exports = new class JSX extends Cacher {
+class JSX extends Cacher {
    compile(mdl, filename, content) {
       const { code } = sucrase.transform(content, {
          transforms: ['jsx', 'flow', 'imports'],
@@ -15,3 +15,5 @@ module.exports = new class JSX extends Cacher {
       return true;
    }
 };
+
+module.exports = new JSX();

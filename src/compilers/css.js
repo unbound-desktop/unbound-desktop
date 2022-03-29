@@ -1,7 +1,9 @@
 const Cacher = require('./cacher');
 
-module.exports = new class CSS extends Cacher {
+class CSS extends Cacher {
    compile(mdl, filename, content) {
       return content;
    }
 };
+
+module.exports = new CSS();

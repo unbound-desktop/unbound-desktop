@@ -1,7 +1,7 @@
 const Cacher = require('./cacher');
 const sucrase = require('sucrase');
 
-module.exports = new class TSX extends Cacher {
+class TSX extends Cacher {
    compile(mdl, filename, content) {
       const { code } = sucrase.transform(content, {
          transforms: ['typescript', 'imports', 'jsx'],
@@ -15,3 +15,5 @@ module.exports = new class TSX extends Cacher {
       return true;
    }
 };
+
+module.exports = new TSX();

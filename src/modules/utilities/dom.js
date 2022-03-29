@@ -8,7 +8,7 @@ const createHead = memoize(() => {
    return head;
 });
 
-module.exports = new class DOM {
+class DOM {
    constructor() {
       this.elements = {
          script: {},
@@ -122,3 +122,5 @@ module.exports = new class DOM {
       return null;
    }
 };
+
+module.exports = new DOM();
