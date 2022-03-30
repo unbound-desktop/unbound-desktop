@@ -12,7 +12,7 @@ module.exports = class Theme extends Addon {
 
       bindAll(this, ['apply', 'onSettingsChange']);
 
-      this.onSettingsChange = debounce(this.onSettingsChange, 500);
+      this.onSettingsChange = debounce(this.onSettingsChange, 100);
    }
 
    start(css) {
