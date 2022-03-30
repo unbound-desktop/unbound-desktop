@@ -65,6 +65,10 @@ module.exports = class Unbound {
          Patcher.unpatchAll(caller);
       }
 
+      // Remove unbound's head
+      const head = document.querySelector('unbound-head');
+      head?.remove?.();
+
       // Clear require cache to allow for any code changes to apply
       const parent = basename(resolve(__dirname, '..', '..'));
       const cache = Object.keys(require.cache).filter(c => ~c.indexOf(parent));
