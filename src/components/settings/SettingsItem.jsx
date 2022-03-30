@@ -1,38 +1,38 @@
 const { Flex, FormItem, FormText, Divider } = require('@components');
-const { bulk, filters } = require('@webpack');
+const { classnames } = require('@utilities/');
 const { React } = require('@webpack/common');
+const { getByProps } = require('@webpack');
 
-const [
-   { marginTop8, marginBottom20 } = {},
-   { description } = {}
-] = bulk(
-   filters.byProps('marginSmall'),
-   filters.byProps('formText', 'description')
-);
+const { description } = getByProps('formText', 'description') || {};
 
 module.exports = class SettingsItem extends React.PureComponent {
    render() {
-      const hasMargin = this.props.hasMargin && marginTop8;
-      return (
+      return (<>
          <FormItem
             title={this.props.title}
             required={this.props.required}
             className={[
+               this.props.className,
                Flex.Direction.VERTICAL,
                Flex.Justify.START,
                Flex.Align.STRETCH,
                Flex.Wrap.NO_WRAP,
-               marginBottom20
+               'unbound-settings-item-form'
             ].join(' ')}
          >
             {this.props.children}
             {this.props.description && (
-               <FormText className={[description, hasMargin].filter(Boolean).join(' ')}>
+               <FormText
+                  className={classnames(
+                     description,
+                     'unbound-settings-item-text'
+                  )}
+               >
                   {this.props.description}
                </FormText>
             )}
-            <Divider className={hasMargin} />
          </FormItem>
-      );
+         <Divider className='unbound-settings-item-divider' />
+      </>);
    }
 };
