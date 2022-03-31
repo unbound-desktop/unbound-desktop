@@ -92,24 +92,33 @@ module.exports = class Manager extends Emitter {
       this.watcher.on('change', (path) => {
          const [, entity] = path.replace(this.path, '').split(/\\|\//);
 
+         const name = basename(entity);
          try {
-            this.reload(basename(entity), true);
+            this.reload(name, true);
             this.emit('changed');
-         } catch { }
+         } catch(e) { 
+            this.logger.error(`Failed to handle file change for ${name}.`, e);
+         }
       });
 
       this.watcher.on('addDir', (path) => {
+         const name = basename(path);
          try {
-            this.reload(basename(path), true);
+            this.reload(name, true);
             this.emit('changed');
-         } catch { }
+         } catch(e) { 
+            this.logger.error(`Failed to handle new addon ${name}.`, e);
+         }
       });
 
       this.watcher.on('unlinkDir', (path) => {
+         const name = basename(path);
          try {
-            this.unload(basename(path));
+            this.unload(name);
             this.emit('changed');
-         } catch { }
+         } catch(e) { 
+            this.logger.error(`Failed to handle deleted addon ${name}.`, e);
+         }
       });
 
       window.addEventListener('unload', () => this.watcher.close());
