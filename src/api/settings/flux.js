@@ -5,6 +5,7 @@ const { writeFileSync } = require('fs');
 const { paths } = require('@constants');
 const fs = require('fs');
 
+const Lodash = window._;
 const Logger = createLogger('Settings', 'Store');
 
 const settings = {};
@@ -32,7 +33,7 @@ class Settings extends Flux.Store {
    constructor(Dispatcher, listeners) {
       super(Dispatcher, listeners);
 
-      this.addChangeListener(this.save);
+      this.addChangeListener(Lodash.debounce(this.save, 200));
    }
 
    getSetting(file, setting, defaults) {
