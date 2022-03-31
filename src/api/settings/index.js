@@ -9,7 +9,16 @@ class Settings extends API {
 
       this.listeners = {};
 
-      bindAll(this, ['set', 'get', 'toggle']);
+      bindAll(this, [
+         'set',
+         'get',
+         'toggle',
+         'makeStore',
+         'subscribe',
+         'unsubscribe',
+         'connectStores',
+         'connectComponent',
+      ]);
    }
 
    get settings() {
