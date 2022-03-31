@@ -126,6 +126,8 @@ class Patcher {
          throw new TypeError('fourth argument "callback" must be of type function');
       } else if (!type || typeof type !== 'string' || !['after', 'before', 'instead'].includes(type)) {
          throw new TypeError('fifth argument "type" must be of type string and any of the three: after, before, instead');
+      } else if (typeof mdl[func] === 'undefined') {
+         throw new ReferenceError(`function ${func} does not exist on the second argument (object or function)`);
       }
 
       const get = this.get(...arguments);
