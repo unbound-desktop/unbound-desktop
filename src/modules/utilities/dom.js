@@ -61,7 +61,7 @@ class DOM {
     * @name appendScript
     * @description Appends a script to the unbound's head.
     * @param {string} id - The unique identifier for this script.
-    * @param {string} instance - The URL of the script.
+    * @param {string} url - The URL of the script.
     * @return {object} Returns an object containing the removal function and the DOM element.
    */
    appendScript(id, url) {
