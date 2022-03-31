@@ -94,8 +94,8 @@ class Settings extends API {
    }
 
    connectComponent(component, file) {
-      if (!component || typeof component !== 'function') {
-         throw new TypeError('the first argument component must be of type function');
+      if (!component || !['function', 'object'].includes(typeof component)) {
+         throw new TypeError('the first argument component must be of type function or object');
       } else if (!file || typeof file !== 'string') {
          throw new TypeError('the second argument file must be of type string');
       }
