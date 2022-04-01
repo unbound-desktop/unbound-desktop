@@ -1,9 +1,11 @@
 const { Text, Icon, Popout, SearchBar, FormTitle, ErrorBoundary, RelativeTooltip, Menu } = require('@components');
-const { React, Locale: { Messages } } = require('@webpack/common');
+const { React, Locale: { Messages }, ContextMenu } = require('@webpack/common');
 const { capitalize, classnames } = require('@utilities');
 const { createLogger } = require('@modules/logger');
 const { getByDisplayName } = require('@webpack');
 const Settings = require('@api/settings');
+const { shell } = require('electron');
+const path = require('path');
 
 const Caret = getByDisplayName('Caret');
 const AddonCard = require('./AddonCard');
@@ -132,6 +134,7 @@ class Manager extends React.Component {
 
    renderOverflowMenu() {
       const { get, set } = this.settings;
+      const { type } = this.props;
 
       const filters = get('filters', {
          name: true,
@@ -141,7 +144,7 @@ class Manager extends React.Component {
       });
 
       return (
-         <Menu.Menu>
+         <Menu.Menu onClose={ContextMenu.closeContextMenu}>
             <Menu.MenuControlItem
                id='filters'
                control={() => (
@@ -163,6 +166,18 @@ class Manager extends React.Component {
                   }}
                />
             )}
+            <Menu.MenuSeparator key='separator' />
+            <Menu.MenuItem
+               key={`filter-${type}`}
+               id={`filter-${type}`}
+               label={`Open ${type} folder`}
+               action={() => {
+                  try {
+                     const folder = path.resolve(__dirname, '..', '..', '..', type);
+                     shell.openPath(folder);
+                  } catch { }
+               }}
+            />
          </Menu.Menu>
       );
    }
