@@ -129,7 +129,7 @@ module.exports = class ErrorBoundary extends React.PureComponent {
                      </Text>
                   </ScrollerThin>
                </Card>}
-               <Card
+               {error.stack && <Card
                   type='card'
                   className='unbound-boundary-error-wrapper'
                >
@@ -138,7 +138,7 @@ module.exports = class ErrorBoundary extends React.PureComponent {
                         {error.stack}
                      </Text>
                   </ScrollerThin>
-               </Card>
+               </Card>}
             </>}
          </Card>
       );
