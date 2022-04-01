@@ -1,5 +1,5 @@
 module.exports = {
-   messages: {
+   Messages: {
       props: [
          'sendMessage',
          'receiveMessage'
@@ -28,25 +28,48 @@ module.exports = {
          ]
       ]
    },
+   Users: {
+      props: [
+         'getCurrentUser',
+         'getUser'
+      ]
+   },
+   AsyncUsers: {
+      props: [
+         'getUser',
+         'fetchProfile'
+      ]
+   },
+   Guilds: {
+      props: [
+         'getGuildCount'
+      ]
+   },
+   Relationships: {
+      props: [
+         'getNickname',
+         'getRelationships'
+      ]
+   },
    Dispatcher: {
       props: [
          '_dispatch',
          'dirtyDispatch'
       ]
    },
-   modal: {
+   Modal: {
       props: [
          'openModal',
          'openModalLazy'
       ]
    },
-   contextMenu: {
+   ContextMenu: {
       props: [
          'openContextMenu',
          'closeContextMenu'
       ]
    },
-   channels: {
+   Channels: {
       props: [
          'getChannelId',
          'getLastSelectedChannelId',
