@@ -1,6 +1,7 @@
-const { FormTitle, FormText, Caret, Text, Divider } = require('@components');
+const { FormTitle, FormText, Caret, Text } = require('@components');
 const { React } = require('@webpack/common');
 const { classnames } = require('@utilities');
+const Divider = require('./Divider');
 
 module.exports = class Category extends React.PureComponent {
    render() {
