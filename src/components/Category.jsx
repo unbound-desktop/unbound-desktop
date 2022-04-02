@@ -12,7 +12,7 @@ module.exports = class Category extends React.PureComponent {
             className={classnames('unbound-category-header', icon && 'unbound-category-has-icon')}
             onClick={onChange}
          >
-            {typeof icon === 'function' && icon()}
+            {typeof icon === 'function' && icon({ className: 'unbound-category-icon' })}
             <div className='unbound-category-details'>
                <FormTitle
                   color={Text.Colors.HEADER_PRIMARY}
