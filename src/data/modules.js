@@ -94,6 +94,11 @@ module.exports = {
          'NUMBER_MODE'
       ]
    },
+   ReactSpring: {
+      props: [
+         'useSpring'
+      ]
+   },
    zustand: {
       filter: m => typeof m === 'function' && m.toString().includes('[useStore, api]')
    }
