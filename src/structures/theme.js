@@ -66,6 +66,6 @@ module.exports = class Theme extends Addon {
       try {
          const Settings = require('@api/settings');
          Settings.unsubscribe(this.data.id, this.onSettingsChange);
-      } catch (e) { console.log(e); }
+      } catch { }
    }
 };
