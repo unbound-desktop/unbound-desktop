@@ -20,10 +20,6 @@ module.exports = class Theme extends Addon {
          this.instance = css;
       }
 
-      if (document.readyState === 'loading') {
-         return window.addEventListener('load', this.apply);
-      }
-
       /*
        * Try accessing settings, if not accessible due to
        * limitations on the splash screen, do nothing
@@ -31,7 +27,11 @@ module.exports = class Theme extends Addon {
       try {
          const Settings = require('@api/settings');
          Settings.subscribe(this.data.id, this.onSettingsChange);
-      } catch (e) { console.log(e); }
+      } catch {  }
+
+      if (document.readyState === 'loading') {
+         return this.listener = window.addEventListener('load', this.apply);
+      }
 
       this.apply();
    }
@@ -53,6 +53,10 @@ module.exports = class Theme extends Addon {
    stop() {
       if (this.stylesheet?.remove) {
          this.stylesheet.remove();
+      }
+
+      if (this.listener) {
+         window.removeEventListener('load', this.listener);
       }
 
       /*
