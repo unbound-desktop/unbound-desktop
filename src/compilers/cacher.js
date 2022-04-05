@@ -2,7 +2,6 @@ const { readFileSync, mkdirSync, existsSync, writeFileSync } = require('fs');
 const { join, basename } = require('path');
 const { paths } = require('@constants');
 const Module = require('module');
-const CRC = require('crc-32');
 
 module.exports = class Compiler {
    constructor() {
