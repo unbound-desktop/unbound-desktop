@@ -63,8 +63,8 @@ module.exports = class Compiler {
    compile() { }
 
    getHash(path) {
-      const content = readFileSync(path);
-      const hash = CRC.buf(content);
+      const content = readFileSync(path, 'utf-8');
+      const hash = this.hash(content);
 
       return {
          hash: hash.toString(),
@@ -80,5 +80,17 @@ module.exports = class Compiler {
       if (!existsSync(type)) mkdirSync(type);
 
       return type;
+   }
+
+   hash(content) {
+      let hash = 0;
+
+      for (let i = 0; i < content.length; i++) {
+         const char = content.charCodeAt(i);
+         hash = ((hash << 5) - hash) + char;
+         hash = hash & hash;
+      }
+
+      return hash;
    }
 };
