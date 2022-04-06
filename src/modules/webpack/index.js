@@ -202,7 +202,14 @@ class Webpack {
 
       for (const id in finder.c) {
          const mdl = finder.c[id].exports;
-         if (!mdl || mdl === window) continue;
+
+         /*
+          * Check if the module exists and make sure its not the window object
+          * Checking for mdl.navigator is faster. Since none of the webpack modules
+          * have a navigator property on them we can safely check if navigator
+          * exists on the webpack module.
+          */
+         if (!mdl || mdl.navigator) continue;
 
          if (typeof mdl === 'object') {
             if (search(mdl, id)) {
