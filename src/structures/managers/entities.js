@@ -96,7 +96,7 @@ module.exports = class Manager extends Emitter {
          try {
             this.reload(name, true);
             this.emit('changed');
-         } catch(e) { 
+         } catch (e) {
             this.logger.error(`Failed to handle file change for ${name}.`, e);
          }
       });
@@ -106,7 +106,7 @@ module.exports = class Manager extends Emitter {
          try {
             this.reload(name, true);
             this.emit('changed');
-         } catch(e) { 
+         } catch (e) {
             this.logger.error(`Failed to handle new addon ${name}.`, e);
          }
       });
@@ -116,7 +116,7 @@ module.exports = class Manager extends Emitter {
          try {
             this.unload(name);
             this.emit('changed');
-         } catch(e) { 
+         } catch (e) {
             this.logger.error(`Failed to handle deleted addon ${name}.`, e);
          }
       });
@@ -225,9 +225,8 @@ module.exports = class Manager extends Emitter {
          }
 
          const type = constants.entities[this.type];
-         const res = {
-            instance: type(Entity.__esModule ? Entity.default : Entity, data)
-         };
+         const exported = Entity.__esModule ? Entity.default : Entity;
+         const res = { instance: type(exported, data) };
 
          this.assignData(data, res, entry);
          this.assignData(data, res.instance, entry);
