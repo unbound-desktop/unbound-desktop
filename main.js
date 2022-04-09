@@ -5,7 +5,7 @@ require('./unisolate');
 const WindowPatcher = require('#kernel/core/patchers/BrowserWindowPatcher');
 const electron = require('electron');
 
-WindowPatcher.patch('unbound', (_, [options]) => {
+WindowPatcher.patch('unbound', (options) => {
    options.webPreferences ??= {};
    options.webPreferences.contextIsolation = false;
    options.webPreferences.nodeIntegration = true;
