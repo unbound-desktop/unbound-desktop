@@ -48,7 +48,7 @@ class Commands extends API {
          }
       });
 
-      Patcher.after(CommandsStore, 'queryCommands', (_, [, , query], res) => {
+      Patcher.after(CommandsStore, 'queryCommands', (_, [{ query }], res) => {
          const commands = [...this.commands.values()].filter(e => ~e.name?.indexOf(query));
          res.push(...commands);
       });
