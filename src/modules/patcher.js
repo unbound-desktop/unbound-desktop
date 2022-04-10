@@ -7,7 +7,13 @@ class Patcher {
    constructor() {
       this.patches = [];
 
-      bindAll(this, ['unpatchAll', 'after', 'before', 'instead', 'create']);
+      bindAll(this, [
+         'unpatchAll',
+         'after',
+         'before',
+         'instead',
+         'create'
+      ]);
    }
 
    create(name) {
@@ -26,7 +32,9 @@ class Patcher {
 
       for (const patch of this.patches) {
          for (const child of patch.patches) {
-            if (child.caller === id) patches.push(child);
+            if (child.caller === id) {
+               patches.push(child);
+            }
          }
       }
 
@@ -41,7 +49,10 @@ class Patcher {
 
    override(patch) {
       return function () {
-         if (!patch.patches?.length) return patch.original.apply(this, arguments);
+         if (!patch.patches?.length) {
+            patch.unpatch();
+            return patch.original.apply(this, arguments);
+         }
 
          let res;
          let args = arguments;
@@ -130,25 +141,32 @@ class Patcher {
          throw new ReferenceError(`function ${func} does not exist on the second argument (object or function)`);
       }
 
-      const get = this.get(...arguments);
+      const current = this.get(...arguments);
 
       const patch = {
          caller,
          type,
-         id: get.patches.count,
+         id: current.patches?.length ?? 0,
          callback,
          unpatch: () => {
-            get.patches.splice(get.patches.findIndex(p => p.id === patch.id && p.type === type), 1);
+            // Remove the original patch this callback was from
+            const individual = current.patches.findIndex(p => p.id === patch.id && p.type === type);
+            if (~individual) current.patches.splice(individual, 1);
 
-            if (get.patches.length <= 0) {
-               const index = this.patches.findIndex(p => p.mdl == mdl && p.func == func);
-               this.patches[index].unpatch();
-               this.patches.splice(index, 1);
+            // If no other patches on the module are remaining, completely remove all patches
+            // and re-assign the original module to its original place.
+            if (!current.patches?.length) {
+               const module = this.patches.findIndex(p => p.mdl == mdl && p.func == func);
+
+               if (~module) {
+                  this.patches[module]?.unpatch();
+                  this.patches.splice(module, 1);
+               }
             }
          }
       };
 
-      get.patches.push(patch);
+      current.patches.push(patch);
 
       return patch.unpatch;
    }
