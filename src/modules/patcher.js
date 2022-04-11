@@ -114,7 +114,6 @@ class Patcher {
 
    push([caller, mdl, func, cb, type, once]) {
       const patch = {
-         caller,
          mdl,
          func,
          original: mdl[func],
@@ -171,7 +170,7 @@ class Patcher {
       const patch = {
          caller,
          type,
-         id: current.patches?.length ?? 0,
+         id: current.patches?.[type]?.length ?? 0,
          callback,
          unpatch: () => {
             // Remove the original patch this callback was from
