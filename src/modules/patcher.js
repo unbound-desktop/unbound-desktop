@@ -30,10 +30,16 @@ class Patcher {
       if (!id) return [];
       const patches = [];
 
-      for (const patch of this.patches) {
-         for (const child of patch.patches) {
-            if (child.caller === id) {
-               patches.push(child);
+      for (const entry of this.patches) {
+         const store = [
+            ...entry.patches.before,
+            ...entry.patches.instead,
+            ...entry.patches.after
+         ];
+
+         for (const patch of store) {
+            if (patch.caller === id) {
+               patches.push(patch);
             }
          }
       }
