@@ -44,12 +44,19 @@ class Patcher {
    unpatchAll(caller) {
       const patches = this.getPatchesByCaller(caller);
       if (!patches.length) return;
-      for (const patch of patches) patch.unpatch();
+
+      for (const patch of patches) {
+         patch.unpatch();
+      }
    }
 
    override(patch) {
       return function () {
-         if (!patch.patches?.length) {
+         if (
+            !patch.patches?.before.length &&
+            !patch.patches?.after.length &&
+            !patch.patches?.instead.length
+         ) {
             patch.unpatch();
             return patch.original.apply(this, arguments);
          }
@@ -57,33 +64,37 @@ class Patcher {
          let res;
          let args = arguments;
 
-         for (const before of patch.patches.filter(e => e.type === 'before')) {
+         const before = patch.patches.before;
+         for (let i = 0; i < before.length; i++) {
             try {
-               const temp = before.callback(this, args, patch.original.bind(this));
+               const temp = before[i].callback(this, args, patch.original.bind(this));
                if (Array.isArray(temp)) args = temp;
             } catch (error) {
-               Logger.error(`Could not fire before patch for ${patch.func} of ${before.caller}`, error);
+               Logger.error(`Could not fire before patch for ${patch.func} of ${before[i].caller}`, error);
             }
          }
 
-         const insteads = patch.patches.filter(e => e.type === 'instead');
-         if (!insteads.length) {
+         const instead = patch.patches.instead;
+         if (!instead.length) {
             res = patch.original.apply(this, args);
-         } else for (const instead of insteads) {
-            try {
-               const ret = instead.callback(this, args, patch.original.bind(this));
-               if (typeof ret !== 'undefined') res = ret;
-            } catch (error) {
-               Logger.error(`Could not fire instead patch for ${patch.func} of ${instead.caller}`, error);
+         } else {
+            for (let i = 0; i < instead.length; i++) {
+               try {
+                  const ret = instead[i].callback(this, args, patch.original.bind(this));
+                  if (typeof ret !== 'undefined') res = ret;
+               } catch (error) {
+                  Logger.error(`Could not fire instead patch for ${patch.func} of ${instead[i].caller}`, error);
+               }
             }
          }
 
-         for (const after of patch.patches.filter(e => e.type === 'after')) {
+         const after = patch.patches.after;
+         for (let i = 0; i < after.length; i++) {
             try {
-               const ret = after.callback(this, args, res, ret => (res = ret));
+               const ret = after[i].callback(this, args, res, ret => (res = ret));
                if (typeof ret !== 'undefined') res = ret;
             } catch (error) {
-               Logger.error(`Could not fire after patch for ${patch.func} of ${after.caller}`, error);
+               Logger.error(`Could not fire after patch for ${patch.func} of ${after[i].caller}`, error);
             }
          }
 
@@ -104,9 +115,17 @@ class Patcher {
          once,
          unpatch: () => {
             patch.mdl[patch.func] = patch.original;
-            patch.patches = [];
+            patch.patches = {
+               before: [],
+               after: [],
+               instead: []
+            };
          },
-         patches: []
+         patches: {
+            before: [],
+            after: [],
+            instead: []
+         }
       };
 
       mdl[func] = this.override(patch);
@@ -150,23 +169,27 @@ class Patcher {
          callback,
          unpatch: () => {
             // Remove the original patch this callback was from
-            const individual = current.patches.findIndex(p => p.id === patch.id && p.type === type);
-            if (~individual) current.patches.splice(individual, 1);
+            const individual = current.patches?.[type].findIndex(p => p.id === patch.id && p.type === type);
+            if (~individual) current.patches?.[type].splice(individual, 1);
+
+            if (
+               current.patches?.before.length ||
+               current.patches?.after.length ||
+               current.patches?.instead.length
+            ) return;
 
             // If no other patches on the module are remaining, completely remove all patches
             // and re-assign the original module to its original place.
-            if (!current.patches?.length) {
-               const module = this.patches.findIndex(p => p.mdl == mdl && p.func == func);
+            const module = this.patches.findIndex(p => p.mdl == mdl && p.func == func);
 
-               if (~module) {
-                  this.patches[module]?.unpatch();
-                  this.patches.splice(module, 1);
-               }
-            }
+            if (!~module) return;
+            this.patches[module]?.unpatch();
+            this.patches.splice(module, 1);
          }
       };
 
-      current.patches.push(patch);
+      current.patches[type] ??= [];
+      current.patches[type].push(patch);
 
       return patch.unpatch;
    }
