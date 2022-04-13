@@ -226,7 +226,7 @@ class Manager extends React.Component {
                   manager={this.props.type}
                   type={client}
                   entity={entity}
-                  key={this.resolve(entity, 'name')}
+                  key={`${this.resolve(entity, 'id')}-${client}`}
                   openSettings={() => this.setState({ settings: { entity, client } })}
                />
             );
