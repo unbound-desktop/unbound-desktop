@@ -20,8 +20,10 @@ module.exports = class Settings extends Patch {
       after('unbound-settings', SettingsView.prototype, 'getPredicateSections', (_, args, sections) => {
          // Remove integrated settings views
          sections = sections.filter(s => {
+            if (s.section === 'pc-updater') return true;
+
             const index = sections.indexOf(s);
-            if (s.section == 'DIVIDER' && sections[index + 1]?.label == 'BetterDiscord') {
+            if (s.section === 'DIVIDER' && sections[index + 1]?.label == 'BetterDiscord') {
                return false;
             }
 
@@ -65,12 +67,14 @@ module.exports = class Settings extends Patch {
             sections.splice = function (...args) {
                const items = args.slice(2);
 
+               const updater = items?.find(i => i.section === 'pc-updater');
                if (
+                  !updater &&
                   items?.length &&
                   items.some(i => blacklisted.labels.some(l => i.label?.includes(l)))
                ) return sections;
 
-               return sections._splice(...args);
+               return updater ? sections._splice(...[...args.slice(0, 2), updater]) : sections._splice(...args);
             };
 
             return sections;
