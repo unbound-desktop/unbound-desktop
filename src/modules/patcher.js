@@ -64,7 +64,7 @@ class Patcher {
             !patch.patches?.instead.length
          ) {
             patch.unpatch();
-            return patch.original.apply(this, arguments);
+            return new.target ? new patch.original(...arguments) : patch.original.apply(this, arguments);
          }
 
          let res;
@@ -82,7 +82,11 @@ class Patcher {
 
          const instead = patch.patches.instead;
          if (!instead.length) {
-            res = patch.original.apply(this, args);
+            if (new.target) {
+               res = new patch.original(...args);
+            } else {
+               res = patch.original.apply(this, args);
+            }
          } else {
             for (let i = 0; i < instead.length; i++) {
                try {
@@ -134,9 +138,22 @@ class Patcher {
       };
 
       mdl[func] = this.override(patch);
-      Object.assign(mdl[func], patch.original, {
-         toString: () => patch.original.toString(),
-         '__original': patch.original
+      
+      const descriptors = Object.getOwnPropertyDescriptors(patch.original);
+      delete descriptors.length;
+
+      Object.defineProperties(mdl[func], {
+         ...descriptors,
+         toString: {
+            value: () => patch.original.toString(),
+            configurable: true,
+            enumerable: false
+         },
+         __original: { 
+            value: patch.original,
+            configurable: true,
+            enumerable: false
+         }
       });
 
       this.patches.push(patch);
