@@ -1,7 +1,7 @@
 const { avatar } = require('@constants');
 const API = require('@structures/api');
 
-const { messages, channels } = require('@webpack/common');
+const { Messages, Channels } = require('@webpack/common');
 const { getByProps } = require('@webpack');
 const { bindAll } = require('@utilities');
 const Lodash = window._;
@@ -45,9 +45,9 @@ class Clyde extends API {
    }
 
    send(channel, message) {
-      if (!channel) channel = channels.getChannelId();
+      if (!channel) channel = Channels.getChannelId();
 
-      messages?.receiveMessage(channel, Lodash.merge({},
+      Messages?.receiveMessage(channel, Lodash.merge({},
          MessageUtil.createBotMessage(channel, message?.content),
          this.defaultMessage,
          message
