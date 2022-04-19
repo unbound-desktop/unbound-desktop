@@ -116,7 +116,7 @@ class Patcher {
       };
    };
 
-   push([caller, mdl, func, cb, type, once]) {
+   push([, mdl, func, , , once]) {
       const patch = {
          mdl,
          func,
@@ -138,7 +138,7 @@ class Patcher {
       };
 
       mdl[func] = this.override(patch);
-      
+
       const descriptors = Object.getOwnPropertyDescriptors(patch.original);
       delete descriptors.length;
 
@@ -149,7 +149,7 @@ class Patcher {
             configurable: true,
             enumerable: false
          },
-         __original: { 
+         __original: {
             value: patch.original,
             configurable: true,
             enumerable: false
@@ -160,11 +160,11 @@ class Patcher {
       return patch;
    }
 
-   get(caller, mdl, func, cb, type, once) {
+   get([, mdl, func]) {
       const patch = this.patches.find(p => p.mdl == mdl && p.func == func);
       if (patch) return patch;
 
-      return this.push(arguments);
+      return this.push(...arguments);
    }
 
    patch(caller, mdl, func, callback, type = 'after', once = false) {
@@ -182,16 +182,15 @@ class Patcher {
          throw new ReferenceError(`function ${func} does not exist on the second argument (object or function)`);
       }
 
-      const current = this.get(...arguments);
+      const current = this.get(arguments);
 
       const patch = {
          caller,
-         type,
          id: current.patches?.[type]?.length ?? 0,
          callback,
          unpatch: () => {
             // Remove the original patch this callback was from
-            const individual = current.patches?.[type].findIndex(p => p.id === patch.id && p.type === type);
+            const individual = current.patches?.[type].findIndex(p => p.id === patch.id);
             if (~individual) current.patches?.[type].splice(individual, 1);
 
             if (
@@ -216,15 +215,15 @@ class Patcher {
       return patch.unpatch;
    }
 
-   after(caller, mdl, func, callback, once) {
+   after(caller, mdl, func, callback, once = false) {
       return this.patch(caller, mdl, func, callback, 'after', once);
    }
 
-   before(caller, mdl, func, callback, once) {
+   before(caller, mdl, func, callback, once = false) {
       return this.patch(caller, mdl, func, callback, 'before', once);
    }
 
-   instead(caller, mdl, func, callback, once) {
+   instead(caller, mdl, func, callback, once = false) {
       return this.patch(caller, mdl, func, callback, 'instead', once);
    }
 };
