@@ -24,6 +24,10 @@ class Webpack {
       return common.stores;
    }
 
+   static get api() {
+      return common.API;
+   }
+
    static async init() {
       Webpack.onPush = Webpack.onPush.bind(this);
 
@@ -505,6 +509,13 @@ class Webpack {
 };
 
 module.exports = {
+   // Cringe
+   get api() {
+      return Webpack.common.API
+   },
+   get stores() {
+      return Webpack.common.stores
+   },
    bulk: Webpack.bulk,
    init: Webpack.init,
    common: Webpack.common,
