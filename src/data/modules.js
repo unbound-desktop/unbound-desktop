@@ -28,29 +28,6 @@ module.exports = {
          ]
       ]
    },
-   Users: {
-      props: [
-         'getCurrentUser',
-         'getUser'
-      ]
-   },
-   AsyncUsers: {
-      props: [
-         'getUser',
-         'fetchProfile'
-      ]
-   },
-   Guilds: {
-      props: [
-         'getGuildCount'
-      ]
-   },
-   Relationships: {
-      props: [
-         'getNickname',
-         'getRelationships'
-      ]
-   },
    Dispatcher: {
       props: [
          '_dispatch',
@@ -69,14 +46,7 @@ module.exports = {
          'closeContextMenu'
       ]
    },
-   Channels: {
-      props: [
-         'getChannelId',
-         'getLastSelectedChannelId',
-         'getVoiceChannelId'
-      ]
-   },
-   constants: {
+   Constants: {
       props: [
          'Endpoints',
          'API_HOST'
@@ -101,5 +71,69 @@ module.exports = {
    },
    zustand: {
       filter: m => typeof m === 'function' && m.toString().includes('[useStore, api]')
+   },
+   stores: {
+      submodule: true,
+      items: {
+         Users: {
+            storeName: 'UserStore'
+         },
+         Channels: {
+            storeName: 'ChannelStore'
+         },
+         Guilds: {
+            storeName: 'GuildStore'
+         },
+         Relationships: {
+            storeName: 'RelationshipStore'
+         },
+         Guilds: {
+            storeName: 'GuildStore'
+         },
+         SelectedChannels: {
+            storeName: 'SelectedChannelStore'
+         },
+         SelectedGuilds: {
+            storeName: 'SelectedGuildStore'
+         },
+         Profiles: {
+            storeName: 'UserProfileStore'
+         },
+         Messages: {
+            storeName: 'MessageStore'
+         },
+         Games: {
+            storeName: 'LocalActivityStore'
+         },
+         Presence: {
+            storeName: 'PresenceStore'
+         },
+         Auth: {
+            storeName: 'AuthenticationStore'
+         },
+         Profiles: {
+            storeName: 'UserProfileStore'
+         },
+         Typing: {
+            storeName: 'TypingStore'
+         }
+      }
+   },
+   API: {
+      submodule: true,
+      items: {
+         Users: {
+            props: ['getUser', 'fetchProfile']
+         },
+         Guilds: {
+            props: ['requestMembersById']
+         },
+         DMs: {
+            props: ['openPrivateChannel']
+         },
+         Spotify: {
+            props: ['SpotifyAPI']
+         }
+      }
    }
-}
+};

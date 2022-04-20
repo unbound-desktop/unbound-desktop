@@ -20,8 +20,13 @@ class Webpack {
       return common;
    }
 
+   static get stores() {
+      return common.stores;
+   }
+
    static async init() {
       Webpack.onPush = Webpack.onPush.bind(this);
+
       return await Webpack.#available.then(() => new Promise(async ready => {
          Webpack.push = window[Webpack.#global].push;
          Object.defineProperty(window[Webpack.#global], 'push', {
@@ -38,8 +43,14 @@ class Webpack {
             }
          });
 
-         const [Dispatcher, { ActionTypes } = {}, { getCurrentUser } = {}] = await Webpack.getByProps(
-            ['dirtyDispatch'], ['API_HOST', 'ActionTypes'], ['getCurrentUser', 'getUser'],
+         const [
+            Dispatcher,
+            { ActionTypes } = {},
+            { getCurrentUser } = {}
+         ] = await Webpack.getByProps(
+            ['dirtyDispatch'],
+            ['API_HOST', 'ActionTypes'],
+            ['getCurrentUser', 'getUser'],
             { cache: false, bulk: true, wait: true, forever: true }
          );
 
@@ -47,50 +58,29 @@ class Webpack {
             Dispatcher.unsubscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
 
             const filters = [];
-            Object.entries(modules).map(([name, m]) => {
-               if (m.props) {
-                  if (m.props.every(props => Array.isArray(props))) {
-                     const found = [];
+            for (const name in modules) {
+               const mdl = modules[name];
 
-                     filters.push({
-                        id: name,
-                        filter: (mdl) => {
-                           const res = m.props.some(props => props.every(p => mdl[p]));
-                           if (res && m.ensure && m.ensure(mdl) === false) {
-                              return false;
-                           } else if (res) {
-                              found.push(mdl);
-                           }
+               if (mdl.submodule) {
+                  if (!mdl.items) continue;
 
-                           return res;
-                        },
-                        map: () => Object.assign({}, ...found)
-                     });
-                  } else {
-                     filters.push({
-                        id: name,
-                        filter: (mdl) => {
-                           const res = Webpack.filters.byProps(...m.props)(mdl);
-                           if (res && m.ensure && m.ensure(mdl) === false) {
-                              return false;
-                           }
+                  const modules = {};
+                  for (const entry in mdl.items) {
+                     const item = mdl.items[entry];
+                     const res = Webpack.#handleCommonModule(entry, item);
+                     res.id = name;
+                     res.map = (mdl) => {
+                        modules[entry] = mdl;
+                        return modules;
+                     };
 
-                           return res;
-                        }
-                     });
+                     filters.push(res);
                   }
-               } else if (m.displayName) {
-                  filters.push({
-                     id: name,
-                     filter: Webpack.filters.byDisplayName(m.displayName)
-                  });
-               } else if (m.filter) {
-                  filters.push({
-                     id: name,
-                     filter: m.filter
-                  });
+               } else {
+                  const res = Webpack.#handleCommonModule(name, mdl);
+                  filters.push(res);
                }
-            });
+            }
 
             const results = Webpack.bulk(...filters.map(({ filter }) => filter));
             filters.map(({ id, map }, index) => {
@@ -102,9 +92,62 @@ class Webpack {
             ready(true);
          };
 
-         if (getCurrentUser?.() != void 0) return listener();
-         Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
+         if (getCurrentUser?.() !== void 0) {
+            return listener();
+         } else {
+            Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
+         }
       }));
+   }
+
+   static #handleCommonModule(name, module) {
+      if (module.storeName) {
+         return {
+            id: name,
+            filter: Webpack.filters.byFluxStore(module.storeName)
+         };
+      } else if (module.props) {
+         if (module.props.every(props => Array.isArray(props))) {
+            const found = [];
+
+            return {
+               id: name,
+               filter: (mdl) => {
+                  const res = module.props.some(props => props.every(p => mdl[p] !== void 0));
+                  if (res && module.ensure && !module.ensure(mdl)) {
+                     return false;
+                  } else if (res !== void 0) {
+                     found.push(mdl);
+                  }
+
+                  return res;
+               },
+               map: () => Object.assign({}, ...found)
+            };
+         } else {
+            return {
+               id: name,
+               filter: (mdl) => {
+                  const res = Webpack.filters.byProps(...module.props)(mdl);
+                  if (res && module.ensure && !module.ensure(mdl)) {
+                     return false;
+                  }
+
+                  return res;
+               }
+            };
+         }
+      } else if (module.displayName) {
+         return {
+            id: name,
+            filter: Webpack.filters.byDisplayName(module.displayName)
+         };
+      } else if (module.filter) {
+         return {
+            id: name,
+            filter: module.filter
+         };
+      }
    }
 
    static addListener(listener) {
