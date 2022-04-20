@@ -9,8 +9,8 @@ const {
    Menu: { Menu, MenuItem }
 } = require('@components');
 const { bulk, filters: { byProps } } = require('@webpack');
-const { capitalize, classnames } = require('@utilities');
 const { React, ContextMenu } = require('@webpack/common');
+const { capitalize } = require('@utilities');
 const { Plug, Bd } = require('./icons');
 
 const [

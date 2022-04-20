@@ -126,7 +126,6 @@ module.exports = class Manager extends Emitter {
 
    get panel() {
       const Components = require('@core/components');
-      const { React } = require('@webpack/common');
 
       return Components.Manager;
    }

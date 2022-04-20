@@ -13,7 +13,7 @@ const DOMWrapper = require('./DOMWrapper');
 
 const Logger = createLogger('Manager');
 
-class Manager extends React.Component {
+class Manager extends React.PureComponent {
    constructor(props) {
       super(props);
 
