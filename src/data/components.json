@@ -63,6 +63,9 @@
    "FormDivider": {
       "name": "FormDivider"
    },
+   "FormLabel": {
+      "name": "FormLabel"
+   },
    "Switch": {
       "name": "Switch"
    },
@@ -95,5 +98,11 @@
    },
    "TextInput": {
       "name": "TextInput"
+   },
+   "Checkbox": {
+      "name": "Checkbox"
+   },
+   "RadioGroup": {
+      "name": "RadioGroup"
    }
 }
