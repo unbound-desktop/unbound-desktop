@@ -288,7 +288,30 @@ class Webpack {
       }
 
       if (bulk) {
-         const filters = names.map(filters.map(Webpack.filters.byDisplayName)).concat({ wait, cache });
+         const filters = names.map(filters.map(Webpack.filters.byDisplayName)).concat({ wait });
+
+         return Webpack.bulk(...filters);
+      }
+
+      return null;
+   }
+
+   static getFluxStore(...options) {
+      const [names, { bulk = false, wait = false, ...rest }] = Webpack.#parseOptions(options);
+
+      if (!bulk && !wait) {
+         return Webpack.getModule(Webpack.filters.byFluxStore(names[0]), { ...rest });
+      }
+
+      if (wait && !bulk) {
+         return Webpack.#waitFor(Webpack.filters.byFluxStore(names[0]), { ...rest });
+      }
+
+      if (bulk) {
+         const filters = names.map(p => Array.isArray(p)
+            ? Webpack.filters.byFluxStore(...p)
+            : Webpack.filters.byFluxStore(p)
+         ).concat({ wait, ...rest });
 
          return Webpack.bulk(...filters);
       }
@@ -415,6 +438,10 @@ class Webpack {
          },
          byString: (...strings) => (mdl) => {
             return strings.every(s => mdl.toString?.()?.includes?.(s));
+         },
+         byFluxStore: (name) => (mdl) => {
+            if (!mdl) return false;
+            return mdl.getName?.() === name;
          }
       };
    }
@@ -451,7 +478,9 @@ module.exports = {
    findModules: Webpack.getModules,
    getByString: Webpack.getByString,
    findByString: Webpack.getByString,
+   getFluxStore: Webpack.getFluxStore,
    getByKeyword: Webpack.getByKeyword,
+   findFluxStore: Webpack.getFluxStore,
    findByKeyword: Webpack.getByKeyword,
    getByDisplayName: Webpack.getByDisplayName,
    findByDisplayName: Webpack.getByDisplayName,
