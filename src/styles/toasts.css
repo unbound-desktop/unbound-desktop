@@ -1,0 +1,23 @@
+.unbound-toasts-container {
+   position: absolute;
+   display: flex;
+   bottom: 0;
+   right: 0;
+   align-items: center;
+   justify-content: center;
+   flex-direction: column;
+   z-index: 99999999999999999;
+   gap: .25rem;
+}
+
+.unbound-toast {
+   position: relative;
+   z-index: 99999999999999999999999;
+   padding: 10px;
+   background-color: var(--background-floating);
+   border-radius: 10px;
+}
+
+.unbound-toast-content {
+   color: white;
+}
