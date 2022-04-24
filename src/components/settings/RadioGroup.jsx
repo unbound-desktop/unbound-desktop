@@ -3,7 +3,7 @@ const { React } = require('@webpack/common');
 
 const SettingsItem = require('./SettingsItem');
 
-module.exports = class TextInput extends React.PureComponent {
+module.exports = class RadioGroup extends React.PureComponent {
    render() {
       const { title, description, required } = this.props;
       const children = this.props.children;
