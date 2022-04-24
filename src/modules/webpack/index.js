@@ -120,7 +120,7 @@ class Webpack {
                   const res = module.props.some(props => props.every(p => mdl[p] !== void 0));
                   if (res && module.ensure && !module.ensure(mdl)) {
                      return false;
-                  } else if (res !== void 0) {
+                  } else if (res) {
                      found.push(mdl);
                   }
 
