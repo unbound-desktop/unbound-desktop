@@ -1,50 +1,24 @@
 module.exports = {
-   Messages: {
-      props: [
-         'sendMessage',
-         'receiveMessage'
-      ]
-   },
    React: {
-      props: [
-         'createElement',
-         'Component'
-      ],
+      props: ['createElement', 'Component'],
    },
    ReactDOM: {
-      props: [
-         'hydrate',
-         'findDOMNode'
-      ]
+      props: ['hydrate', 'findDOMNode']
    },
    Flux: {
       props: [
-         [
-            'Store',
-            'connectStores'
-         ],
-         [
-            'useStateFromStoresObject'
-         ]
+         ['Store', 'connectStores'],
+         ['useStateFromStoresObject']
       ]
    },
    Dispatcher: {
-      props: [
-         '_dispatch',
-         'dirtyDispatch'
-      ]
+      props: ['_dispatch', 'dirtyDispatch']
    },
    Modal: {
-      props: [
-         'openModal',
-         'openModalLazy'
-      ]
+      props: ['openModal', 'openModalLazy']
    },
    ContextMenu: {
-      props: [
-         'openContextMenu',
-         'closeContextMenu'
-      ]
+      props: ['openContextMenu', 'closeContextMenu']
    },
    Constants: {
       props: [
@@ -59,15 +33,10 @@ module.exports = {
       ensure: (m) => Object.keys(m?.Messages ?? {}).length > 5
    },
    HighlightJS: {
-      props: [
-         'highlight',
-         'NUMBER_MODE'
-      ]
+      props: ['highlight', 'NUMBER_MODE']
    },
    ReactSpring: {
-      props: [
-         'useSpring'
-      ]
+      props: ['useSpring']
    },
    zustand: {
       filter: m => typeof m === 'function' && m.toString().includes('[useStore, api]')
@@ -133,7 +102,10 @@ module.exports = {
          },
          Spotify: {
             props: ['SpotifyAPI']
-         }
+         },
+         Messages: {
+            props: ['sendMessage', 'receiveMessage']
+         },
       }
    }
 };
