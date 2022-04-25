@@ -7,7 +7,7 @@
 
 const { createLogger } = require('@modules/logger');
 const modules = require('@data/modules');
-const { uuid } = require('@utilities');
+const uuid = require('@utilities/uuid');
 
 const Logger = createLogger('Webpack');
 const common = {};
@@ -15,6 +15,7 @@ const common = {};
 class Webpack {
    static instance = null;
    static listeners = new Set();
+   static ready = new Promise(() => { });
 
    static get common() {
       return common;
@@ -31,7 +32,7 @@ class Webpack {
    static async init() {
       Webpack.onPush = Webpack.onPush.bind(this);
 
-      return await Webpack.#available.then(() => new Promise(async ready => {
+      await Webpack.#available.then(() => new Promise(async ready => {
          Webpack.push = window[Webpack.#global].push;
          Object.defineProperty(window[Webpack.#global], 'push', {
             configurable: true,
@@ -93,6 +94,7 @@ class Webpack {
                Webpack.common[id] = res;
             });
 
+            Webpack.ready = Promise.resolve();
             ready(true);
          };
 
@@ -511,10 +513,13 @@ class Webpack {
 module.exports = {
    // Cringe
    get api() {
-      return Webpack.common.API
+      return Webpack.common.API;
    },
    get stores() {
-      return Webpack.common.stores
+      return Webpack.common.stores;
+   },
+   get ready() {
+      return Webpack.ready;
    },
    bulk: Webpack.bulk,
    init: Webpack.init,
