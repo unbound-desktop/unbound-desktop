@@ -1,10 +1,9 @@
-const { getByDisplayName } = require('@webpack');
+const { SelectInput } = require('@components');
 const { React } = require('@webpack/common');
 
-const SelectWrapper = getByDisplayName('SelectTempWrapper');
 const SettingsItem = require('./SettingsItem');
 
-module.exports = class TextInput extends React.PureComponent {
+module.exports = class Select extends React.PureComponent {
    render() {
       const { title, description, required } = this.props;
       const children = this.props.children;
@@ -17,7 +16,7 @@ module.exports = class TextInput extends React.PureComponent {
             required={required}
             hasMargin={true}
          >
-            <SelectWrapper {...this.props} />
+            <SelectInput {...this.props} />
             {children}
          </SettingsItem>
       );
