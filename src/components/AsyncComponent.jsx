@@ -10,16 +10,22 @@ module.exports = class AsyncComponent extends React.PureComponent {
    }
 
    render() {
-      const { resolved } = this.state;
+      const Component = this.state.resolved;
+      const suspense = this.props.suspense;
+      const props = { ...this.props };
+      delete props.component;
+      delete props.suspense;
 
-      return (
-         resolved && <resolved {...this.props.childProps} /> ||
-         this.props.suspense || null
-      );
+      if (Component) {
+         return <Component {...props} />;
+      }
+
+      return suspense || null;
    }
 
    async componentDidMount() {
-      this.setState({ resolved: await this.props.component() });
+      const res = await this.props.component();
+      this.setState({ resolved: res });
    }
 
    static from(promise, suspense) {
