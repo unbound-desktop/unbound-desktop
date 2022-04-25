@@ -1,4 +1,4 @@
-const { React, ReactDOM, Constants: { DEFAULT_ROLE_COLOR, ROLE_COLORS } } = require('@webpack/common');
+const { React, Constants: { DEFAULT_ROLE_COLOR, ROLE_COLORS } } = require('@webpack/common');
 const { findInReactTree, memoize } = require('@utilities');
 const { createLogger } = require('@modules/logger');
 const { getByProps } = require('@webpack');
