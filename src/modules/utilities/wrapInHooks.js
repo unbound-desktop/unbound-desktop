@@ -45,6 +45,6 @@ module.exports = (component) => {
          throw res.error;
       }
 
-      return res;
+      return res.rendered;
    };
 };
