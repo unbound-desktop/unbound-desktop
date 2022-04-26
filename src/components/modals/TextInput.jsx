@@ -1,6 +1,7 @@
 const { React, Constants: { ComponentActions } } = require('@webpack/common');
 const { Button, FormTitle, TextInput, Modal } = require('@components');
 const { getByProps } = require('@webpack');
+const { bindAll } = require('@utilities');
 
 const { ComponentDispatch } = getByProps('ComponentDispatcher');
 
@@ -64,6 +65,8 @@ module.exports = class TextInputModal extends React.PureComponent {
          input: props.value ?? '',
          error: null
       };
+
+      bindAll(this, ['handleSubmit', 'handleEnter']);
    }
 
    render() {
@@ -90,7 +93,7 @@ module.exports = class TextInputModal extends React.PureComponent {
             <Modal.ModalFooter>
                <Button
                   color={this.state.error ? Button.Colors.RED : Button.Colors.GREEN}
-                  onClick={this.handleSubmit.bind(this)}
+                  onClick={this.handleSubmit}
                >
                   {buttonText ?? 'Submit'}
                </Button>
@@ -138,11 +141,11 @@ module.exports = class TextInputModal extends React.PureComponent {
    }
 
    componentDidMount() {
-      document.addEventListener('keydown', this.handleEnter.bind(this));
+      document.addEventListener('keydown', this.handleEnter);
    }
 
    componentWillUnmount() {
-      document.removeEventListener('keydown', this.handleEnter.bind(this));
+      document.removeEventListener('keydown', this.handleEnter);
    }
 
    componentDidUpdate(_, state) {
