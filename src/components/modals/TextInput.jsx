@@ -73,7 +73,9 @@ module.exports = class TextInputModal extends React.PureComponent {
       return (
          <Modal.ModalRoot {...event} size={Modal.ModalSize.SMALL}>
             <Modal.ModalHeader>
-               <FormTitle tag='h4'>{title ?? 'Input Modal'}</FormTitle>
+               <FormTitle tag='h4'>
+                  {title ?? 'Input Modal'}
+               </FormTitle>
                <Modal.ModalCloseButton onClick={event.onClose} />
             </Modal.ModalHeader>
             <Modal.ModalContent>
@@ -81,7 +83,7 @@ module.exports = class TextInputModal extends React.PureComponent {
                   value={input}
                   onChange={v => this.setState({ input: v })}
                   error={this.state.error}
-                  placeholder={placeholder ?? 'Both of my parents are divorced!'}
+                  placeholder={placeholder ?? 'Enter a value...'}
                />
             </Modal.ModalContent>
             <div style={{ marginTop: '10px' }} />
@@ -136,11 +138,11 @@ module.exports = class TextInputModal extends React.PureComponent {
    }
 
    componentDidMount() {
-      document.addEventListener('keydown', this.handleEnter);
+      document.addEventListener('keydown', this.handleEnter.bind(this));
    }
 
    componentWillUnmount() {
-      document.removeEventListener('keydown', this.handleEnter);
+      document.removeEventListener('keydown', this.handleEnter.bind(this));
    }
 
    componentDidUpdate(_, state) {
