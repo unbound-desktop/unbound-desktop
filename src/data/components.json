@@ -110,5 +110,10 @@
    },
    "Slider": {
       "name": "Slider"
+   },
+   "Modal": {
+      "props": [
+         "ModalCloseButton"
+      ]
    }
 }
