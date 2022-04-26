@@ -22,5 +22,6 @@ Function.prototype.call = function (...args) {
       Logger.error('Failed to fetch.', err);
       Function.prototype.call = call;
    }
+   
    return call.apply(this, args);
 };
