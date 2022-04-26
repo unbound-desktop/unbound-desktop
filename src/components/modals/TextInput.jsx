@@ -111,7 +111,7 @@ module.exports = class TextInputModal extends React.PureComponent {
    }
 
    shake() {
-      return ComponentDispatch.dispatch(ComponentActions.SHAKE_APP, {
+      ComponentDispatch.dispatch(ComponentActions.SHAKE_APP, {
          duration: 200,
          intensity: 2
       });
