@@ -124,6 +124,7 @@ module.exports = class TextInputModal extends React.PureComponent {
 
          if (event?.onClose) event.onClose();
       } catch (error) {
+         this.shake();
          this.setState({ error: error.message ?? error });
       }
    }
