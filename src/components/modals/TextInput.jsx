@@ -81,6 +81,7 @@ module.exports = class TextInputModal extends React.PureComponent {
                </FormTitle>
                <Modal.ModalCloseButton onClick={event.onClose} />
             </Modal.ModalHeader>
+            <div style={{ marginTop: '10px' }} />
             <Modal.ModalContent>
                <TextInput
                   value={input}
