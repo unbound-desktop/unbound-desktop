@@ -73,10 +73,13 @@ class Patcher {
          const before = patch.patches.before;
          for (let i = 0; i < before.length; i++) {
             try {
-               const temp = before[i].callback(this, args, patch.original.bind(this));
+               const instance = before[i];
+               if (!instance) continue;
+
+               const temp = instance.callback(this, args, patch.original.bind(this));
                if (Array.isArray(temp)) args = temp;
             } catch (error) {
-               Logger.error(`Could not fire before patch for ${patch.func} of ${before[i].caller}`, error);
+               Logger.error(`Could not fire before patch for ${patch.func} of ${instance.caller}`, error);
             }
          }
 
@@ -89,22 +92,28 @@ class Patcher {
             }
          } else {
             for (let i = 0; i < instead.length; i++) {
+               const instance = instead[i];
+               if (!instance) continue;
+
                try {
-                  const ret = instead[i].callback(this, args, patch.original.bind(this));
+                  const ret = instance.callback(this, args, patch.original.bind(this));
                   if (typeof ret !== 'undefined') res = ret;
                } catch (error) {
-                  Logger.error(`Could not fire instead patch for ${patch.func} of ${instead[i].caller}`, error);
+                  Logger.error(`Could not fire instead patch for ${patch.func} of ${instance.caller}`, error);
                }
             }
          }
 
          const after = patch.patches.after;
          for (let i = 0; i < after.length; i++) {
+            const instance = after[i];
+            if (!instance) continue;
+
             try {
-               const ret = after[i].callback(this, args, res, ret => (res = ret));
+               const ret = instance.callback(this, args, res, ret => (res = ret));
                if (typeof ret !== 'undefined') res = ret;
             } catch (error) {
-               Logger.error(`Could not fire after patch for ${patch.func} of ${after[i].caller}`, error);
+               Logger.error(`Could not fire after patch for ${patch.func} of ${instance.caller}`, error);
             }
          }
 
