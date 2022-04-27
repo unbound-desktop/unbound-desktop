@@ -24,6 +24,7 @@
       "@data": "src/data",
       "@src": "src",
       "@root": "./",
-      "@core": "src/core"
+      "@core": "src/core",
+      "react": "src/modules/webpack/react"
    }
 }
