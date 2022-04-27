@@ -14,7 +14,7 @@ module.exports = {
    Dispatcher: {
       props: ['_dispatch', 'dirtyDispatch']
    },
-   Modal: {
+   Modals: {
       props: ['openModal', 'openModalLazy']
    },
    ContextMenu: {
