@@ -18,37 +18,30 @@ class MenuPatcher {
       }
    }
 
-   static before(caller, menu, callback) {
-      MenuPatcher.validateArguments(caller, menu, callback);
+   static push(type, caller, menu, callback) {
       MenuPatcher.patches[menu] ??= [];
       MenuPatcher.patches[menu].push({
+         type,
          caller,
+         menu,
          callback,
          applied: false,
-         type: 'before'
       });
    }
 
-   static after(caller, menu, callback) {
-      MenuPatcher.validateArguments(caller, menu, callback);
-      MenuPatcher.patches[menu] ??= [];
-      MenuPatcher.patches[menu].push({
-         caller,
-         callback,
-         applied: false,
-         type: 'after'
-      });
+   static before() {
+      MenuPatcher.validateArguments(...arguments);
+      MenuPatcher.push('before', ...arguments);
    }
 
-   static instead(caller, menu, callback) {
-      MenuPatcher.validateArguments(caller, menu, callback);
-      MenuPatcher.patches[menu] ??= [];
-      MenuPatcher.patches[menu].push({
-         caller,
-         callback,
-         applied: false,
-         type: 'instead'
-      });
+   static after() {
+      MenuPatcher.validateArguments(...arguments);
+      MenuPatcher.push('after', ...arguments);
+   }
+
+   static instead() {
+      MenuPatcher.validateArguments(...arguments);
+      MenuPatcher.push('instead', ...arguments);
    }
 
    static create(caller) {
@@ -61,6 +54,11 @@ class MenuPatcher {
    }
 
    static unpatchAll(caller) {
+      for (const menu in MenuPatcher.patches) {
+         const patches = MenuPatcher.patches[menu];
+         MenuPatcher.patches[menu] = patches.filter(e => e.caller !== caller);
+      }
+
       return Patcher.unpatchAll(caller);
    }
 
@@ -108,10 +106,16 @@ class MenuPatcher {
          if (!AnalyticsContext) return res;
 
          for (const patch of patches ?? []) {
-            const unpatch = Patcher.after(patch.caller, AnalyticsContext, 'default', (_, args, res) => {
+            Patcher.after(patch.caller, AnalyticsContext, 'default', (_, args, res) => {
                try {
-                  Patcher[patch.type](patch.caller, res.props.children, 'type', patch.callback);
-                  unpatch();
+                  const child = res.props.children;
+                  if (!child) return;
+                  if (child.type?.displayName !== patch.menu) return;
+
+                  const unpatch = Patcher[patch.type](patch.caller, res.props.children, 'type', (ctx, args, res) => {
+                     unpatch();
+                     return patch.callback.apply(ctx, [ctx, args, res]);
+                  });
                } catch (e) {
                   Logger.error(`Failed to patch context menu ${displayName} of caller ${patch.caller}.`, e);
                }
