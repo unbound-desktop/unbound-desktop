@@ -233,7 +233,7 @@ class Webpack {
       return res;
    }
 
-   static getModule(filter, { all = false, cache = true, force = false, defaultExport = true } = {}) {
+   static getModule(filter, { all = false, cache = true, force = false, default: defaultExport = true } = {}) {
       if (typeof filter !== 'function') return void 0;
 
       const finder = Webpack.#request(cache);
@@ -329,11 +329,11 @@ class Webpack {
       const [names, { bulk = false, default: defaultExport = true, wait = false, ...rest }] = Webpack.#parseOptions(options);
 
       if (!bulk && !wait) {
-         return Webpack.getModule(Webpack.filters.byDisplayName(names[0]), { defaultExport, ...rest });
+         return Webpack.getModule(Webpack.filters.byDisplayName(names[0]), { default: defaultExport, ...rest });
       }
 
       if (wait && !bulk) {
-         return Webpack.#waitFor(Webpack.filters.byDisplayName(names[0]), { defaultExport, ...rest });
+         return Webpack.#waitFor(Webpack.filters.byDisplayName(names[0]), { default: defaultExport, ...rest });
       }
 
       if (bulk) {
@@ -477,9 +477,14 @@ class Webpack {
    static get filters() {
       return {
          byProps: (...mdls) => (mdl) => mdls.every(k => mdl[k] !== void 0),
-         byDisplayName: (name, def) => (mdl) => {
-            if (!mdl || (def && !mdl.default)) return false;
-            return typeof mdl === 'function' && mdl.displayName === name;
+         byDisplayName: (name, def = true) => (mdl) => {
+            if (!mdl) return false;
+            
+            if (!def) {
+               return typeof mdl.default === 'function' && mdl.default.displayName === name;
+            } else {
+               return typeof mdl === 'function' && mdl.displayName === name;
+            }
          },
          byDefaultString: (...strings) => (mdl) => {
             if (!mdl?.default) return false;
