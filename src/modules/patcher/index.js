@@ -57,11 +57,14 @@ class Patcher {
    }
 
    override(patch) {
+      const _this = this;
+
       return function () {
          if (
-            !patch.patches?.before.length &&
-            !patch.patches?.after.length &&
-            !patch.patches?.instead.length
+            !patch?.patches?.before.length &&
+            !patch?.patches?.after.length &&
+            !patch?.patches?.instead.length &&
+            !_this.patches.find(p => p.mdl === patch.mdl && p.func === patch.func)
          ) {
             patch.unpatch();
             return new.target ? new patch.original(...arguments) : patch.original.apply(this, arguments);
@@ -170,7 +173,7 @@ class Patcher {
    }
 
    get([, mdl, func]) {
-      const patch = this.patches.find(p => p.mdl == mdl && p.func == func);
+      const patch = this.patches.find(p => p.mdl === mdl && p.func === func);
       if (patch) return patch;
 
       return this.push(...arguments);
