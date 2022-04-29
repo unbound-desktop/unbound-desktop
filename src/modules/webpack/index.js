@@ -174,11 +174,11 @@ class Webpack {
          modules[id] = (...args) => {
             const [, exports] = args;
             Reflect.apply(orig, null, args);
+            if (!Webpack.listeners?.size) return;
 
-            const listeners = [...Webpack.listeners];
-            for (let i = 0; i < listeners.length; i++) {
+            for (const listener of Webpack.listeners) {
                try {
-                  listeners[i](exports);
+                  listener(exports);
                } catch (e) {
                   Logger.error('Failed to fire listener.', e);
                }
