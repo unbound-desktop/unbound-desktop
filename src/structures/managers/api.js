@@ -1,6 +1,6 @@
 const { createLogger } = require('@modules/logger');
 const { memoize } = require('@utilities/');
-const Logger = createLogger('APIs');
+const Logger = createLogger('Core', 'APIs');
 
 const getEntities = memoize(() => require('@api'));
 
@@ -21,7 +21,7 @@ module.exports = class APIs {
          }
       }
 
-      Logger.log('Finished loading.');
+      Logger.log('Initialization complete.');
    }
 
    async stop() {
@@ -36,6 +36,6 @@ module.exports = class APIs {
          }
       }
 
-      Logger.log('Finished unloading.');
+      Logger.log('Unloading complete.');
    }
 };

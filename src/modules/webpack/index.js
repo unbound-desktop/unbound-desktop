@@ -8,6 +8,7 @@
 const { createLogger } = require('@modules/logger');
 const modules = require('@data/modules');
 const uuid = require('@utilities/uuid');
+const patcher = require('../patcher');
 
 const Logger = createLogger('Webpack');
 const common = {};
@@ -60,7 +61,8 @@ class Webpack {
          );
 
          const listener = function () {
-            Dispatcher.unsubscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
+            Logger.log('Initialization complete.');
+            Dispatcher.unsubscribe(ActionTypes.ACCESSIBILITY_SYSTEM_PREFERS_REDUCED_MOTION_CHANGED, listener.bind(Webpack));
 
             const filters = [];
             for (const name in modules) {
@@ -101,7 +103,7 @@ class Webpack {
          if (getCurrentUser?.() !== void 0) {
             return listener();
          } else {
-            Dispatcher.subscribe(ActionTypes.START_SESSION, listener.bind(Webpack));
+            Dispatcher.subscribe(ActionTypes.ACCESSIBILITY_SYSTEM_PREFERS_REDUCED_MOTION_CHANGED, listener.bind(Webpack));
          }
       }));
    }
@@ -479,7 +481,7 @@ class Webpack {
          byProps: (...mdls) => (mdl) => mdls.every(k => mdl[k] !== void 0),
          byDisplayName: (name, def = true) => (mdl) => {
             if (!mdl) return false;
-            
+
             if (!def) {
                return typeof mdl.default === 'function' && mdl.default.displayName === name;
             } else {
@@ -502,7 +504,7 @@ class Webpack {
 
    static get #available() {
       return new Promise(async cb => {
-         while (typeof window[Webpack.#global] === 'undefined' || window[Webpack.#global].length < 1) {
+         while (window[Webpack.#global] === void 0) {
             await new Promise(setImmediate);
          }
 

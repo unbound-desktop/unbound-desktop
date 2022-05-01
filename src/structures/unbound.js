@@ -6,6 +6,9 @@ const PatchManager = require('@structures/managers/patches');
 const StyleManager = require('@structures/managers/styles');
 const APIManager = require('@structures/managers/api');
 
+const { createLogger } = require('@modules/logger');
+
+const Logger = createLogger();
 const Patcher = require('@patcher');
 
 module.exports = class Unbound {
@@ -13,6 +16,8 @@ module.exports = class Unbound {
    static #patches = new PatchManager();
 
    async start() {
+      const start = new Date();
+      Logger.log('Initializing client...');
       global.unbound = this;
 
       // Apply core styles
@@ -39,6 +44,9 @@ module.exports = class Unbound {
       // Load all entities
       this.managers.themes.loadAll();
       this.managers.plugins.loadAll();
+
+      const end = new Date() - start;
+      Logger.log(`Initialized in ${end >= 1000 ? end / 1000 : `${end}m`}s.`);
    }
 
    async restart() {
