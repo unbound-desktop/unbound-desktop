@@ -59,3 +59,7 @@ exports.ReactSymbols = {
    Element: Symbol.for('react.element'),
    Memo: Symbol.for('react.memo')
 };
+
+exports.IPCEvents = {
+   SPAWN_GIT: 'SPAWN_GIT'
+};

@@ -75,10 +75,10 @@ class Patcher {
 
          const before = patch.patches.before;
          for (let i = 0; i < before.length; i++) {
+            const instance = before[i];
+            if (!instance) continue;
+            
             try {
-               const instance = before[i];
-               if (!instance) continue;
-
                const temp = instance.callback(this, args, patch.original.bind(this));
                if (Array.isArray(temp)) args = temp;
             } catch (error) {

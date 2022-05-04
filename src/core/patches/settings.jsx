@@ -60,6 +60,11 @@ module.exports = class Settings extends Patch {
                      element: () => <Manager.panel type={m} />
                   };
                }),
+               {
+                  section: 'unbound-updater',
+                  label: 'Updater',
+                  element: Components.Updater
+               },
                { section: 'DIVIDER' }
             );
 

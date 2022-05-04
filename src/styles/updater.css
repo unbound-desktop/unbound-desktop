@@ -1,0 +1,261 @@
+.unbound-updater-icon,
+.unbound-updater-checking {
+   height: 64px;
+   width: 64px;
+   z-index: 1
+}
+
+.unbound-updater-icon[class*='updateAvailable'] {
+   animation-duration: 1.15s !important;
+}
+
+.unbound-updater-update-content > [class*='divider'] {
+   opacity: .025;
+   margin: 5px 0;
+   border-color: var(--header-primary) !important;
+}
+
+.unbound-updater-update-download {
+   cursor: pointer;
+   padding: 5px;
+   width: 32px;
+   height: 32px;
+   border-radius: 5px;
+}
+
+.unbound-updater-update-download:hover {
+   background-color: var(--background-modifier-hover);
+}
+
+.unbound-updater-update-download:active {
+   transform: translateY(1px);
+}
+
+.unbound-updater-no-updates {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   height: calc(100vh - 22.5rem);
+   margin: auto;
+   text-align: center;
+}
+
+.unbound-updater-no-updates > img {
+   width: 375px;
+}
+
+.unbound-updater-update-title,
+.unbound-updater-update-author {
+   font-size: 1rem;
+   font-weight: 500
+}
+
+.unbound-updater-update-author {
+   font-size: .75rem;
+}
+
+.unbound-updater-update-count,
+.unbound-updater-update-type {
+   color: var(--text-muted);
+   font-size: .75rem;
+   font-weight: 500
+}
+
+.unbound-updater-icon-container {
+   align-items: center;
+   display: flex;
+   margin: 10px
+}
+
+.unbound-updater {
+   display: flex
+}
+
+.unbound-updater-update-content {
+   padding: 10px
+}
+
+.unbound-updater-update {
+   background: var(--background-secondary);
+   border-radius: 5px;
+   margin-bottom: 10px
+}
+
+.unbound-updater-update-header {
+   background: var(--background-secondary-alt);
+   border-radius: 5px 5px 0 0;
+   display: flex;
+   padding: 15px;
+   align-items: center;
+}
+
+.unbound-updater-update-commit {
+   padding: 2.5px;
+}
+
+.unbound-updater-update-commit-container {
+   display: flex;
+   align-items: center;
+}
+
+.unbound-updater-update-commit-author {
+   font-weight: 600;
+}
+
+.unbound-updater-update-commit-hash {
+   background: var(--background-secondary-alt);
+   border-radius: 5px;
+   font-size: 12px;
+   margin-left: auto;
+   padding: 5px;
+}
+
+.unbound-updater-update-header > h3 {
+   font-weight: 300;
+   margin-bottom: 0
+}
+
+.unbound-updater-status-container {
+   display: flex;
+   flex: 1;
+   flex-direction: column;
+   justify-content: center;
+   margin-left: 15px
+}
+
+.unbound-updater-status {
+   flex: 0 !important;
+   margin: 0 !important;
+   padding: 0 !important
+}
+
+.unbound-updater-update-download {
+   margin-left: 10px;
+   color: var(--info-positive-foreground)
+}
+
+.unbound-updater-unbound-status {
+   display: flex;
+   flex-direction: column;
+   justify-content: center
+}
+
+.unbound-updater-client-info .unbound-category-content {
+   margin: 0 10px
+}
+
+.unbound-updater-client-info-arrow {
+   color: var(--interactive-normal);
+   margin-left: auto
+}
+
+.unbound-updater-client-info-icon {
+   color: var(--interactive-normal);
+   height: 24px;
+   width: 24px
+}
+
+.unbound-updater-client-info-header {
+   margin-left: 10px
+}
+
+.unbound-form-title-small-margin {
+   margin-bottom: 5px !important
+}
+
+.unbound-updater-info-text {
+   margin-bottom: 7.5px
+}
+
+.unbound-updater-info-text > span[class*='spinner'] {
+   width: fit-content
+}
+
+.unbound-updater-info-text span[class*='pulsingEllipsis-'] {
+   height: 7.5px
+}
+
+.unbound-updater-client-information {
+   align-self: center;
+   color: var(--interactive-normal);
+   cursor: pointer;
+   display: flex;
+   margin-left: 5px
+}
+
+.unbound-updater-client-information:hover {
+   color: var(--interactive-hover)
+}
+
+.unbound-updater-client-information:active {
+   color: var(--interactive-active)
+}
+
+.unbound-info-modal-header {
+   margin-bottom: 0
+}
+
+.unbound-info-modal {
+   min-height: 170px !important
+}
+
+.unbound-updater-actions {
+   display: flex;
+   gap: 12.5px;
+   margin-bottom: 15px
+}
+
+.unbound-updater-actions-disable {
+   margin-left: auto
+}
+
+.unbound-updater-updates-container {
+   margin-top: 20px
+}
+
+.unbound-updater-update-installing {
+   margin-left: 10px;
+   height: 32px;
+   width: 32px;
+   z-index: 1;
+}
+
+.unbound-updater-update-installing div[class*='spinningCircleInner'],
+.unbound-updater-update-installing svg[class*='circular'] {
+   height: 28px;
+   width: 28px
+}
+
+.unbound-updater-checking div[class*='spinningCircleInner'],
+.unbound-updater-checking div[class*='circular'] {
+   height: 45px;
+   width: 45px
+}
+
+.unbound-updater-placeholder-image[data-is-checking='true'] {
+   width: 150px !important;
+}
+
+.unbound-updater-update-type-icon {
+   margin-right: 15px;
+   width: 24px;
+   height: 24px;
+}
+
+.unbound-updater-update-type-icon > div {
+   width: 16px;
+   height: 16px;
+}
+
+.unbound-updater-no-updates-title {
+   color: var(--header-primary);
+   margin-top: 20px;
+   font-weight: 500;
+   font-size: 18px;
+}
+
+.unbound-updater-no-updates-desc {
+   color: var(--header-secondary);
+   font-size: 14px;
+}
