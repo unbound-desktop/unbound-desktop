@@ -6,37 +6,34 @@
       "baseUrl": "./src/",
       "paths": {
          "@structures/*": [
-            "src/structures/*"
+            "structures/*"
          ],
          "@modules/*": [
-            "src/modules/*"
+            "modules/*"
          ],
          "@webpack/*": [
-            "src/modules/webpack/*"
+            "modules/webpack/*"
          ],
          "@utilities/*": [
-            "src/modules/utilities/*"
+            "modules/utilities/*"
          ],
-         "@constants/*": [
-            "src/modules/constants/*"
+         "@constants": [
+            "modules/constants"
          ],
          "@patcher/*": [
-            "src/modules/patcher/*"
+            "modules/patcher/*"
          ],
          "@api/*": [
-            "src/api/*"
+            "api/*"
          ],
          "@data/*": [
-            "src/data/*"
-         ],
-         "@src/*": [
-            "src/*"
+            "data/*"
          ],
          "@root/*": [
             "./*"
          ],
          "@core/*": [
-            "src/core/*"
+            "core/*"
          ]
       }
    }
