@@ -41,6 +41,9 @@ module.exports = {
    zustand: {
       filter: m => typeof m === 'function' && m.toString().includes('[useStore, api]')
    },
+   Layers: {
+      props: ['popLayer']
+   },
    stores: {
       submodule: true,
       items: {

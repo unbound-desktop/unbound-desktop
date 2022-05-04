@@ -3,7 +3,7 @@ const { React } = require('@webpack/common');
 
 const icons = getModules(m => ~m?.toString?.()?.indexOf?.('"currentColor"'));
 
-module.exports = class Icon extends React.Component {
+module.exports = class Icon extends React.PureComponent {
    render() {
       if (!this.props.name) return null;
 

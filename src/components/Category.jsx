@@ -5,9 +5,9 @@ const Divider = require('./Divider');
 
 module.exports = class Category extends React.PureComponent {
    render() {
-      const { title, description, opened, onChange, children, icon } = this.props;
+      const { title, description, opened, onChange, children, icon, className } = this.props;
 
-      return <div className={classnames('unbound-category', opened && 'unbound-category-opened')}>
+      return <div className={classnames('unbound-category', opened && 'unbound-category-opened', className)}>
          <div
             className={classnames('unbound-category-header', icon && 'unbound-category-has-icon')}
             onClick={onChange}
@@ -18,17 +18,17 @@ module.exports = class Category extends React.PureComponent {
                   color={Text.Colors.HEADER_PRIMARY}
                   tag={FormTitle.Tags.H3}
                   size={Text.Sizes.SIZE_16}
-                  className='unbound-category-details-title'
+                  className={classnames('unbound-category-details-title', !description && 'unbound-category-details-title-no-description')}
                >
                   {title}
                </FormTitle>
-               <FormText
+               {description && <FormText
                   color={Text.Colors.HEADER_SECONDARY}
                   size={Text.Sizes.SIZE_14}
                   className='unbound-category-details-description'
                >
                   {description}
-               </FormText>
+               </FormText>}
             </div>
             <Caret
                direction={opened ? Caret.Directions.DOWN : Caret.Directions.RIGHT}

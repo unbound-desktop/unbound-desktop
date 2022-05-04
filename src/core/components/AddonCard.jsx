@@ -1,25 +1,8 @@
-const {
-   Text,
-   Icon,
-   Switch,
-   Anchor,
-   FormText,
-   Markdown,
-   RelativeTooltip,
-   Menu: { Menu, MenuItem }
-} = require('@components');
-const { bulk, filters: { byProps } } = require('@webpack');
-const { React, ContextMenu } = require('@webpack/common');
+const { Text, Icon, Switch, Anchor, FormText, Markdown, RelativeTooltip, Menu: { Menu, MenuItem } } = require('@components');
+const { React, ContextMenu, Layers } = require('@webpack/common');
 const { capitalize } = require('@utilities');
-const { Plug, Bd } = require('./icons');
-
-const [
-   DMs,
-   Layers
-] = bulk(
-   byProps('openPrivateChannel'),
-   byProps('popLayer')
-);
+const { DMs } = require('@webpack/api');
+const { Plug, Bd } = require('./Icons');
 
 module.exports = class AddonCard extends React.Component {
    onToggle = this.onToggle.bind(this);

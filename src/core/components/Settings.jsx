@@ -2,7 +2,7 @@ const { React } = require('@webpack/common');
 
 const { Text, ErrorBoundary, Category, FormTitle, Icon, Switch } = require('@components');
 const Settings = require('@api/settings');
-const Icons = require('./icons');
+const Icons = require('./Icons');
 
 class GeneralSettings extends React.PureComponent {
    constructor(props) {
@@ -24,7 +24,7 @@ class GeneralSettings extends React.PureComponent {
       } = options;
 
       return <div className='unbound-settings-category-switch'>
-         <Text className='unbound-settings-categry-switch-text' size={Text.Sizes.SIZE_16}>
+         <Text className='unbound-settings-category-switch-text' size={Text.Sizes.SIZE_16}>
             {name}
          </Text>
          <Switch
