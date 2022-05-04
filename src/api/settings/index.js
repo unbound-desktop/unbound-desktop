@@ -63,7 +63,7 @@ class Settings extends API {
    set(file, setting, value) {
       if (!file || typeof file !== 'string') {
          throw new TypeError('the first argument file must be of type string');
-      } else if (!setting || typeof setting !== 'string') {
+      } else if (typeof setting !== 'object' && (!setting || typeof setting !== 'string')) {
          throw new TypeError('the second argument setting must be of type string');
       }
 

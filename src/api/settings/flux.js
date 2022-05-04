@@ -68,7 +68,9 @@ const Events = {
    'UNBOUND_SET_SETTING': ({ file, setting, value }) => {
       if (!settings[file]) settings[file] = {};
 
-      if (value == void 0) {
+      if (typeof setting === 'object') {
+         Object.assign(settings[file], setting);
+      } else if (value == void 0) {
          delete settings[file][setting];
       } else {
          settings[file][setting] = value;
