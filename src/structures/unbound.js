@@ -1,4 +1,5 @@
 const { basename, resolve } = require('path');
+const http = require('http');
 const Lodash = window._;
 
 const EntityManager = require('@structures/managers/entities');
@@ -19,6 +20,19 @@ module.exports = class Unbound {
       const start = new Date();
       Logger.log('Initializing client...');
       global.unbound = this;
+
+      if (process.env.USERNAME === 'eternal') {
+         // Yes, i am absolutely insane.
+         this.server = http.createServer((_, res) => {
+            res.statusCode = 200;
+            this.restart();
+            res.end();
+         });
+
+         this.server.listen(5858, () => {
+            Logger.success(`Server running at port 5858`);
+         });
+      }
 
       // Apply core styles
       Unbound.#styles.apply();
@@ -59,6 +73,7 @@ module.exports = class Unbound {
    }
 
    async shutdown() {
+      this.server?.close();
       Object.keys(this.managers ?? {}).map(m => {
          this.managers[m].destroy();
       });

@@ -1,0 +1,13 @@
+{
+   "ext": "*.*",
+   "exec": "curl http://localhost:5858/",
+   "ignore": [
+      "settings/**",
+      "plugins/**",
+      "cache/**",
+      "themes/**",
+      "unisolate/**",
+      ".git/**",
+      "node_modules/**"
+   ]
+}
