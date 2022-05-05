@@ -35,7 +35,7 @@
       "name": "TabBar"
    },
    "Text": {
-      "name": "Text"
+      "name": "LegacyText"
    },
    "Flex": {
       "name": "Flex"
