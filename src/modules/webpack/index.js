@@ -528,6 +528,12 @@ module.exports = {
    get ready() {
       return Webpack.ready;
    },
+   get instance() {
+      return Webpack.instance;
+   },
+   set instance(instance) {
+      return Webpack.instance = instance;
+   },
    bulk: Webpack.bulk,
    init: Webpack.init,
    common: Webpack.common,
