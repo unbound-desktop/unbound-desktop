@@ -1,7 +1,7 @@
 const API = require('@structures/api');
 
+const { bindAll, classnames } = require('@utilities');
 const { bulk, filters } = require('@webpack');
-const { bindAll } = require('@utilities');
 const { avatar } = require('@constants');
 const { create } = require('@patcher');
 
@@ -11,13 +11,21 @@ const [
    Commands,
    CommandsStore,
    Icons,
-   SearchStore
+   SearchStore,
+   Classes,
+   ApplicationIcon,
+   SectionIcon,
 ] = bulk(
    filters.byProps('getContextCommands'),
    filters.byProps('getBuiltInCommands'),
    filters.byProps('getApplicationIconURL'),
-   filters.byProps('SearchManagerStore')
+   filters.byProps('SearchManagerStore'),
+   filters.byProps('icon', 'selectable', 'wrapper'),
+   filters.byDisplayName('ApplicationCommandDiscoveryApplicationIcon'),
+   filters.byDisplayName('ApplicationCommandDiscoverySectionIcon', false),
 );
+
+const Icon = require('./components/SectionIcon');
 
 class CommandsAPI extends API {
    constructor() {
@@ -26,7 +34,7 @@ class CommandsAPI extends API {
       this.commands = new Map();
       this.section = {
          id: 'unbound',
-         type: 1,
+         type: 0,
          name: 'Unbound',
          icon: avatar
       };
@@ -35,6 +43,32 @@ class CommandsAPI extends API {
    }
 
    start() {
+      Patcher.instead(SectionIcon, 'default', (self, args, orig) => {
+         const [props] = args;
+         const isSmall = props.selectable === void 0;
+
+         if (props.section.id === this.section.id) {
+            const metadata = classnames(Classes.wrapper, props.selectable && Classes.selectable, props.selectable && props.isSelected && Classes.selected);
+
+            return (
+               <div className={metadata}>
+                  <Icon
+                     width={props.width}
+                     height={props.height}
+                     className={classnames(Classes.icon, props.className)}
+                     style={{
+                        width: `${props.width}px`,
+                        padding: !isSmall ? '4px' : 0,
+                        paddingBottom: !isSmall ? '1px' : 0
+                     }}
+                  />
+               </div>
+            );
+         }
+
+         return orig.apply(self, args);
+      });
+
       Patcher.after(Commands, 'getContextCommands', (_, args, res) => {
          if (!args[0] || !args[0].query || !Array.isArray(res)) return;
 
@@ -64,7 +98,7 @@ class CommandsAPI extends API {
          return orig.apply(self, args);
       });
 
-      Patcher.after(SearchStore.SearchManagerStore, 'getChannelState', (_, args, res) => {
+      Patcher.after(SearchStore.SearchManagerStore, 'getChannelState', (_, __, res) => {
          if (!res.applicationSections?.find?.(s => s.id === this.section.id)) {
             res.applicationSections ??= [];
             res.applicationSections.push(this.section);
@@ -73,8 +107,10 @@ class CommandsAPI extends API {
          const commands = [...this.commands.values()];
          if (commands.some(c => !res.applicationCommands?.find?.(r => r.id === c.id))) {
             res.applicationCommands ??= [];
+
             // De-duplicate commands
-            res.applicationCommands = [...new Set([...res.applicationCommands, ...commands]).values()];
+            const collection = [...res.applicationCommands, ...commands];
+            res.applicationCommands = [...new Set(collection).values()];
          }
       });
    };
