@@ -1,24 +1,25 @@
 const API = require('@structures/api');
 
-const { getByProps, getByDisplayName } = require('@webpack');
-const { bindAll, findInReactTree } = require('@utilities');
+const { bulk, filters } = require('@webpack');
+const { bindAll } = require('@utilities');
 const { avatar } = require('@constants');
 const { create } = require('@patcher');
 
 const Patcher = create('unbound-commands');
 
 const [
-   AssetUtils,
-   CommandUtils,
-   CommandsStore
-] = getByProps(
-   ['getApplicationIconURL'],
-   ['useApplicationCommandsDiscoveryState'],
-   ['queryCommands'],
-   { bulk: true }
+   Commands,
+   CommandsStore,
+   Icons,
+   SearchStore
+] = bulk(
+   filters.byProps('getContextCommands'),
+   filters.byProps('getBuiltInCommands'),
+   filters.byProps('getApplicationIconURL'),
+   filters.byProps('SearchManagerStore')
 );
 
-class Commands extends API {
+class CommandsAPI extends API {
    constructor() {
       super();
 
@@ -34,63 +35,53 @@ class Commands extends API {
    }
 
    start() {
-      const CommandsIcon = getByDisplayName('ApplicationCommandDiscoveryApplicationIcon', { default: false });
-      Patcher.after(CommandsIcon, 'default', (_, [props], res) => {
-         if (props.section.id === this.section.id) {
-            const img = findInReactTree(res, r => r.props.src);
-            img.props.src = this.section.icon;
+      Patcher.after(Commands, 'getContextCommands', (_, args, res) => {
+         if (!args[0] || !args[0].query || !Array.isArray(res)) return;
+
+         const { query } = args[0];
+
+         for (const command of this.commands.values()) {
+            if (!~command.name?.indexOf(query) || res.some(e => e.__unbound && e.id === command.id)) {
+               continue;
+            }
+
+            try {
+               res.unshift(command);
+            } catch {
+               // Discord calls Object.preventExtensions on the result when switching channels
+               // Therefore, re-making the result array is required.
+               res = [...res, command];
+            }
          }
       });
 
-      Patcher.after(AssetUtils, 'getApplicationIconURL', (_, [section]) => {
-         if (section.id === this.section.id) {
+      CommandsStore.BUILT_IN_SECTIONS['unbound'] = this.section;
+      Patcher.instead(Icons, 'getApplicationIconURL', (self, args, orig) => {
+         if (args[0]?.id === this.section.id) {
             return this.section.icon;
          }
+
+         return orig.apply(self, args);
       });
 
-      Patcher.after(CommandsStore, 'queryCommands', (_, [{ query }], res) => {
-         const commands = [...this.commands.values()].filter(e => ~e.name?.indexOf(query));
-         res.push(...commands);
-      });
-
-      Patcher.after(CommandsStore, 'getApplicationCommandSectionName', (_, [section], res) => {
-         if (section.id === this.section.id) {
-            return this.section.name;
-         }
-      });
-
-      Patcher.after(CommandUtils, 'useApplicationCommandsDiscoveryState', (_, [, , , isChat], res) => {
-         if (isChat !== false) return res;
-
-         if (!res.discoverySections.find(s => s.key == this.section.id) && this.commands.size) {
-            const cmds = [...this.commands.values()];
-
-            res.commands.push(...cmds.filter(cmd => !res.commands.some(e => e.name === cmd.name)));
-            res.sectionsOffset.push(this.commands.size);
-            res.discoveryCommands.push(...cmds);
-            res.discoverySections.push({
-               data: cmds,
-               key: this.section.id,
-               section: this.section
-            });
+      Patcher.after(SearchStore.SearchManagerStore, 'getChannelState', (_, args, res) => {
+         if (!res.applicationSections?.find?.(s => s.id === this.section.id)) {
+            res.applicationSections ??= [];
+            res.applicationSections.push(this.section);
          }
 
-         if (!res.applicationCommandSections.find(s => s.id == this.section.id) && this.commands.size) {
-            res.applicationCommandSections.push(this.section);
-         }
-
-
-         const index = res.discoverySections.findIndex(e => e.key === '-2');
-         if (res.discoverySections[index]?.data) {
-            const section = res.discoverySections[index];
-            section.data = section.data.filter(c => !c.__unbound);
-
-            if (section.data.length == 0) res.discoverySections.splice(index, 1);
+         const commands = [...this.commands.values()];
+         if (commands.some(c => !res.applicationCommands?.find?.(r => r.id === c.id))) {
+            res.applicationCommands ??= [];
+            // De-duplicate commands
+            res.applicationCommands = [...new Set([...res.applicationCommands, ...commands]).values()];
          }
       });
    };
 
    stop() {
+      delete CommandsStore.BUILT_IN_SECTIONS['unbound'];
+
       Patcher.unpatchAll();
    }
 
@@ -116,4 +107,4 @@ class Commands extends API {
    };
 };
 
-module.exports = new Commands();
+module.exports = new CommandsAPI();
