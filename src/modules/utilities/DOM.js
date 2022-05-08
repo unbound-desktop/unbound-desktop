@@ -2,6 +2,9 @@ const bindAll = require('./bindAll');
 const memoize = require('./memoize');
 
 const createHead = memoize(() => {
+   const existing = document.querySelector('unbound-head');
+   if (existing) return existing;
+
    const head = document.createElement('unbound-head');
    document.head.appendChild(head);
 
