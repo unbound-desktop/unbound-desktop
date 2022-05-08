@@ -58,6 +58,7 @@ class CommandsAPI extends API {
                      className={classnames(Classes.icon, props.className)}
                      style={{
                         width: `${props.width}px`,
+                        height: `${props.height}px`,
                         padding: !isSmall ? '4px' : 0,
                         paddingBottom: !isSmall ? '1px' : 0
                      }}
