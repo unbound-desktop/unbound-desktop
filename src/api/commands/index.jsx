@@ -4,6 +4,7 @@ const { bindAll, classnames } = require('@utilities');
 const { bulk, filters } = require('@webpack');
 const { avatar } = require('@constants');
 const { create } = require('@patcher');
+const React = require('react');
 
 const Patcher = create('unbound-commands');
 
