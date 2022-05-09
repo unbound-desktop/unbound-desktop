@@ -1,6 +1,8 @@
 const { React, ReactSpring } = require('@webpack/common');
 const Component = require('@structures/component');
-const { animated } = ReactSpring;
+const { FormTitle } = require('@components');
+
+const { useSpring, useTransition, animated } = ReactSpring;
 
 module.exports = class Toast extends Component {
    constructor() {
@@ -14,59 +16,122 @@ module.exports = class Toast extends Component {
       };
    }
 
-   componentWillMount() {
-      const { timeout } = this.props;
-
-      this.timeout = setTimeout(() => {
-         this.setState({ closing: true });
-      }, timeout);
+   componentWillUnmount() {
+      if (this.observer) this.observer.disconnect();
    }
 
-   componentWillUnmount() {
-      this.timeout && clearTimeout(this.timeout);
+   componentDidUpdate(prev) {
+      if (prev.closing !== this.props.closing) {
+         this.setState({ closing: this.props.closing });
+      }
    }
 
    render() {
-      const { content, store, id } = this.props;
+      const { title, content, position, store, id, timeout } = this.props;
 
-      this.spring = ReactSpring.useSpring({
-         from: { opacity: 1, height: '100%' },
-         to: async (next, cancel) => {
-            console.log('ran');
-            console.log(this.ref.current?.offsetHeight);
-            if (this.ref.current?.offsetHeight === 0) {
-               await next({ opacity: 0 });
-               store.delete(id);
-            } else if (this.state.closing) {
-               const height = this.ref.current.offsetHeight;
-               const change = (height / 10).toFixed(0);
+      const progress = useSpring({
+         from: {
+            value: 0
+         },
+         to: {
+            value: 100
+         },
+         config: (key) => {
+            switch (key) {
+               case 'value': return {
+                  duration: timeout
+               };
 
-               do {
-                  await next({ height: `${Math.max(change, 0)}px` });
-               } while (this.ref.current.offsetHeight <= 0);
-            } else {
-               await next({ opacity: 1 });
+               default: return {
+                  duration: 0
+               };
             }
          }
       });
 
-      return (
-         <animated.div ref={this.ref} className='unbound-toast' style={{
-            opacity: this.spring.opacity,
-            height: this.spring.height.to(e => {
-               console.log(e);
-               return e;
-               // if (!this.ref.current) return;
-               // const height = this.ref.current.offsetHeight;
-               // const change = parseInt(height / 10);
+      const isFromTop = position.includes('top');
+      const spring = {
+         config: {
+            mass: 1,
+            tension: 185,
+            friction: 26
+         },
+         from: {
+            opacity: 1,
+            height: 0,
+            transform: `translateY(${isFromTop ? '-100%' : 0}) scale(1)`
+         },
+         enter: () => (next) => next({
+            opacity: 1,
+            height: this.ref.current?.getBoundingClientRect().height ?? 'auto',
+            transform: `translateY(0) scale(1)`
+         }),
+         leave: {
+            opacity: 0,
+            height: 0,
+            transform: `translateY(0) scale(0.9)`
+         },
+         onRest: () => {
+            if (this.state.closing) {
+               store.delete(id);
+            }
+         }
+      };
 
-               // return `${change}px`;
-            })
-         }}>
-            <div className='unbound-toast-content'>
-               {content}
-            </div>
-         </animated.div>
-      );
+      const transition = useTransition(!this.state.closing, spring);
+
+      return <>
+         {transition((props, item) => {
+            if (!item) return null;
+
+            return (
+               <animated.div
+                  key={id}
+                  onMouseEnter={() => progress.value.pause()}
+                  onMouseLeave={() => progress.value.resume()}
+                  className='unbound-toast-wrapper'
+                  style={{
+                     opacity: props.opacity,
+                     height: props.height,
+                     display: 'flex',
+                     flexDirection: 'column',
+                     alignItems: 'center'
+                  }}
+               >
+                  <animated.div
+                     ref={this.ref}
+                     style={{
+                        transform: props.transform,
+                        pointerEvents: 'auto'
+                     }}
+                     className='unbound-toast'
+                  >
+                     <div className='unbound-toast-header'>
+                        {title && <FormTitle>
+                           {title}
+                        </FormTitle>}
+                     </div>
+                     <p>{content}</p>
+                     {timeout > 0 && <div className="unbound-toast-progress">
+                        <animated.div
+                           className="unbound-toast-progress-bar"
+                           style={{
+                              width: progress.value.to(e => {
+                                 if (e > 97 && timeout !== 0 && !this.state.closing) {
+                                    this.setState({ closing: true });
+                                 }
+
+                                 return `${e}%`;
+                              })
+                           }}
+                        >
+
+                        </animated.div>
+                     </div>}
+                  </animated.div>
+               </animated.div>
+            );
+         })}
+      </>;
    }
 };

@@ -12,14 +12,9 @@ class Toasts extends API {
    constructor() {
       super();
 
-      this.promises = {
-         cancelled: false,
-         cancel: () => this.promises.cancelled = true
-      };
-
       this.toasts = createStore();
       this.container = document.createElement('div');
-      this.container.className = 'unbound-toasts-container';
+      this.container.className = 'unbound-toasts';
 
       bindAll(this, ['send', 'close']);
    }
@@ -43,14 +38,20 @@ class Toasts extends API {
    }
 
    close(id) {
-      if (this.toasts.get(id)) {
-         this.toasts.delete(id);
+      const toast = this.toasts.get(id);
+      if (!toast) return;
+
+      this.toasts.set(toast.id, { ...toast, closing: true });
+   }
+
+   closeAll() {
+      for (const toast in this.toasts.storage) {
+         this.close(toast);
       }
    }
 
    stop() {
       this.container.remove();
-      this.promises.cancel();
       Patcher.unpatchAll();
    }
 };

@@ -1,8 +1,8 @@
 const { avatar } = require('@constants');
 const API = require('@structures/api');
 
-const { Messages } = require('@webpack/api');
 const { Channels } = require('@webpack/stores');
+const { Messages } = require('@webpack/api');
 const { getByProps } = require('@webpack');
 const { bindAll } = require('@utilities');
 const Lodash = window._;

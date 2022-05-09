@@ -12,7 +12,7 @@ module.exports = (data) => {
    /* Require this here as require caches it and we don't have it before webpack inits so the client dies */
    const { Flux, Dispatcher } = require('@webpack/common');
 
-   const storage = { ...(data ?? {}) };
+   let storage = { ...(data ?? {}) };
    const id = uuid(10).toUpperCase();
 
    const handlers = {
@@ -27,6 +27,10 @@ module.exports = (data) => {
 
    const store = new Flux.Store(Dispatcher, {
       [`UNBOUND_FLUX_${id}_SET`]: ({ key, value }) => {
+         if (key === '*') {
+            return storage = value;
+         }
+
          if (value === void 0) {
             delete storage[key];
          } else {
@@ -38,7 +42,9 @@ module.exports = (data) => {
    return {
       ...handlers,
       store,
-      storage,
+      get storage() {
+         return storage;
+      },
       id,
    };
 };

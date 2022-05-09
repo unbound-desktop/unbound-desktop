@@ -1,23 +1,67 @@
 .unbound-toasts-container {
    position: absolute;
    display: flex;
-   bottom: 0;
-   right: 0;
    align-items: center;
    justify-content: center;
    flex-direction: column;
    z-index: 99999999999999999;
-   gap: .25rem;
+   gap: .5rem;
+   margin: 15px;
+}
+
+.unbound-toasts-container[data-position='bottom-right'] {
+   bottom: 0;
+   right: 0;
+}
+
+.unbound-toasts-container[data-position='bottom-left'] {
+   bottom: 0;
+}
+
+.unbound-toasts-container[data-position='top-middle'] {
+   top: 15px;
+   left: 50%;
+}
+
+.unbound-toasts-container[data-position='top-middle'] {
+   top: 15px;
+   left: 50%;
+}
+
+.unbound-toasts-container[data-position='top-right'] {
+   top: 15px;
+   right: 0;
+}
+
+.unbound-toasts-container[data-position='top-left'] {
+   top: 15px;
+}
+
+
+.unbound-toast-wrapper {
+   z-index: 99999999999999999999999;
 }
 
 .unbound-toast {
-   position: relative;
-   z-index: 99999999999999999999999;
    padding: 10px;
    background-color: var(--background-floating);
-   border-radius: 10px;
+   border-radius: 5px;
+   min-width: 50px;
+   min-height: 25px;
+   color: white;
+   overflow: hidden;
 }
 
-.unbound-toast-content {
-   color: white;
+.unbound-toast-progress {
+   width: 100%;
+   height: 2px;
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   right: 0;
+}
+
+.unbound-toast-progress-bar {
+   background: var(--brand-experiment);
+   height: 2px;
 }
