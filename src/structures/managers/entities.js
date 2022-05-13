@@ -1,15 +1,4 @@
-const {
-   statSync,
-   lstatSync,
-   mkdirSync,
-   rmdirSync,
-   existsSync,
-   unlinkSync,
-   readdirSync,
-   readFileSync,
-   writeFileSync
-} = require('fs');
-
+const { statSync, lstatSync, mkdirSync, rmdirSync, existsSync, unlinkSync, readdirSync, readFileSync, writeFileSync } = require('fs');
 const { join, resolve, basename } = require('path');
 const { watch } = require('chokidar');
 const Emitter = require('events');
@@ -252,11 +241,11 @@ module.exports = class Manager extends Emitter {
 
       if (entity?.instance && !entity.started) {
          try {
-            entity.instance.start?.();
             entity.started = true;
+            entity.instance.start?.();
             this.logger.log(`${entity.data.name} was started.`);
          } catch (e) {
-            this.logger.error(`Couldn't start ${entity.data.name}`, e);
+            this.logger.error(`Couldn't start ${entity.data.name}. You may face issues with your client.\n`, e);
          }
       }
    }
@@ -265,11 +254,11 @@ module.exports = class Manager extends Emitter {
       const entity = this.resolve(id);
       if (entity?.instance && entity.started) {
          try {
-            entity.instance.stop?.();
             entity.started = false;
+            entity.instance.stop?.();
             this.logger.log(`${entity.data.name} was stopped.`);
          } catch (e) {
-            this.logger.error(`Couldn't stop ${entity.data.name}`, e);
+            this.logger.error(`Couldn't stop ${entity.data.name}. You may face issues with your client.\n`, e);
          }
       }
    }
