@@ -90,35 +90,7 @@ class Updater extends React.Component {
                   disabled={status}
                   color={force ? Button.Colors.RED : Button.Colors.GREEN}
                   size={Button.Sizes.SMALL}
-                  onClick={async () => {
-                     settings.set({ status: 'updating', force: false });
-
-                     const status = { force: [force ?? []] };
-                     await Promise.allSettled(updates.map(async update => {
-                        try {
-                           const needsForce = force && force.some(e => update.commits.some(u => u.longHash === e.longHash));
-
-                           await Git.pull(update.path, needsForce);
-
-                           const idx = updates.indexOf(update);
-                           if (idx > -1) updates.splice(idx, 1);
-
-                           if (needsForce) {
-
-                           }
-
-                           settings.set({ updates, force: needsForce ? false : force });
-                        } catch (e) {
-                           status.force.push(update.commits);
-                        }
-                     }));
-
-                     if (status.force.length) {
-                        settings.set('force', status.force.flat());
-                     }
-
-                     settings.set('status', null);
-                  }}
+                  onClick={this.handleInstall.bind(this)}
                >
                   {force ? 'Force updates' : 'Update All'}
                </Button>
@@ -170,10 +142,45 @@ class Updater extends React.Component {
                   </Text>
                </div>
                :
-               updates.map(update => <Update update={update} />)
+               updates.map(update => <Update settings={settings} update={update} />)
             }
          </div>
       </ErrorBoundary>;
+   }
+
+   async handleInstall() {
+      const { settings } = this.props;
+
+      const force = settings.get('force', false);
+      const updates = settings.get('updates', []);
+
+      settings.set({ status: 'updating', force: false });
+
+      const status = { force: [force ?? []] };
+      await Promise.allSettled(updates.map(async update => {
+         try {
+            const needsForce = force && force.some(e => update.commits.some(u => u.longHash === e.longHash));
+
+            await Git.pull(update.path, needsForce);
+
+            if (needsForce) {
+               console.log('fuck');
+            } else {
+               const idx = updates.indexOf(update);
+               if (idx > -1) updates.splice(idx, 1);
+            }
+
+            settings.set({ updates, force: needsForce ? false : force });
+         } catch (e) {
+            status.force.push(update.commits);
+         }
+      }));
+
+      if (status.force.length) {
+         settings.set('force', status.force.flat());
+      }
+
+      settings.set('status', null);
    }
 
    async handleUpdateCheck() {

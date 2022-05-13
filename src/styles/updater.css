@@ -23,6 +23,10 @@
    border-radius: 5px;
 }
 
+.unbound-updater-update-download[data-force='true'] {
+   color: var(--info-danger-foreground);
+}
+
 .unbound-updater-update-download:hover {
    background-color: var(--background-modifier-hover);
 }

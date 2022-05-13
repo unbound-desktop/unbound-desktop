@@ -2,6 +2,7 @@ const { Icon, Text, Anchor, RelativeTooltip, Spinner, Divider } = require('@comp
 const { Layers } = require('@webpack/common');
 const Settings = require('@api/settings');
 const { DMs } = require('@webpack/api');
+const Git = require('@modules/git');
 const React = require('react');
 
 const Unbound = require('./Icons/Unbound');
@@ -17,7 +18,7 @@ class Update extends React.Component {
    }
 
    render() {
-      const { update } = this.props;
+      const { update, settings } = this.props;
       const status = { icon: null };
 
       switch (update.type) {
@@ -31,6 +32,8 @@ class Update extends React.Component {
             status.icon = <Unbound />;
             break;
       }
+
+      const force = settings.get('force', false);
 
       return (
          <div className='unbound-updater-update'>
@@ -59,9 +62,10 @@ class Update extends React.Component {
                      />}
                   </RelativeTooltip>
                   :
-                  <RelativeTooltip text='Install' hideOnClick={false}>
+                  <RelativeTooltip text={force ? 'Force Install' : 'Install'} hideOnClick={false}>
                      {props => <Icon
                         {...props}
+                        data-force={Boolean(force)}
                         className='unbound-updater-update-download'
                         name='Download'
                         onClick={this.handleUpdate.bind(this)}
@@ -91,8 +95,41 @@ class Update extends React.Component {
       );
    }
 
-   handleUpdate() {
+   async handleUpdate() {
+      const { update, settings } = this.props;
+
+      const force = settings.get('force', []);
+      const updates = settings.get('updates', []);
+
       this.setState({ updating: true });
+      settings.set({ status: 'updating', force: false });
+      const status = { force: [] };
+
+      try {
+         const needsForce = force && force.some(e => update.commits.some(u => u.longHash === e.longHash));
+
+         await Git.pull(update.path, needsForce);
+
+         if (needsForce) {
+            console.log('fuck');
+         } else {
+         }
+
+         const idx = updates.indexOf(update);
+         if (idx > -1) updates.splice(idx, 1);
+
+         settings.set({ updates, force: needsForce ? false : force });
+      } catch (e) {
+         console.log(e);
+         status.force.push(update.commits);
+      }
+
+      this.setState({ updating: false });
+      if (status.force.length) {
+         settings.set('force', status.force.flat());
+      }
+
+      settings.set('status', null);
    }
 
    renderAuthors(authors) {
@@ -140,4 +177,4 @@ class Update extends React.Component {
    }
 };
 
-module.exports = Settings.connectComponent(Update, 'unbound-updater');
+module.exports = Update;
