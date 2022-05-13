@@ -6,8 +6,8 @@ module.exports = class Plugin extends React.Component {
 
       return (<svg
          {...rest}
-         width={width ?? 32}
-         height={height ?? 32}
+         width={width ?? 24}
+         height={height ?? 24}
          viewBox='0 0 512 512'
          fill='currentColor'
       >
