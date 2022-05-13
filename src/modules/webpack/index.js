@@ -339,7 +339,13 @@ class Webpack {
       }
 
       if (bulk) {
-         const filters = names.map(filters.map(Webpack.filters.byDisplayName)).concat({ wait });
+         const filters = names.map(name => {
+            if (Array.isArray(name)) {
+               return Webpack.filters.byDisplayName(name[0], name[1]);
+            }
+
+            return Webpack.filters.byDisplayName(name, true);
+         }).concat({ wait });
 
          return Webpack.bulk(...filters);
       }
