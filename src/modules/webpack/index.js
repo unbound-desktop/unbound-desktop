@@ -229,7 +229,6 @@ class Webpack {
       window[Webpack.#global].pop();
 
       if (res) {
-         Webpack.instance = res;
       }
 
       return res;
@@ -400,44 +399,27 @@ class Webpack {
    }
 
    static getByString(...options) {
-      const [props, { bulk = false, wait = false, ...rest }] = Webpack.#parseOptions(options);
+      const [strings, { bulk = false, default: defaultExport = true, wait = false, ...rest }] = Webpack.#parseOptions(options);
 
       if (!bulk && !wait) {
-         return Webpack.getModule(Webpack.filters.byString(...props), rest);
+         return Webpack.getModule(Webpack.filters.byString(strings, defaultExport), rest);
       }
 
       if (wait && !bulk) {
-         return Webpack.#waitFor(Webpack.filters.byString(...props), rest);
+         return Webpack.#waitFor(Webpack.filters.byString(strings, defaultExport), rest);
       }
 
       if (bulk) {
-         const filters = props.map(p => Array.isArray(p)
-            ? Webpack.filters.byString(...p)
-            : Webpack.filters.byString(p)
-         ).concat({ wait, ...rest });
-
-         return Webpack.bulk(...filters);
-      }
-
-      return null;
-   }
-
-   static getByDefaultString(...options) {
-      const [props, { bulk = false, wait = false, ...rest }] = Webpack.#parseOptions(options);
-
-      if (!bulk && !wait) {
-         return Webpack.getModule(Webpack.filters.byDefaultString(...props), rest);
-      }
-
-      if (wait && !bulk) {
-         return Webpack.#waitFor(Webpack.filters.byDefaultString(...props), rest);
-      }
-
-      if (bulk) {
-         const filters = props.map(p => Array.isArray(p)
-            ? Webpack.filters.byDefaultString(...p)
-            : Webpack.filters.byDefaultString(p)
-         ).concat({ wait, ...rest });
+         const filters = strings.map(string => {
+            if (Array.isArray(s)) {
+               const defaultExport = string[string.length - 1];
+               if (typeof defaultExport === 'boolean') {
+                  return Webpack.filters.byString(string.splice(string.length, 1), defaultExport)
+               };
+            } else {
+               return Webpack.filters.byString([string], defaultExport);
+            }
+         }).filter(Boolean).concat({ wait, ...rest });
 
          return Webpack.bulk(...filters);
       }
@@ -494,12 +476,14 @@ class Webpack {
                return typeof mdl === 'function' && mdl.displayName === name;
             }
          },
-         byDefaultString: (...strings) => (mdl) => {
-            if (!mdl?.default) return false;
-            return strings.every(s => mdl.default.toString?.()?.includes?.(s));
-         },
-         byString: (...strings) => (mdl) => {
-            return strings.every(s => mdl.toString?.()?.includes?.(s));
+         byString: (strings, def = true) => (mdl) => {
+            if (!mdl) return false;
+
+            if (!def) {
+               return typeof mdl.default === 'function' && strings.every(s => mdl.default?.toString?.()?.includes?.(s));
+            } else {
+               return typeof mdl === 'function' && strings.every(s => mdl.toString?.()?.includes?.(s));
+            }
          },
          byFluxStore: (name) => (mdl) => {
             if (!mdl) return false;
@@ -562,6 +546,4 @@ module.exports = {
    findByKeyword: Webpack.getByKeyword,
    getByDisplayName: Webpack.getByDisplayName,
    findByDisplayName: Webpack.getByDisplayName,
-   getByDefaultString: Webpack.getByDefaultString,
-   findByDefaultString: Webpack.getByDefaultString
 };
