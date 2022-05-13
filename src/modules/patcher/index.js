@@ -77,12 +77,16 @@ class Patcher {
          for (let i = 0; i < before.length; i++) {
             const instance = before[i];
             if (!instance) continue;
-            
+
             try {
                const temp = instance.callback(this, args, patch.original.bind(this));
                if (Array.isArray(temp)) args = temp;
             } catch (error) {
                Logger.error(`Could not fire before patch for ${patch.func} of ${instance.caller}`, error);
+            }
+
+            if (instance.once) {
+               instance.unpatch();
             }
          }
 
@@ -104,6 +108,10 @@ class Patcher {
                } catch (error) {
                   Logger.error(`Could not fire instead patch for ${patch.func} of ${instance.caller}`, error);
                }
+
+               if (instance.once) {
+                  instance.unpatch();
+               }
             }
          }
 
@@ -118,22 +126,21 @@ class Patcher {
             } catch (error) {
                Logger.error(`Could not fire after patch for ${patch.func} of ${instance.caller}`, error);
             }
-         }
 
-         if (patch.once) {
-            patch.unpatch();
+            if (instance.once) {
+               instance.unpatch();
+            }
          }
 
          return res;
       };
    };
 
-   push([, mdl, func, , , once]) {
+   push([, mdl, func]) {
       const patch = {
          mdl,
          func,
          original: mdl[func],
-         once,
          unpatch: () => {
             patch.mdl[patch.func] = patch.original;
             patch.patches = {
@@ -200,6 +207,7 @@ class Patcher {
          caller,
          id: current.patches?.[type]?.length ?? 0,
          callback,
+         once,
          unpatch: () => {
             // Remove the original patch this callback was from
             const individual = current.patches?.[type].findIndex(p => p.id === patch.id);
