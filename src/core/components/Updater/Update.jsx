@@ -112,7 +112,6 @@ class Update extends React.Component {
 
          if (needsForce) {
             console.log('fuck');
-         } else {
          }
 
          const idx = updates.indexOf(update);

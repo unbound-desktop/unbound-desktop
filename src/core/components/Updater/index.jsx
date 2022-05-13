@@ -165,10 +165,10 @@ class Updater extends React.Component {
 
             if (needsForce) {
                console.log('fuck');
-            } else {
-               const idx = updates.indexOf(update);
-               if (idx > -1) updates.splice(idx, 1);
             }
+
+            const idx = updates.indexOf(update);
+            if (idx > -1) updates.splice(idx, 1);
 
             settings.set({ updates, force: needsForce ? false : force });
          } catch (e) {
