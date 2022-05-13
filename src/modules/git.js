@@ -21,7 +21,7 @@ class Git {
       }
    }
 
-   async isRepo(path) {
+   isRepo(path) {
       return existsSync(join(path, '.git'));
    }
 

@@ -1,6 +1,7 @@
 const { RelativeTooltip, Button, Icon, Text, ErrorBoundary, FormTitle, Divider, Spinner } = require('@components');
 const { Modals } = require('@webpack/common');
 const Settings = require('@api/settings');
+const { paths } = require('@constants');
 const Git = require('@modules/git');
 const React = require('react');
 
@@ -131,16 +132,6 @@ class Updater extends React.Component {
             </Button>
             <Button
                disabled={status}
-               color={Button.Colors.YELLOW}
-               size={Button.Sizes.SMALL}
-               onClick={() => {
-
-               }}
-            >
-               Pause updates
-            </Button>
-            <Button
-               disabled={status}
                className='unbound-updater-actions-disable'
                color={Button.Colors.RED}
                size={Button.Sizes.SMALL}
@@ -205,6 +196,15 @@ class Updater extends React.Component {
       if (PCPlugins) res.push(...await this.handleEntities(PCPlugins, 'Plugin'));
       if (PCThemes) res.push(...await this.handleEntities(PCThemes, 'Theme'));
 
+      try {
+         res.push(...await this.handleUpdates({
+            path: paths.root,
+            name: 'Unbound',
+            authors: [{ name: 'eternal', id: '263689920210534400' }],
+            type: 'Core'
+         }));
+      } catch { }
+
       return settings.set({
          updates: res.sort((a, b) => b.entity - a.entity),
          status: null
@@ -212,26 +212,39 @@ class Updater extends React.Component {
    }
 
    async handleEntities(entities, type) {
-      const updates = [];
+      const res = [];
 
       await Promise.allSettled(entities.map(async entity => {
          try {
-            if (!Git.isRepo(entity.path)) return;
-
-            const branch = await Git.getBranch(entity.path);
-            const commits = await Git.getNewCommits(entity.path, branch);
-            const url = await Git.getURL(entity.path);
-
-            if (commits.length) updates.push({
-               entity: entity.manifest?.name ?? entity.data.name,
-               authors: entity.manifest?.author ?? entity.data.author ?? entity.data.authors,
+            const updates = await this.handleUpdates({
                path: entity.path,
-               type: type,
-               url,
-               commits
+               name: entity.manifest?.name ?? entity.data.name,
+               authors: entity.manifest?.author ?? entity.data.author ?? entity.data.authors,
+               type
             });
+
+            res.push(...updates);
          } catch { }
       }));
+
+      return res;
+   }
+
+   async handleUpdates({ path, name, authors, type }) {
+      const updates = [];
+
+      try {
+         const isRepo = Git.isRepo(path);
+         if (!isRepo) return;
+
+         const branch = await Git.getBranch(path);
+         const commits = await Git.getNewCommits(path, branch);
+         const url = await Git.getURL(path);
+
+         if (commits.length) {
+            updates.push({ entity: name, authors, commits, path, type, url });
+         }
+      } catch { }
 
       return updates;
    }

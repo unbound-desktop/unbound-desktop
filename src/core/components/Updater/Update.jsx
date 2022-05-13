@@ -4,6 +4,7 @@ const Settings = require('@api/settings');
 const { DMs } = require('@webpack/api');
 const React = require('react');
 
+const Unbound = require('./Icons/Unbound');
 const Plugin = require('./Icons/Plugin');
 
 class Update extends React.Component {
@@ -26,12 +27,15 @@ class Update extends React.Component {
          case 'Plugin':
             status.icon = <Plugin />;
             break;
+         case 'Core':
+            status.icon = <Unbound />;
+            break;
       }
 
       return (
          <div className='unbound-updater-update'>
             <div className='unbound-updater-update-header'>
-               <Text className='unbound-updater-update-type-icon'>
+               <Text data-update-type={update.type} className='unbound-updater-update-type-icon'>
                   {status.icon}
                </Text>
                <div>
@@ -60,9 +64,7 @@ class Update extends React.Component {
                         {...props}
                         className='unbound-updater-update-download'
                         name='Download'
-                        onClick={() => {
-                           this.setState({ updating: true });
-                        }}
+                        onClick={this.handleUpdate.bind(this)}
                      />}
                   </RelativeTooltip>}
             </div>
@@ -87,6 +89,10 @@ class Update extends React.Component {
             </div>
          </div>
       );
+   }
+
+   handleUpdate() {
+      this.setState({ updating: true });
    }
 
    renderAuthors(authors) {

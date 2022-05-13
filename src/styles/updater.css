@@ -206,6 +206,11 @@
    margin-bottom: 15px
 }
 
+.unbound-updater-update-type-icon[data-update-type='Core'] {
+   width: 32px;
+   height: 32px;
+}
+
 .unbound-updater-actions-disable {
    margin-left: auto
 }
