@@ -20,6 +20,10 @@
    height: 100%;
 }
 
+.unbound-addon-controls {
+   max-height: 24px;
+}
+
 .unbound-addon-header {
    display: flex;
    padding-bottom: 10px;
