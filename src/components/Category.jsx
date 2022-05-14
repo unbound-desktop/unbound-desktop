@@ -5,7 +5,7 @@ const Divider = require('./Divider');
 
 module.exports = class Category extends React.PureComponent {
    render() {
-      const { title, description, opened, onChange, children, icon, className } = this.props;
+      const { title, description, opened, onChange, children, icon, className, endDivider } = this.props;
 
       return <div className={classnames('unbound-category', opened && 'unbound-category-opened', className)}>
          <div
@@ -37,10 +37,14 @@ module.exports = class Category extends React.PureComponent {
          </div>
          {opened && <Divider className='unbound-category-divider' />}
          <div
+            data-is-open={opened}
             className={classnames('unbound-category-content', opened && 'unbound-margin-top-20')}
          >
-            {opened && children}
+            {opened && <>
+               {children}
+            </>}
          </div>
+         {opened && endDivider && <Divider className='unbound-category-divider' />}
       </div>;
    }
 };
