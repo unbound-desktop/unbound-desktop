@@ -285,7 +285,7 @@ module.exports = class AddonCard extends React.Component {
       const id = this.getId();
       const name = this.getName();
 
-      return (
+      return this.isEnabled && (
          this.props.entity.instance?.getSettingsPanel ??
          this.props.entity.getSettingsPanel ??
          [...window?.powercord?.api?.settings?.settings?.keys() ?? []].includes(id) ??
