@@ -166,7 +166,7 @@ class Manager extends React.PureComponent {
                   }}
                />
             )}
-            <Menu.MenuSeparator key='separator' />
+            {/* <Menu.MenuSeparator key='separator' />
             <Menu.MenuItem
                key={`filter-${type}`}
                id={`filter-${type}`}
@@ -177,7 +177,7 @@ class Manager extends React.PureComponent {
                      shell.openPath(folder);
                   } catch { }
                }}
-            />
+            /> */}
          </Menu.Menu>
       );
    }
@@ -277,12 +277,29 @@ class Manager extends React.PureComponent {
                query={this.state.query}
                className='unbound-manager-search-bar'
             />
-            <RelativeTooltip text='Store' hideOnClick={false}>
+            {/* <RelativeTooltip text='Store' hideOnClick={false}>
                {props => (
                   <Icon
                      {...props}
                      onClick={() => this.forceUpdate()}
                      name='StoreTag'
+                     className='unbound-manager-button'
+                     width={32}
+                     height={32}
+                  />
+               )}
+            </RelativeTooltip> */}
+            <RelativeTooltip text='Open Folder' hideOnClick={false}>
+               {props => (
+                  <Icon
+                     {...props}
+                     onClick={() => {
+                        try {
+                           const folder = path.resolve(__dirname, '..', '..', '..', this.props.type);
+                           shell.openPath(folder);
+                        } catch { }
+                     }}
+                     name='Folder'
                      className='unbound-manager-button'
                      width={32}
                      height={32}
