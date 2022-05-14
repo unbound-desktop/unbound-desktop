@@ -112,9 +112,9 @@ module.exports = class Toast extends Component {
                         </FormTitle>}
                      </div>
                      <p>{content}</p>
-                     {timeout > 0 && <div className="unbound-toast-progress">
+                     {timeout > 0 && <div className='unbound-toast-progress'>
                         <animated.div
-                           className="unbound-toast-progress-bar"
+                           className='unbound-toast-progress-bar'
                            style={{
                               width: progress.value.to(e => {
                                  if (e > 97 && timeout !== 0 && !this.state.closing) {

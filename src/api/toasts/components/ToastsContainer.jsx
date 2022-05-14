@@ -13,6 +13,10 @@ class ToastsContainer extends React.Component {
       const { toasts, settings } = this.props;
       const position = settings.get('toastPosition', 'bottom-right');
 
+      if (position === 'disabled') {
+         return null;
+      }
+
       return <div className='unbound-toasts-container' data-position={position}>
          {Object.values(toasts.storage).map(data =>
             <Toast key={data.id} {...data} store={toasts} position={position} />
