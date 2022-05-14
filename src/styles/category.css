@@ -25,9 +25,27 @@
    margin: 5px 0 10px;
 }
 
-.unbound-category>*,
-.unbound-category-details>* {
+.unbound-category > *,
+.unbound-category-details > * {
    cursor: pointer;
+}
+
+.unbound-category-content > .unbound-category {
+   padding: 0;
+   margin-top: 10px;
+   margin-bottom: 0;
+}
+
+.unbound-category-content > .unbound-category > .unbound-category-content {
+   padding: 0 5px;
+}
+
+.unbound-category-content > .unbound-category > .unbound-category-divider:last-child {
+   margin-top: 10px;
+}
+
+.unbound-settings-sub-category .unbound-category-details > h3 {
+   font-weight: 500;
 }
 
 .unbound-category .unbound-category-content {
