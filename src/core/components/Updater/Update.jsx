@@ -1,6 +1,5 @@
 const { Icon, Text, Anchor, RelativeTooltip, Spinner, Divider } = require('@components');
 const { Layers } = require('@webpack/common');
-const Settings = require('@api/settings');
 const { DMs } = require('@webpack/api');
 const Git = require('@modules/git');
 const React = require('react');

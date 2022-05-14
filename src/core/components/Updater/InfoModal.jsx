@@ -4,14 +4,15 @@ const Git = require('@modules/git');
 const React = require('react');
 
 module.exports = class InfoModal extends React.Component {
-   constructor() {
-      super();
+   constructor(props) {
+      super(props);
 
       this.state = {
          branch: null,
          commit: null
       };
    }
+
    render() {
       return <Modal.ModalRoot className='unbound-info-modal' size={Modal.ModalSize.SMALL} {...this.props}>
          <Modal.ModalHeader separator={false}>
