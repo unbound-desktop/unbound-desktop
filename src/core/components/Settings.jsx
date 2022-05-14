@@ -1,8 +1,14 @@
+const { getLazy, filters } = require('@webpack');
 const { React } = require('@webpack/common');
+const { memoize } = require('@utilities');
 
-const { Text, ErrorBoundary, Category, FormTitle, Icon, Switch } = require('@components');
+const { Text, ErrorBoundary, Category, FormTitle, Icon, Switch, AsyncComponent } = require('@components');
 const Settings = require('@api/settings');
+const Toasts = require('@api/toasts');
 const Icons = require('./Icons');
+
+const NotificationSettings = memoize(() => getLazy(filters.byDisplayName('NotificationSettings')));
+const BoundSelector = AsyncComponent.from(NotificationSettings);
 
 class GeneralSettings extends React.PureComponent {
    constructor(props) {
@@ -54,21 +60,34 @@ class GeneralSettings extends React.PureComponent {
          isBdOpen = false
       } = this.state;
 
+      const BDSettings = window.BDInternal?.SettingsManager;
+
       return (
          <ErrorBoundary>
             <FormTitle tag='h1' className='unbound-settings-title'>
                Settings
             </FormTitle>
             <Category
-               title='General Settings'
-               description='Settings strictly related to Unbound'
-               icon={() => <Icon name='Gear' className='unbound-category-icon' />}
+               title='Toast Settings'
+               description='Customize your toasts the way you want them.'
+               icon={p => <Icon name='Ban' {...p} />}
                opened={isGeneralOpen}
                onChange={() => this.setState({ isGeneralOpen: !isGeneralOpen })}
             >
-               {this.renderSwitch({ name: 'Hi' })}
-               {this.renderSwitch({ name: 'Hi' })}
-               {this.renderSwitch({ name: 'Hi' })}
+               <BoundSelector
+                  position={this.parsePosition(this.settings.get('toastPosition', 'bottom-right'))}
+                  onChange={(e, v) => {
+                     const position = this.parsePosition(v);
+                     this.settings.set('toastPosition', position);
+                     if (this.openToast) Toasts.close(this.openToast);
+
+                     this.openToast = Toasts.send({
+                        title: 'Position changed!',
+                        content: 'This is a toast.',
+                        timeout: 1000
+                     });
+                  }}
+               />
             </Category>
 
             <Category
@@ -78,46 +97,65 @@ class GeneralSettings extends React.PureComponent {
                opened={isDeveloperOpen}
                onChange={() => this.setState({ isDeveloperOpen: !isDeveloperOpen })}
             >
-               {this.renderSwitch({
-                  name: 'F8 DevTools Debugger Keybind',
-                  id: 'debuggerKeybind',
-                  default: false,
-                  onChange: (enabled) => {
-                     if (enabled) {
-                        console.log('hi');
-                     } else {
 
-                     }
-                  }
-               })}
             </Category>
 
-            {/* window.powercord && */
-               <Category
-                  title='Powercord Settings'
-                  description='Settings strictly related to Powercord'
-                  icon={() => <Icons.Plug className='unbound-category-icon' />}
-                  opened={isPowercordOpen}
-                  onChange={() => this.setState({ isPowercordOpen: !isPowercordOpen })}
-               >
-                  soon
-               </Category>
-            }
-
-            {/* window.powercord && */
-               <Category
-                  title='BetterDiscord Settings'
-                  description='Settings strictly related to BetterDiscord'
-                  icon={() => <Icons.Bd className='unbound-category-icon' />}
-                  opened={isBdOpen}
-                  onChange={() => this.setState({ isBdOpen: !isBdOpen })}
-               >
-                  soon
-               </Category>
-            }
+            {BDSettings && <Category
+               title='BetterDiscord Settings'
+               description='Settings strictly related to BetterDiscord'
+               icon={() => <Icons.Bd className='unbound-category-icon' />}
+               opened={isBdOpen}
+               onChange={() => this.setState({ isBdOpen: !isBdOpen })}
+            >
+               {Object.entries(BDSettings.defaultSettings).map(([category, { settings }]) => {
+                  return <Category
+                     title={category}
+                     className='unbound-settings-sub-category'
+                     opened={this.state[category] ?? false}
+                     onChange={() => this.setState({
+                        [category]: !(this.state[category] ?? false)
+                     })}
+                  >
+                     {settings.map(s => this.handleBDSetting(category, s))}
+                  </Category>;
+               })}
+            </Category>}
          </ErrorBoundary>
       );
    }
+
+   parsePosition(position) {
+      if (position.includes('-')) {
+         return position.split('-').map((item, idx) => idx === 0 ? item : `${item[0].toUpperCase()}${item.slice(1)}`).join('');
+      } else {
+         return position.split(/(top|bottom)/).filter(Boolean).join('-').toLowerCase();
+      }
+   }
+
+   handleBDSetting(category, setting) {
+      const BDSettings = window.BDInternal?.SettingsManager;
+
+      switch (setting.type) {
+         case 'switch':
+            return this.renderSwitch({
+               onChange: (v) => BDSettings.setSetting(setting.id, v),
+               value: BDSettings.isEnabled(setting.id) ?? setting.value,
+               name: setting.name,
+               id: setting.id
+            });
+         case 'category':
+            return <Category
+               title={setting.name}
+               endDivider={true}
+               opened={this.state[`${category}-${setting.name}`] ?? false}
+               onChange={() => this.setState({
+                  [`${category}-${setting.name}`]: !(this.state[`${category}-${setting.name}`] ?? false)
+               })}
+            >
+               {setting.items.map(setting => this.handleBDSetting(category, setting))}
+            </Category>;
+      }
+   }
 };
 
-module.exports = Settings.connectComponent(GeneralSettings, 'unbound-general-settings');
+module.exports = Settings.connectComponent(GeneralSettings, 'unbound');
