@@ -132,7 +132,7 @@ module.exports = class Toast extends Component {
                   />
                </div>
                <Text className='unbound-toast-content'>{this.parse(content)}</Text>
-               {Array.isArray(buttons) && <div className='unbound-toast-buttons'>
+               {Array.isArray(buttons) && buttons.length && <div className='unbound-toast-buttons'>
                   {buttons.map((button, i) =>
                      <Button
                         color={Button.Colors[button.color?.toUpperCase() ?? 'BRAND_NEW']}
