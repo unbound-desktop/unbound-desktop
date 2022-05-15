@@ -2,7 +2,7 @@ const { React } = require('@webpack/common');
 const Settings = require('@api/settings');
 const Toast = require('./Toast');
 
-class ToastsContainer extends React.Component {
+class ToastsContainer extends React.PureComponent {
    constructor(props) {
       super(props);
 

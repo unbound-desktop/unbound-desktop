@@ -1,7 +1,10 @@
 const { React, ReactSpring } = require('@webpack/common');
 const { Icon, Text, FormTitle } = require('@components');
 const Component = require('@structures/component');
-const { close } = require('@api/toasts');
+const { getByProps } = require('@webpack');
+
+const Markdown = getByProps('reactParserFor', 'parse');
+const Parser = Markdown?.reactParserFor?.(Markdown?.defaultRules);
 
 const { useSpring, useTransition, animated } = ReactSpring;
 
@@ -111,7 +114,7 @@ module.exports = class Toast extends Component {
             >
                <div className='unbound-toast-header' data-has-content={Boolean(content)}>
                   {typeof CustomIcon === 'function' && <CustomIcon className='unbound-toast-icon' />}
-                  {title && <FormTitle className='unbound-toast-title' tag='h3'>{title}</FormTitle>}
+                  {title && <FormTitle className='unbound-toast-title' tag='h3'>{this.parse(title)}</FormTitle>}
                   <Icon
                      className='unbound-toast-close'
                      name='Close'
@@ -125,7 +128,7 @@ module.exports = class Toast extends Component {
                      }}
                   />
                </div>
-               <Text className='unbound-toast-content'>{content}</Text>
+               <Text className='unbound-toast-content'>{this.parse(content)}</Text>
                {timeout > 0 && <div className='unbound-toast-progress'>
                   <animated.div
                      className='unbound-toast-progress-bar'
@@ -144,5 +147,13 @@ module.exports = class Toast extends Component {
          </animated.div>
          ))}
       </>;
+   }
+
+   parse(content) {
+      try {
+         return Parser(content);
+      } catch {
+         return content;
+      }
    }
 };
