@@ -1,6 +1,7 @@
 const { React, ReactSpring } = require('@webpack/common');
+const { Icon, Text, FormTitle } = require('@components');
 const Component = require('@structures/component');
-const { FormTitle } = require('@components');
+const { close } = require('@api/toasts');
 
 const { useSpring, useTransition, animated } = ReactSpring;
 
@@ -27,7 +28,18 @@ module.exports = class Toast extends Component {
    }
 
    render() {
-      const { title, content, position, store, id, timeout } = this.props;
+      const {
+         icon: CustomIcon,
+         color,
+         title,
+         manager,
+         content,
+         position,
+         store,
+         id,
+         timeout,
+         onClose
+      } = this.props;
 
       const progress = useSpring({
          from: {
@@ -69,7 +81,7 @@ module.exports = class Toast extends Component {
          leave: {
             opacity: 0,
             height: 0,
-            transform: `translateY(0) scale(0.9)`
+            transform: `translateY(0) scale(0.75)`
          },
          onRest: () => {
             if (this.state.closing) {
@@ -81,57 +93,56 @@ module.exports = class Toast extends Component {
       const transition = useTransition(!this.state.closing, spring);
 
       return <>
-         {transition((props, item) => {
-            if (!item) return null;
-
-            return (
-               <animated.div
-                  key={id}
-                  onMouseEnter={() => progress.value.pause()}
-                  onMouseLeave={() => progress.value.resume()}
-                  className='unbound-toast-wrapper'
-                  style={{
-                     opacity: props.opacity,
-                     height: props.height,
-                     display: 'flex',
-                     flexDirection: 'column',
-                     alignItems: 'center'
-                  }}
-               >
-                  <animated.div
-                     ref={this.ref}
-                     style={{
-                        transform: props.transform,
-                        pointerEvents: 'auto'
+         {transition((props, item) => item && (<animated.div
+            key={id}
+            onMouseEnter={() => progress.value.pause()}
+            onMouseLeave={() => progress.value.resume()}
+            className='unbound-toast-wrapper'
+            style={{ opacity: props.opacity, height: props.height }}
+         >
+            <animated.div
+               ref={this.ref}
+               data-color={color}
+               style={{
+                  transform: props.transform,
+                  '--color': color
+               }}
+               className='unbound-toast'
+            >
+               <div className='unbound-toast-header' data-has-content={Boolean(content)}>
+                  {typeof CustomIcon === 'function' && <CustomIcon className='unbound-toast-icon' />}
+                  {title && <FormTitle className='unbound-toast-title' tag='h3'>{title}</FormTitle>}
+                  <Icon
+                     className='unbound-toast-close'
+                     name='Close'
+                     onClick={() => {
+                        manager.close(id);
+                        onClose?.();
                      }}
-                     className='unbound-toast'
-                  >
-                     <div className='unbound-toast-header'>
-                        {title && <FormTitle>
-                           {title}
-                        </FormTitle>}
-                     </div>
-                     <p>{content}</p>
-                     {timeout > 0 && <div className='unbound-toast-progress'>
-                        <animated.div
-                           className='unbound-toast-progress-bar'
-                           style={{
-                              width: progress.value.to(e => {
-                                 if (e > 97 && timeout !== 0 && !this.state.closing) {
-                                    this.setState({ closing: true });
-                                 }
+                     onContextMenu={() => {
+                        manager.closeAll();
+                        onClose?.();
+                     }}
+                  />
+               </div>
+               <Text className='unbound-toast-content'>{content}</Text>
+               {timeout > 0 && <div className='unbound-toast-progress'>
+                  <animated.div
+                     className='unbound-toast-progress-bar'
+                     style={{
+                        width: progress.value.to(e => {
+                           if (e >= 100 && timeout !== 0 && !this.state.closing) {
+                              this.setState({ closing: true });
+                           }
 
-                                 return `${e}%`;
-                              })
-                           }}
-                        >
-
-                        </animated.div>
-                     </div>}
-                  </animated.div>
-               </animated.div>
-            );
-         })}
+                           return `${e}%`;
+                        })
+                     }}
+                  />
+               </div>}
+            </animated.div>
+         </animated.div>
+         ))}
       </>;
    }
 };

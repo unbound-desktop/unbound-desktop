@@ -18,16 +18,6 @@
    bottom: 0;
 }
 
-.unbound-toasts-container[data-position='top-middle'] {
-   top: 15px;
-   left: 50%;
-}
-
-.unbound-toasts-container[data-position='top-middle'] {
-   top: 15px;
-   left: 50%;
-}
-
 .unbound-toasts-container[data-position='top-right'] {
    top: 15px;
    right: 0;
@@ -37,24 +27,77 @@
    top: 15px;
 }
 
+.unbound-toast-icon {
+   margin-right: 7.5px;
+   color: var(--color);
+   fill: var(--color, white);
+   width: 20px;
+   height: 20px;
+   justify-content: center;
+   align-items: center;
+}
+
+.unbound-toasts-container[data-position='bottom-right'] .unbound-toast-wrapper,
+.unbound-toasts-container[data-position='top-right'] .unbound-toast-wrapper {
+   display: flex;
+   justify-content: flex-end;
+}
+
+.unbound-toast-title {
+   margin: 0;
+   margin-right: 10px;
+}
+
+.unbound-toast-header {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.unbound-toast-header[data-has-content='true'] {
+   margin-bottom: 5px;
+}
+
+.unbound-toast-close {
+   margin-left: auto;
+   cursor: pointer;
+   padding: 5px;
+   width: 16px;
+   height: 16px;
+}
+
+.unbound-toast-content {
+   max-width: 375px;
+}
 
 .unbound-toast-wrapper {
    z-index: 99999999999999999999999;
 }
 
+.unbound-toast[data-color] .unbound-toast-progress-bar {
+   background: var(--color);
+}
+
+/* .unbound-toast[data-color] {
+   border-left: 5px solid var(--color);
+} */
+
 .unbound-toast {
    padding: 10px;
-   background-color: var(--background-floating);
+   pointer-events: auto;
+   background-color: var(--background-tertiary);
    border-radius: 5px;
-   min-width: 50px;
+   position: absolute;
+   min-width: 200px;
    min-height: 25px;
    color: white;
+   width: max-content;
    overflow: hidden;
 }
 
 .unbound-toast-progress {
    width: 100%;
-   height: 2px;
+   height: 2.5px;
    position: absolute;
    bottom: 0;
    left: 0;
@@ -63,5 +106,5 @@
 
 .unbound-toast-progress-bar {
    background: var(--brand-experiment);
-   height: 2px;
+   height: 2.5px;
 }

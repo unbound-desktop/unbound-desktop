@@ -81,9 +81,11 @@ class GeneralSettings extends React.PureComponent {
                      this.settings.set('toastPosition', position);
                      if (this.openToast) Toasts.close(this.openToast);
 
-                     this.openToast = Toasts.send({
-                        title: 'Position changed!',
-                        content: 'This is a toast.',
+                     this.openToast = Toasts.open({
+                        title: 'Toast position changed',
+                        color: 'var(--info-positive-foreground)',
+                        icon: (p) => <Icon name='CheckmarkCircle' {...p} />,
+                        content: 'This is an example toast.',
                         timeout: 1000
                      });
                   }}

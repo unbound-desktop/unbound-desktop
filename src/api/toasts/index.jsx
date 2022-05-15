@@ -16,20 +16,20 @@ class Toasts extends API {
       this.container = document.createElement('div');
       this.container.className = 'unbound-toasts';
 
-      bindAll(this, ['send', 'close']);
+      bindAll(this, ['open', 'close']);
    }
 
    start() {
       const ConnectedToastsContainer = Flux.connectStores([this.toasts.store], () => { })(ToastsContainer);
-      ReactDOM.render(<ConnectedToastsContainer toasts={this.toasts} />, this.container);
+      ReactDOM.render(<ConnectedToastsContainer manager={this} toasts={this.toasts} />, this.container);
       document.body.appendChild(this.container);
    }
 
-   send(options) {
+   open(options) {
       options.id ??= uuid(5);
 
       if (this.toasts.get(options.id)) {
-         return this.send(Object.assign(options, { id: uuid(5) }));
+         return this.open(Object.assign(options, { id: uuid(5) }));
       }
 
       this.toasts.set(options.id, options);
