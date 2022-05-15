@@ -6,7 +6,7 @@ const SettingsItem = require('./SettingsItem');
 
 module.exports = class SliderInput extends React.PureComponent {
    render() {
-      const { title, description, required } = this.props;
+      const { title, description, required, ...rest } = this.props;
       const children = this.props.children;
       delete this.props.children;
 
@@ -15,7 +15,7 @@ module.exports = class SliderInput extends React.PureComponent {
             title={title}
             description={description}
             required={required}
-            hasMargin={true}
+            {...rest}
          >
             <Slider
                {...this.props}

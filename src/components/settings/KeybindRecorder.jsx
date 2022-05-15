@@ -13,7 +13,7 @@ const KeyRecorder = AsyncComponent.from(getKeybindRecorder);
 
 module.exports = class KeybindRecorder extends React.PureComponent {
    render() {
-      const { title, description, required } = this.props;
+      const { title, description, required, ...rest } = this.props;
       const children = this.props.children;
       delete this.props.children;
 
@@ -22,7 +22,7 @@ module.exports = class KeybindRecorder extends React.PureComponent {
             title={title}
             description={description}
             required={required}
-            hasMargin={true}
+            {...rest}
          >
             <KeyRecorder
                defaultValue={this.props.defaultValue ?? []}

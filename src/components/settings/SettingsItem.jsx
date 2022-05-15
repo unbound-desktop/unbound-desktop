@@ -3,16 +3,18 @@ const { classnames } = require('@utilities/');
 const { React } = require('@webpack/common');
 const { getByProps } = require('@webpack');
 
-const { description } = getByProps('formText', 'description') || {};
+const Classes = getByProps('formText', 'description') || {};
 
 module.exports = class SettingsItem extends React.PureComponent {
    render() {
+      const { className, title, required, endDivider = true, children, description } = this.props;
+
       return (<>
          <FormItem
-            title={this.props.title}
-            required={this.props.required}
+            title={title}
+            required={required}
             className={[
-               this.props.className,
+               className,
                Flex.Direction.VERTICAL,
                Flex.Justify.START,
                Flex.Align.STRETCH,
@@ -20,19 +22,19 @@ module.exports = class SettingsItem extends React.PureComponent {
                'unbound-settings-item-form'
             ].join(' ')}
          >
-            {this.props.children}
-            {this.props.description && (
+            {children}
+            {description && (
                <FormText
                   className={classnames(
-                     description,
+                     Classes.description,
                      'unbound-settings-item-text'
                   )}
                >
-                  {this.props.description}
+                  {description}
                </FormText>
             )}
          </FormItem>
-         <Divider className='unbound-settings-item-divider' />
+         {endDivider && <Divider className='unbound-settings-item-divider' />}
       </>);
    }
 };

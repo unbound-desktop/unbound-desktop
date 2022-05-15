@@ -32,7 +32,7 @@ const Picker = AsyncComponent.from(getColorPicker);
 
 module.exports = class ColorPicker extends React.PureComponent {
    render() {
-      const { title, description, required, default: defaultValue, defaultColors = ROLE_COLORS, value, disabled, onChange } = this.props;
+      const { title, description, required, default: defaultValue, defaultColors = ROLE_COLORS, ...rest } = this.props;
       const children = this.props.children;
       delete this.props.children;
 
@@ -41,7 +41,7 @@ module.exports = class ColorPicker extends React.PureComponent {
             title={title}
             description={description}
             required={required}
-            hasMargin={true}
+            {...rest}
          >
             <Picker
                colors={defaultColors}
