@@ -29,7 +29,6 @@
 
 .unbound-toast-button {
    width: 45%;
-   border: 1px solid #000;
    flex-grow: 1;
    box-sizing: border-box;
    justify-content: space-between;
