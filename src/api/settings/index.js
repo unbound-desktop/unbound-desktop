@@ -90,7 +90,7 @@ class Settings extends API {
          throw new TypeError('the first argument file must be of type string');
       } else if (!setting || typeof setting !== 'string') {
          throw new TypeError('the second argument setting must be of type string');
-      } else if (defaults !== void 0 || typeof defaults !== 'boolean') {
+      } else if (defaults === void 0 || typeof defaults !== 'boolean') {
          throw new TypeError('the third argument defaults must be of type boolean');
       }
 

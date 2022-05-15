@@ -80,7 +80,7 @@ const Events = {
    'UNBOUND_TOGGLE_SETTING': ({ file, setting, defaults }) => {
       if (!settings[file]) settings[file] = {};
 
-      if (settings[file][setting] == void 0) {
+      if (settings[file][setting] === void 0) {
          settings[file][setting] = !defaults;
       } else {
          settings[file][setting] = !settings[file][setting];
