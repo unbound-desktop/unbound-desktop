@@ -27,6 +27,24 @@
    top: 15px;
 }
 
+.unbound-toast-button {
+   width: 45%;
+   border: 1px solid #000;
+   flex-grow: 1;
+   box-sizing: border-box;
+   justify-content: space-between;
+   text-align: center;
+   padding: 5px;
+}
+
+.unbound-toast-buttons {
+   margin-top: 10px;
+   display: flex;
+   flex-wrap: wrap;
+   box-sizing: border-box;
+   gap: 0.25rem;
+}
+
 .unbound-toast-icon {
    margin-right: 7.5px;
    color: var(--color);
@@ -78,10 +96,6 @@
    background: var(--color);
 }
 
-/* .unbound-toast[data-color] {
-   border-left: 5px solid var(--color);
-} */
-
 .unbound-toast {
    padding: 10px;
    border-left: 4px solid var(--color);
@@ -94,6 +108,7 @@
    color: white;
    width: max-content;
    overflow: hidden;
+   box-shadow: 0 3px 10px rgb(0 0 0 / 0.15);
 }
 
 .unbound-toast-progress {

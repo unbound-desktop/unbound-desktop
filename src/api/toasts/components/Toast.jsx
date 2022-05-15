@@ -1,10 +1,10 @@
+const { Icon, Text, FormTitle, Button } = require('@components');
 const { React, ReactSpring } = require('@webpack/common');
-const { Icon, Text, FormTitle } = require('@components');
 const Component = require('@structures/component');
 const { getByProps } = require('@webpack');
 
 const Markdown = getByProps('reactParserFor', 'parse');
-const Parser = Markdown?.reactParserFor?.(Markdown?.defaultRules);
+const Parser = Markdown?.reactParserFor?.(Markdown.defaultRules);
 
 const { useSpring, useTransition, animated } = ReactSpring;
 
@@ -41,7 +41,8 @@ module.exports = class Toast extends Component {
          store,
          id,
          timeout,
-         onClose
+         onClose,
+         buttons
       } = this.props;
 
       const progress = useSpring({
@@ -114,7 +115,9 @@ module.exports = class Toast extends Component {
             >
                <div className='unbound-toast-header' data-has-content={Boolean(content)}>
                   {typeof CustomIcon === 'function' && <CustomIcon className='unbound-toast-icon' />}
-                  {title && <FormTitle className='unbound-toast-title' tag='h3'>{this.parse(title)}</FormTitle>}
+                  {title && <FormTitle className='unbound-toast-title' tag='h3'>
+                     {this.parse(title)}
+                  </FormTitle>}
                   <Icon
                      className='unbound-toast-close'
                      name='Close'
@@ -129,6 +132,23 @@ module.exports = class Toast extends Component {
                   />
                </div>
                <Text className='unbound-toast-content'>{this.parse(content)}</Text>
+               {Array.isArray(buttons) && <div className='unbound-toast-buttons'>
+                  {buttons.map((button, i) =>
+                     <Button
+                        color={Button.Colors[button.color?.toUpperCase() ?? 'BRAND_NEW']}
+                        look={Button.Looks[button.look?.toUpperCase() || 'FILLED']}
+                        size={Button.Sizes[button.size?.toUpperCase() || 'MIN']}
+                        key={`button-${i}`}
+                        className='unbound-toast-button'
+                        onClick={() => {
+                           button.onClick?.();
+                           (button.close ?? true) && manager.close(id);
+                        }}
+                     >
+                        {button.text}
+                     </Button>
+                  )}
+               </div>}
                {timeout > 0 && <div className='unbound-toast-progress'>
                   <animated.div
                      className='unbound-toast-progress-bar'
@@ -156,4 +176,4 @@ module.exports = class Toast extends Component {
          return content;
       }
    }
-};
+};;
