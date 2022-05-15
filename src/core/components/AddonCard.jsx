@@ -56,6 +56,7 @@ module.exports = class AddonCard extends React.Component {
 
       const color = (
          entity?.color ??
+         entity?.data?.color ??
          entity?.instance?.color ??
          '#3a71c1'
       );
