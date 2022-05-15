@@ -79,15 +79,25 @@ class GeneralSettings extends React.PureComponent {
                   onChange={(e, v) => {
                      const position = this.parsePosition(v);
                      this.settings.set('toastPosition', position);
-                     if (this.openToast) Toasts.close(this.openToast);
 
-                     this.openToast = Toasts.open({
+                     this.toasts ??= [];
+                     if (this.toasts.length) {
+                        for (const toast of this.toasts) {
+                           Toasts.close(toast);
+                        }
+                     }
+
+                     if (position === 'disabled') {
+                        Toasts.clear();
+                     }
+
+                     this.toasts.push(Toasts.open({
                         title: 'Toast position changed',
                         color: 'var(--info-positive-foreground)',
                         icon: (p) => <Icon name='CheckmarkCircle' {...p} />,
                         content: 'This is an example toast.',
                         timeout: 1000
-                     });
+                     }));
                   }}
                />
             </Category>

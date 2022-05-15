@@ -9,14 +9,14 @@ const Parser = Markdown?.reactParserFor?.(Markdown.defaultRules);
 const { useSpring, useTransition, animated } = ReactSpring;
 
 module.exports = class Toast extends Component {
-   constructor() {
-      super();
+   constructor(props) {
+      super(props);
 
       this.spring = null;
       this.timeout = null;
       this.ref = React.createRef();
       this.state = {
-         closing: false
+         closing: props.closing ?? false
       };
    }
 

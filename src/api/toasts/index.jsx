@@ -50,6 +50,10 @@ class Toasts extends API {
       }
    }
 
+   clear() {
+      this.toasts.set('*', {});
+   }
+
    stop() {
       this.container.remove();
       Patcher.unpatchAll();
