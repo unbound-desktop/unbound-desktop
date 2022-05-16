@@ -1,11 +1,4 @@
 {
-  "BRANCH": "Messages.CREATE_STORE_CHANNEL_BRANCH",
-  "DELETE": "Messages.DELETE",
-  "DESCRIPTION": "Messages.DESCRIPTION",
-  "INSTALL": "Messages.GAME_ACTION_BUTTON_INSTALL",
-  "NAME": "Messages.FRIENDS_COLUMN_NAME",
-  "OPTIONS": "Messages.OPTIONS",
-  "SETTINGS": "Messages.SETTINGS",
   "AUTHOR": "Author",
   "NOT_FOUND": "Not Found.",
   "OPEN_FOLDER": "Open Folder",

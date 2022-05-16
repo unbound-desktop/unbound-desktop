@@ -53,6 +53,24 @@ class i18n extends API {
    * 
    * console.log(strings.GREETING); // 'Hello' or 'Bonjour'
    * ```
+   * You can also set a proxy option to proxy Locale.Messages!
+   * ```js
+   * const i18n = require('@api/i18n');
+   * 
+   * const strings = i18n.parseObject({
+   *  'proxy': {
+   *     FISHING: 'APPLICATION_STORE_GENRE_FISHING'
+   *   },
+   *  'en-US': { 
+   *     GREETING: 'Hello' 
+   *   }, 
+   *   'fr': { 
+   *     GREETING: 'Bonjour'
+   *   } 
+   * });
+   * 
+   * console.log(strings.FISHING); // 'Fishing'
+   * ```
    */
   parseObject(data) {
     if (!data || typeof data !== 'object') throw new TypeError('Argument "data" must be of type object!');
@@ -61,9 +79,9 @@ class i18n extends API {
     const classCtx = this;
     return new Proxy(data, {
       get(target, prop) {
-        const string = target[classCtx.locale]?.[prop] || target['en-US'][prop];
-        if (!string.indexOf('Messages.')) return Messages[string.substring(9)];
-        return string;
+        return target[classCtx.locale]?.[prop]
+          || target['en-US'][prop]
+          || Messages[target.proxy?.[prop]];
       }
     });
   }
