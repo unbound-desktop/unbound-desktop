@@ -34,9 +34,9 @@ module.exports = class Toast extends Component {
       const {
          icon: CustomIcon,
          color,
-         title,
+         title: Title,
          manager,
-         content,
+         content: Content,
          position,
          store,
          id,
@@ -113,10 +113,16 @@ module.exports = class Toast extends Component {
                }}
                className='unbound-toast'
             >
-               <div className='unbound-toast-header' data-has-content={Boolean(content)}>
-                  {typeof CustomIcon === 'function' && <CustomIcon className='unbound-toast-icon' />}
-                  {title && <FormTitle className='unbound-toast-title' tag='h3'>
-                     {this.parse(title)}
+               <div className='unbound-toast-header' data-has-content={Boolean(Content)}>
+                  {
+                     typeof CustomIcon === 'function' && <CustomIcon className='unbound-toast-icon' /> ||
+                     typeof CustomIcon === 'string' && <Icon className='unbound-toast-icon' name={CustomIcon} />
+                  }
+                  {Title && <FormTitle className='unbound-toast-title' tag='h3'>
+                     {
+                        typeof Title === 'function' && <Title /> ||
+                        typeof Title === 'string' && this.parse(Title)
+                     }
                   </FormTitle>}
                   <Icon
                      className='unbound-toast-close'
@@ -131,7 +137,12 @@ module.exports = class Toast extends Component {
                      }}
                   />
                </div>
-               <Text className='unbound-toast-content'>{this.parse(content)}</Text>
+               <Text className='unbound-toast-content'>
+                  {
+                     typeof Content === 'function' && <Content /> ||
+                     typeof Content === 'string' && this.parse(Content)
+                  }
+               </Text>
                {Array.isArray(buttons) && buttons.length && <div className='unbound-toast-buttons'>
                   {buttons.map((button, i) =>
                      <Button
