@@ -1,3 +1,4 @@
+const { unboundStrings: strings } = require('@api/i18n');
 const { getLazy, filters } = require('@webpack');
 const { React } = require('@webpack/common');
 const { memoize } = require('@utilities');
@@ -68,8 +69,8 @@ class GeneralSettings extends React.PureComponent {
                Settings
             </FormTitle>
             <Category
-               title='Toast Settings'
-               description='Customize your toasts the way you want them.'
+               title={strings.TOAST_SETTINGS_TITLE}
+               description={strings.TOAST_SETTINGS_DESCRIPTION}
                icon={p => <Icon name='Ban' {...p} />}
                opened={isGeneralOpen}
                onChange={() => this.setState({ isGeneralOpen: !isGeneralOpen })}
@@ -92,10 +93,10 @@ class GeneralSettings extends React.PureComponent {
                      }
 
                      this.toasts.push(Toasts.open({
-                        title: 'Toast position changed',
+                        title: strings.TOAST_EXAMPLE_TITLE,
                         color: 'var(--info-positive-foreground)',
                         icon: (p) => <Icon name='CheckmarkCircle' {...p} />,
-                        content: 'This is an example toast.',
+                        content: strings.TOAST_EXAMPLE_CONTENT,
                         timeout: 1000
                      }));
                   }}
@@ -103,8 +104,8 @@ class GeneralSettings extends React.PureComponent {
             </Category>
 
             <Category
-               title='Developer Settings'
-               description='Settings strictly related to Unbound'
+               title={strings.DEVELOPER_SETTINGS_TITLE}
+               description={strings.DEVELOPER_SETTINGS_DESCRIPTION}
                icon={() => <Icon name='InlineCode' className='unbound-category-icon' />}
                opened={isDeveloperOpen}
                onChange={() => this.setState({ isDeveloperOpen: !isDeveloperOpen })}
@@ -113,8 +114,8 @@ class GeneralSettings extends React.PureComponent {
             </Category>
 
             {BDSettings && <Category
-               title='BetterDiscord Settings'
-               description='Settings strictly related to BetterDiscord'
+               title={strings.BD_SETTINGS_TITLE}
+               description={strings.BD_SETTINGS_DESCRIPTIONf}
                icon={() => <Icons.Bd className='unbound-category-icon' />}
                opened={isBdOpen}
                onChange={() => this.setState({ isBdOpen: !isBdOpen })}

@@ -1,8 +1,9 @@
 const { getLazy, filters: { byDisplayName } } = require('@webpack');
+const { unboundStrings: strings } = require('@api/i18n');
 const { after, unpatchAll } = require('@patcher');
 const Components = require('@core/components');
-const { React } = require('@webpack/common');
 const { capitalize } = require('@utilities');
+const { React } = require('@webpack/common');
 const Patch = require('@structures/patch');
 
 const blacklisted = {
@@ -46,7 +47,7 @@ module.exports = class Settings extends Patch {
                },
                {
                   section: 'unbound',
-                  label: 'Settings',
+                  label: strings.SETTINGS,
                   element: Components.Settings
                },
                ...Object.keys(unbound.managers).map(m => {
@@ -54,13 +55,13 @@ module.exports = class Settings extends Patch {
 
                   return {
                      section: capitalize(m),
-                     label: capitalize(m),
+                     label: strings[m.toUpperCase()] || capitalize(m),
                      element: () => <Manager.panel type={m} />
                   };
                }),
                {
                   section: 'unbound-updater',
-                  label: 'Updater',
+                  label: strings.UPDATER,
                   element: Components.Updater
                },
                { section: 'DIVIDER' }

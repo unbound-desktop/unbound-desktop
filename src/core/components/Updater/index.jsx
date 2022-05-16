@@ -1,4 +1,5 @@
 const { RelativeTooltip, Button, Icon, Text, ErrorBoundary, FormTitle, Divider, Spinner } = require('@components');
+const { unboundStrings: strings } = require('@api/i18n');
 const { Modals } = require('@webpack/common');
 const Settings = require('@api/settings');
 const { paths } = require('@constants');
@@ -31,35 +32,35 @@ class Updater extends React.Component {
       const data = {
          icon: 'CloudDone',
          color: 'var(--info-positive-foreground)',
-         text: "You're all caught up!",
-         description: "Upcoming updates will appear here when they're pushed."
+         text: strings.UPDATER_DEFAULT_TEXT,
+         description: strings.UPDATER_DEFAULT_DESCRIPTION
       };
 
       if (force) {
-         data.text = 'Some updates failed to install';
-         data.description = 'We faced an error updating one of the addons, due to you having unstaged changes.';
+         data.text = strings.UPDATER_FAILED_TEXT;
+         data.description = strings.UPDATER_FAILED_DESCRIPTION;
          data.color = 'var(--info-danger-foreground)';
          data.icon = 'CloseCircle';
       } else if (status === 'checking') {
-         data.text = 'Fetching latest updates...';
-         data.description = 'Please be patient while we fetch the latest updates for your addons.';
+         data.text = strings.UPDATER_FETCHING_TEXT;
+         data.description = strings.UPDATER_FETCHING_DESCRIPTION;
          data.color = 'var(--header-primary)';
       } else if (status === 'updating') {
-         data.text = 'Updating addons...';
-         data.description = 'Please be patient while install the latest updates for your addons.';
+         data.text = strings.UPDATER_UPDATING_TEXT;
+         data.description = strings.UPDATER_UPDATING_DESCRIPTION;
          data.icon = 'UpdateAvailable';
          data.color = 'var(--header-primary)';
       } else if (updates.length) {
-         data.text = 'You have updates!';
-         data.description = 'Procceed by clicking the update button below.';
+         data.text = strings.UPDATER_NEW_UPDATES_TEXT;
+         data.description = strings.UPDATER_NEW_UPDATES_DESCRIPTION;
          data.icon = 'CloudDownload';
          data.color = 'var(--header-primary)';
       }
 
       return <ErrorBoundary>
          <FormTitle tag='h1' className='unbound-settings-title'>
-            Updater
-            <RelativeTooltip text='Client Information' hideOnClick={false}>
+            {strings.UPDATER}
+            <RelativeTooltip text={strings.CLIENT_INFORMATION} hideOnClick={false}>
                {p => <Icon
                   {...p}
                   className='unbound-updater-client-information'
@@ -92,7 +93,7 @@ class Updater extends React.Component {
                   size={Button.Sizes.SMALL}
                   onClick={this.handleInstall.bind(this)}
                >
-                  {force ? 'Force updates' : 'Update All'}
+                  {force ? strings.FORCE_UPDATES : strings.UPDATE_ALL}
                </Button>
             }
             <Button
@@ -100,7 +101,7 @@ class Updater extends React.Component {
                size={Button.Sizes.SMALL}
                onClick={this.handleUpdateCheck.bind(this)}
             >
-               Check for updates
+               {strings.CHECK_FOR_UPDATES}
             </Button>
             <Button
                disabled={status}
@@ -111,7 +112,7 @@ class Updater extends React.Component {
 
                }}
             >
-               Disable updates
+               {strings.DISABLE_UPDATES}
             </Button>
          </div>
          <Divider />
@@ -131,14 +132,14 @@ class Updater extends React.Component {
                      color={Text.Colors.HEADER_PRIMARY}
                      size={Text.Sizes.SIZE_20}
                   >
-                     {status !== 'checking' ? 'Wumpus doesn\'t have any updates for you!' : 'We\'re searching for updates.'}
+                     {status !== 'checking' ? strings.UPDATES_IDLE_TITLE : strings.UPDATES_SEARCHING_TITLE}
                   </Text>
                   <Text
                      className='unbound-updater-no-updates-desc'
                      color={Text.Colors.HEADER_SECONDARY}
                      size={Text.Sizes.SIZE_16}
                   >
-                     {status !== 'checking' ? 'Feel free to lay back and relax, we will notify you when updates become available.' : 'Please be patient as we push any found updates to this area.'}
+                     {status !== 'checking' ? strings.UPDATES_IDLE_TEXT : strings.UPDATES_SEARCHING_TEXT}
                   </Text>
                </div>
                :

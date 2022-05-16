@@ -1,5 +1,6 @@
 const { Text, Icon, Switch, Anchor, FormText, Markdown, RelativeTooltip, Menu: { Menu, MenuItem } } = require('@components');
 const { React, ContextMenu, Layers } = require('@webpack/common');
+const { unboundStrings: strings } = require('@api/i18n');
 const { capitalize } = require('@utilities');
 const { DMs } = require('@webpack/api');
 const { Plug, Bd } = require('./Icons');
@@ -33,7 +34,7 @@ module.exports = class AddonCard extends React.Component {
          entity.displayName ??
          entity.data?.name ??
          entity.name ??
-         'No name provided.'
+         strings.MISSING_NAME
       );
 
       const description = (
@@ -41,7 +42,7 @@ module.exports = class AddonCard extends React.Component {
          entity.manifest?.description ??
          entity.data?.description ??
          entity.description ??
-         'No description provided.'
+         strings.MISSING_DESCRIPTION
       );
 
       const author = (
@@ -51,7 +52,7 @@ module.exports = class AddonCard extends React.Component {
          entity.getAuthor?.() ??
          entity.data?.author ??
          entity.author ??
-         'No author provided.'
+         strings.MISSING_AUTHOR
       );
 
       const color = (
@@ -67,7 +68,7 @@ module.exports = class AddonCard extends React.Component {
          entity.getVersion?.() ??
          entity.data?.version ??
          entity.version ??
-         'No version provided.'
+         strings.MISSING_VERSION
       );
 
       return (
@@ -77,14 +78,14 @@ module.exports = class AddonCard extends React.Component {
             onContextMenu={(e) => ContextMenu.openContextMenu(e, () =>
                <Menu onClose={ContextMenu.closeContextMenu}>
                   <MenuItem
-                     label='Delete'
-                     color='colorDanger'
                      id='delete'
+                     color='colorDanger'
+                     label={strings.DELETE}
                      action={() => this.delete()}
                   />
                   <MenuItem
-                     label='Reload'
                      id='reload'
+                     label={strings.RELOAD}
                      action={() => this.reload()}
                   />
                </Menu>
@@ -119,7 +120,7 @@ module.exports = class AddonCard extends React.Component {
                      {p => this.renderType({ ...p })}
                   </RelativeTooltip>
                   {this.hasSettings() && (
-                     <RelativeTooltip text='Settings' hideOnClick={false}>
+                     <RelativeTooltip text={strings.SETTINGS} hideOnClick={false}>
                         {p => <Icon
                            {...p}
                            onClick={() => this.props.openSettings()}

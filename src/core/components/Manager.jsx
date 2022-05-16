@@ -1,8 +1,9 @@
 const { Text, Icon, Popout, SearchBar, FormTitle, ErrorBoundary, RelativeTooltip, Menu } = require('@components');
 const { React, Locale: { Messages }, ContextMenu } = require('@webpack/common');
-const { capitalize, classnames } = require('@utilities');
+const { unboundStrings: strings } = require('@api/i18n');
 const { createLogger } = require('@modules/logger');
 const { getByDisplayName } = require('@webpack');
+const { classnames } = require('@utilities');
 const Settings = require('@api/settings');
 const { shell } = require('electron');
 const path = require('path');
@@ -149,7 +150,7 @@ class Manager extends React.PureComponent {
                id='filters'
                control={() => (
                   <h5 className='unbound-manager-overflow-title'>
-                     Search Options
+                     {strings.SEARCH_OPTIONS}
                   </h5>
                )}
             />
@@ -158,7 +159,7 @@ class Manager extends React.PureComponent {
                <Menu.MenuCheckboxItem
                   key={`filter-${f}`}
                   id={`filter-${f}`}
-                  label={capitalize(f)}
+                  label={strings[f.toUpperCase()]}
                   checked={filters[f]}
                   action={() => {
                      filters[f] = !filters[f];
@@ -254,7 +255,7 @@ class Manager extends React.PureComponent {
             onClick={() => settings && this.setState({ settings: null })}
          >
             <FormTitle tag='h1' className='unbound-manager-title-main'>
-               {capitalize(this.props.type)} {amount && `- ${amount}`} {settings && <Caret
+               {strings[this.props.type.toUpperCase()]} {amount && `- ${amount}`} {settings && <Caret
                   direction={Caret.Directions.RIGHT}
                   className='unbound-manager-title-caret'
                />}
@@ -272,7 +273,7 @@ class Manager extends React.PureComponent {
             <SearchBar
                onQueryChange={(value) => this.setState({ query: value })}
                onClear={() => this.setState({ query: '' })}
-               placeholder={`Search ${this.props.type}...`}
+               placeholder={strings[`SEARCH_${this.props.type.toUpperCase()}`]}
                size={SearchBar.Sizes.MEDIUM}
                query={this.state.query}
                className='unbound-manager-search-bar'
@@ -289,7 +290,7 @@ class Manager extends React.PureComponent {
                   />
                )}
             </RelativeTooltip> */}
-            <RelativeTooltip text='Open Folder' hideOnClick={false}>
+            <RelativeTooltip text={strings.OPEN_FOLDER} hideOnClick={false}>
                {props => (
                   <Icon
                      {...props}
@@ -306,7 +307,7 @@ class Manager extends React.PureComponent {
                   />
                )}
             </RelativeTooltip>
-            <RelativeTooltip text='Reload' hideOnClick={false}>
+            <RelativeTooltip text={strings.RELOAD} hideOnClick={false}>
                {props => (
                   <Icon
                      {...props}
@@ -325,7 +326,7 @@ class Manager extends React.PureComponent {
                   />
                )}
             </RelativeTooltip>
-            <RelativeTooltip text='Options' hideOnClick={false}>
+            <RelativeTooltip text={strings.OPTIONS} hideOnClick={false}>
                {props => (
                   <Popout
                      position={Popout.Positions.TOP}
@@ -360,7 +361,7 @@ class Manager extends React.PureComponent {
                entity.displayName ??
                entity.data?.name ??
                entity.name ??
-               'No name provided.'
+               strings.MISSING_NAME
             );
          case 'id':
             return (
@@ -374,7 +375,7 @@ class Manager extends React.PureComponent {
                entity.manifest?.description ??
                entity.data?.description ??
                entity.description ??
-               'No description provided.'
+               strings.MISSING_DESCRIPTION
             );
          case 'author':
             if (Array.isArray(entity.instance?._config?.info?.authors)) {
@@ -390,7 +391,7 @@ class Manager extends React.PureComponent {
                entity.getAuthor?.() ??
                entity.data?.author ??
                entity.author ??
-               'No author provided.'
+               strings.MISSING_AUTHOR
             );
          case 'version':
             return (
@@ -398,7 +399,7 @@ class Manager extends React.PureComponent {
                entity.getVersion?.() ??
                entity.data?.version ??
                entity.version ??
-               'No version provided.'
+               strings.MISSING_VERSION
             );
          case 'settings':
             const id = this.resolve(entity, 'id');
@@ -415,7 +416,7 @@ class Manager extends React.PureComponent {
                })
             );
          default:
-            return 'Not found.';
+            return strings.NOT_FOUND;
       }
    }
 };

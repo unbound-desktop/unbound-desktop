@@ -1,4 +1,5 @@
 const { Icon, Text, Anchor, RelativeTooltip, Spinner, Divider } = require('@components');
+const { unboundStrings: strings } = require('@api/i18n');
 const { Layers } = require('@webpack/common');
 const { DMs } = require('@webpack/api');
 const Git = require('@modules/git');
@@ -53,7 +54,7 @@ class Update extends React.Component {
                </Text>
                {this.state.updating
                   ?
-                  <RelativeTooltip text='Installing...' hideOnClick={false}>
+                  <RelativeTooltip text={strings.INSTALLING} hideOnClick={false}>
                      {props => <Spinner
                         {...props}
                         className='unbound-updater-update-installing'
@@ -61,7 +62,7 @@ class Update extends React.Component {
                      />}
                   </RelativeTooltip>
                   :
-                  <RelativeTooltip text={force ? 'Force Install' : 'Install'} hideOnClick={false}>
+                  <RelativeTooltip text={force ? strings.FORCE_INSTALL : strings.INSTALL} hideOnClick={false}>
                      {props => <Icon
                         {...props}
                         data-force={Boolean(force)}
