@@ -18,7 +18,7 @@ class Updater {
    }
 
    async install(updates = this.settings.get('updates', [])) {
-      this.settings.set({ status: 'updating', force: false });
+      this.settings.set({ status: 'updating' });
 
       const status = { force: [] };
       await Promise.allSettled(updates.map(async update => {
@@ -31,7 +31,7 @@ class Updater {
             const idx = updates.indexOf(update);
             if (idx > -1) updates.splice(idx, 1);
 
-            this.settings.set({ updates, force: needsForce });
+            this.settings.set({ updates, force: needsForce ? false : force });
          } catch (e) {
             status.force.push(update.commits);
          }
