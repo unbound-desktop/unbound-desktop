@@ -48,5 +48,6 @@
    "FORCE_INSTALL": "Force Install",
    "FORCE_UPDATES": "Force updates",
    "INSTALLING": "Installing...",
-   "UPDATE_ALL": "Update All"
+   "UPDATE_ALL": "Update All",
+   "UPDATE_RESTART_DESC": "Core updates require Unbound to restart to complete installing. Note that, this isn't a full app reload, it will only restart Unbound which will take up to a second."
 }

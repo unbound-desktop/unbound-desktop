@@ -1,7 +1,13 @@
+const { ConfirmModal } = require('@components/modals');
 const { contributors, paths } = require('@constants');
+const { Modals, Layers } = require('@webpack/common');
 const { createLogger } = require('@modules/logger');
 const Settings = require('@api/settings');
+const sleep = require('@utilities/sleep');
+const { strings } = require('@api/i18n');
+const { Text } = require('@components');
 const Git = require('@modules/git');
+const React = require('react');
 
 class Updater {
    settings = Settings.makeStore('unbound-updater');
@@ -30,6 +36,10 @@ class Updater {
 
             const idx = updates.indexOf(update);
             if (idx > -1) updates.splice(idx, 1);
+
+            if (update.type === 'Core') {
+               this.#promptReload();
+            }
 
             this.settings.set({ updates, force: needsForce ? false : force });
          } catch (e) {
@@ -108,6 +118,34 @@ class Updater {
       const updates = await this.fetchUpdates(metadata);
 
       return updates;
+   }
+
+   #promptReload() {
+      Modals.openModal(e => <ConfirmModal
+         {...e}
+         header={strings.RESTART}
+         children={<Text>{strings.UPDATE_RESTART_DESC}</Text>}
+         cancelText={strings.CANCEL}
+         onConfirm={async () => {
+            e.onClose();
+            Layers.popAllLayers();
+
+            // Wait for layer to pop, it dies if reloaded too early.
+            await sleep(300);
+            await unbound.restart();
+
+            if (!window.unbound?.apis) return;
+
+            unbound.apis?.toasts?.open({
+               title: 'Restart Successful',
+               content: 'Unbound restarted successfully, you may continue your previous task.',
+               color: 'var(--info-positive-foreground)',
+               timeout: 5000,
+               icon: 'CheckmarkCircle'
+            });
+         }}
+         confirmText={strings.RESTART}
+      />);
    }
 
    #getMeta(entity, type) {
