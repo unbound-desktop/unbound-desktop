@@ -8,9 +8,6 @@
          "@structures/*": [
             "structures/*"
          ],
-         "@modules/*": [
-            "modules/*"
-         ],
          "@webpack/*": [
             "modules/webpack/*"
          ],
@@ -28,6 +25,9 @@
          ],
          "@core/*": [
             "core/*"
+         ],
+         "@modules/*": [
+            "modules/*"
          ],
          "@data/*": [
             "data/*"
