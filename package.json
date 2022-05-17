@@ -23,7 +23,6 @@
       "@api": "src/api",
       "@data": "src/data",
       "@src": "src",
-      "@root": "./",
       "@core": "src/core",
       "react": "src/modules/webpack/react"
    }
