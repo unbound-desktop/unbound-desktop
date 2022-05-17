@@ -1,8 +1,8 @@
 const { RelativeTooltip, Button, Icon, Text, ErrorBoundary, FormTitle, Divider, Spinner } = require('@components');
-const { unboundStrings: strings } = require('@api/i18n');
 const { Modals } = require('@webpack/common');
 const Settings = require('@api/settings');
 const Updater = require('@core/updater');
+const { strings } = require('@api/i18n');
 const React = require('react');
 
 const InfoModal = require('./InfoModal');

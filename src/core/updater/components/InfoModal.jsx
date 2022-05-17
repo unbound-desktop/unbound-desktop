@@ -1,5 +1,5 @@
 const { Modal, FormTitle, FormText, Spinner, Anchor } = require('@components');
-const { unboundStrings: strings } = require('@api/i18n');
+const { strings } = require('@api/i18n');
 const { paths } = require('@constants');
 const Git = require('@modules/git');
 const React = require('react');

@@ -1,6 +1,6 @@
 const { Icon, Text, Anchor, RelativeTooltip, Spinner, Divider } = require('@components');
-const { unboundStrings: strings } = require('@api/i18n');
 const { Layers } = require('@webpack/common');
+const { strings } = require('@api/i18n');
 const Updater = require('@core/updater');
 const { DMs } = require('@webpack/api');
 const React = require('react');

@@ -1,7 +1,7 @@
-const { unboundStrings: strings } = require('@api/i18n');
 const { getLazy, filters } = require('@webpack');
 const { React } = require('@webpack/common');
 const { memoize } = require('@utilities');
+const { strings } = require('@api/i18n');
 
 const { Text, ErrorBoundary, Category, FormTitle, Icon, Switch, AsyncComponent } = require('@components');
 const Settings = require('@api/settings');
@@ -95,7 +95,7 @@ class GeneralSettings extends React.PureComponent {
                      this.toasts.push(Toasts.open({
                         title: strings.TOAST_EXAMPLE_TITLE,
                         color: 'var(--info-positive-foreground)',
-                        icon: (p) => <Icon name='CheckmarkCircle' {...p} />,
+                        icon: 'CheckmarkCircle',
                         content: strings.TOAST_EXAMPLE_CONTENT,
                         timeout: 1000
                      }));

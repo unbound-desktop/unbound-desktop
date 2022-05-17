@@ -1,7 +1,7 @@
 const { Text, Icon, Switch, Anchor, FormText, Markdown, RelativeTooltip, Menu: { Menu, MenuItem } } = require('@components');
 const { React, ContextMenu, Layers } = require('@webpack/common');
-const { unboundStrings: strings } = require('@api/i18n');
 const { capitalize } = require('@utilities');
+const { strings } = require('@api/i18n');
 const { DMs } = require('@webpack/api');
 const { Plug, Bd } = require('./Icons');
 

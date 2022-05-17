@@ -1,11 +1,11 @@
 const { getLazy, filters: { byDisplayName } } = require('@webpack');
-const { unboundStrings: strings } = require('@api/i18n');
 const Updater = require('@core/updater/components');
 const { after, unpatchAll } = require('@patcher');
 const Components = require('@core/components');
 const { capitalize } = require('@utilities');
 const { React } = require('@webpack/common');
 const Patch = require('@structures/patch');
+const { strings } = require('@api/i18n');
 
 const blacklisted = {
    labels: ['Powercord', 'BetterDiscord'],
