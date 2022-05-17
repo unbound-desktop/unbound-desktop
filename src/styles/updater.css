@@ -261,5 +261,6 @@
 
 .unbound-updater-no-updates-desc {
    color: var(--header-secondary);
+   max-width: 30rem;
    font-size: 14px;
 }

@@ -2,14 +2,13 @@ const { RelativeTooltip, Button, Icon, Text, ErrorBoundary, FormTitle, Divider, 
 const { unboundStrings: strings } = require('@api/i18n');
 const { Modals } = require('@webpack/common');
 const Settings = require('@api/settings');
-const { paths } = require('@constants');
-const Git = require('@modules/git');
+const Updater = require('@core/updater');
 const React = require('react');
 
 const InfoModal = require('./InfoModal');
 const Update = require('./Update');
 
-class Updater extends React.Component {
+class UpdaterPanel extends React.Component {
    constructor(props) {
       super(props);
 
@@ -25,6 +24,7 @@ class Updater extends React.Component {
    render() {
       const { settings } = this.props;
 
+      const disabled = settings.get('disabled', false);
       const status = settings.get('status', null);
       const force = settings.get('force', false);
       const updates = settings.get('updates', []);
@@ -36,7 +36,12 @@ class Updater extends React.Component {
          description: strings.UPDATER_DEFAULT_DESCRIPTION
       };
 
-      if (force) {
+      if (disabled) {
+         data.text = strings.UPDATER_DISABLED_TEXT;
+         data.description = strings.UPDATER_DISABLED_DESCRIPTION;
+         data.color = 'var(--info-warning-foreground)';
+         data.icon = 'PrivacyAndSafety';
+      } else if (force) {
          data.text = strings.UPDATER_FAILED_TEXT;
          data.description = strings.UPDATER_FAILED_DESCRIPTION;
          data.color = 'var(--info-danger-foreground)';
@@ -91,28 +96,26 @@ class Updater extends React.Component {
                   disabled={status}
                   color={force ? Button.Colors.RED : Button.Colors.GREEN}
                   size={Button.Sizes.SMALL}
-                  onClick={this.handleInstall.bind(this)}
+                  onClick={() => Updater.install()}
                >
                   {force ? strings.FORCE_UPDATES : strings.UPDATE_ALL}
                </Button>
             }
             <Button
-               disabled={status}
+               disabled={disabled || status}
                size={Button.Sizes.SMALL}
-               onClick={this.handleUpdateCheck.bind(this)}
+               onClick={() => Updater.fetch()}
             >
                {strings.CHECK_FOR_UPDATES}
             </Button>
             <Button
                disabled={status}
                className='unbound-updater-actions-disable'
-               color={Button.Colors.RED}
+               color={disabled ? Button.Colors.GREEN : Button.Colors.RED}
                size={Button.Sizes.SMALL}
-               onClick={() => {
-
-               }}
+               onClick={() => settings.toggle('disabled', false)}
             >
-               {strings.DISABLE_UPDATES}
+               {disabled ? strings.ENABLE_UPDATES : strings.DISABLE_UPDATES}
             </Button>
          </div>
          <Divider />
@@ -122,7 +125,7 @@ class Updater extends React.Component {
                   <img
                      className='unbound-updater-placeholder-image'
                      data-is-checking={status === 'checking'}
-                     src={status !== 'checking' ?
+                     src={disabled ? '/assets/b5eb2f7d6b3f8cc9b60be4a5dcf28015.svg' : status !== 'checking' ?
                         '/assets/13cb217fd14b022bf4b00dcc8c157238.svg' :
                         '/assets/8f79e7f01dbb1afeb122cb3e8c4a342f.svg'
                      }
@@ -132,14 +135,14 @@ class Updater extends React.Component {
                      color={Text.Colors.HEADER_PRIMARY}
                      size={Text.Sizes.SIZE_20}
                   >
-                     {status !== 'checking' ? strings.UPDATES_IDLE_TITLE : strings.UPDATES_SEARCHING_TITLE}
+                     {disabled ? strings.UPDATES_DISABLED : status !== 'checking' ? strings.UPDATES_IDLE_TITLE : strings.UPDATES_SEARCHING_TITLE}
                   </Text>
                   <Text
                      className='unbound-updater-no-updates-desc'
                      color={Text.Colors.HEADER_SECONDARY}
                      size={Text.Sizes.SIZE_16}
                   >
-                     {status !== 'checking' ? strings.UPDATES_IDLE_TEXT : strings.UPDATES_SEARCHING_TEXT}
+                     {disabled ? strings.UPDATES_DISABLED_DESC : status !== 'checking' ? strings.UPDATES_IDLE_TEXT : strings.UPDATES_SEARCHING_TEXT}
                   </Text>
                </div>
                :
@@ -148,114 +151,6 @@ class Updater extends React.Component {
          </div>
       </ErrorBoundary>;
    }
-
-   async handleInstall() {
-      const { settings } = this.props;
-
-      const force = settings.get('force', false);
-      const updates = settings.get('updates', []);
-
-      settings.set({ status: 'updating', force: false });
-
-      const status = { force: [force ?? []] };
-      await Promise.allSettled(updates.map(async update => {
-         try {
-            const needsForce = force && force.some(e => update.commits.some(u => u.longHash === e.longHash));
-
-            await Git.pull(update.path, needsForce);
-
-            if (needsForce) {
-               console.log('fuck');
-            }
-
-            const idx = updates.indexOf(update);
-            if (idx > -1) updates.splice(idx, 1);
-
-            settings.set({ updates, force: needsForce ? false : force });
-         } catch (e) {
-            status.force.push(update.commits);
-         }
-      }));
-
-      if (status.force.length) {
-         settings.set('force', status.force.flat());
-      }
-
-      settings.set('status', null);
-   }
-
-   async handleUpdateCheck() {
-      const { settings } = this.props;
-      settings.set({ updates: [], status: 'checking', force: false });
-
-      const res = [];
-
-      const Plugins = unbound?.managers?.plugins?.entities;
-      const Themes = unbound?.managers?.themes?.entities;
-      if (!Plugins || !Themes) {
-         return settings.set('status', null);
-      }
-
-      const PCPlugins = window.powercord?.pluginManager?.addons;
-      const PCThemes = window.powercord?.styleManager?.addons;
-
-      res.push(...await this.handleEntities([...Plugins.values()], 'Plugin'));
-      res.push(...await this.handleEntities([...Themes.values()], 'Theme'));
-      if (PCPlugins) res.push(...await this.handleEntities(PCPlugins, 'Plugin'));
-      if (PCThemes) res.push(...await this.handleEntities(PCThemes, 'Theme'));
-
-      try {
-         res.push(...await this.handleUpdates({
-            path: paths.root,
-            name: 'Unbound',
-            authors: [{ name: 'eternal', id: '263689920210534400' }],
-            type: 'Core'
-         }));
-      } catch { }
-
-      return settings.set({
-         updates: res.sort((a, b) => b.entity - a.entity),
-         status: null
-      });
-   }
-
-   async handleEntities(entities, type) {
-      const res = [];
-
-      await Promise.allSettled(entities.map(async entity => {
-         try {
-            const updates = await this.handleUpdates({
-               path: entity.path,
-               name: entity.manifest?.name ?? entity.data.name,
-               authors: entity.manifest?.author ?? entity.data.author ?? entity.data.authors,
-               type
-            });
-
-            res.push(...updates);
-         } catch { }
-      }));
-
-      return res;
-   }
-
-   async handleUpdates({ path, name, authors, type }) {
-      const updates = [];
-
-      try {
-         const isRepo = Git.isRepo(path);
-         if (!isRepo) return;
-
-         const branch = await Git.getBranch(path);
-         const commits = await Git.getNewCommits(path, branch);
-         const url = await Git.getURL(path);
-
-         if (commits.length) {
-            updates.push({ entity: name, authors, commits, path, type, url });
-         }
-      } catch { }
-
-      return updates;
-   }
 };
 
-module.exports = Settings.connectComponent(Updater, 'unbound-updater');
+module.exports = Settings.connectComponent(UpdaterPanel, 'unbound-updater');

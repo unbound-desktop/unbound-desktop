@@ -1,8 +1,8 @@
 const { Icon, Text, Anchor, RelativeTooltip, Spinner, Divider } = require('@components');
 const { unboundStrings: strings } = require('@api/i18n');
 const { Layers } = require('@webpack/common');
+const Updater = require('@core/updater');
 const { DMs } = require('@webpack/api');
-const Git = require('@modules/git');
 const React = require('react');
 
 const Unbound = require('./Icons/Unbound');
@@ -43,7 +43,7 @@ class Update extends React.Component {
                </Text>
                <div>
                   <Text className='unbound-updater-update-title'>
-                     {update.entity}
+                     {update.name}
                   </Text>
                   <Text className='unbound-updater-update-author'>
                      {this.renderAuthors(update.authors)}
@@ -96,39 +96,11 @@ class Update extends React.Component {
    }
 
    async handleUpdate() {
-      const { update, settings } = this.props;
-
-      const force = settings.get('force', []);
-      const updates = settings.get('updates', []);
+      const { update } = this.props;
 
       this.setState({ updating: true });
-      settings.set({ status: 'updating', force: false });
-      const status = { force: [] };
-
-      try {
-         const needsForce = force && force.some(e => update.commits.some(u => u.longHash === e.longHash));
-
-         await Git.pull(update.path, needsForce);
-
-         if (needsForce) {
-            console.log('fuck');
-         }
-
-         const idx = updates.indexOf(update);
-         if (idx > -1) updates.splice(idx, 1);
-
-         settings.set({ updates, force: needsForce ? false : force });
-      } catch (e) {
-         console.log(e);
-         status.force.push(update.commits);
-      }
-
+      await Updater.install([update]);
       this.setState({ updating: false });
-      if (status.force.length) {
-         settings.set('force', status.force.flat());
-      }
-
-      settings.set('status', null);
    }
 
    renderAuthors(authors) {

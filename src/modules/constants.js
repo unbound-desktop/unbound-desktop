@@ -9,6 +9,13 @@ exports.regex = {
    newline: /\r?\n|\r/g
 };
 
+exports.contributors = [
+   {
+      name: 'eternal',
+      id: '263689920210534400'
+   }
+];
+
 exports.console = {
    success: {
       'background-color': '#6bffb2',

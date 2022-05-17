@@ -1,5 +1,6 @@
 const { getLazy, filters: { byDisplayName } } = require('@webpack');
 const { unboundStrings: strings } = require('@api/i18n');
+const Updater = require('@core/updater/components');
 const { after, unpatchAll } = require('@patcher');
 const Components = require('@core/components');
 const { capitalize } = require('@utilities');
@@ -62,7 +63,7 @@ module.exports = class Settings extends Patch {
                {
                   section: 'unbound-updater',
                   label: strings.UPDATER,
-                  element: Components.Updater
+                  element: Updater
                },
                { section: 'DIVIDER' }
             );
