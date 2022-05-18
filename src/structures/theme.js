@@ -27,7 +27,7 @@ module.exports = class Theme extends Addon {
       try {
          const Settings = require('@api/settings');
          Settings.subscribe(this.data.id, this.onSettingsChange);
-      } catch {  }
+      } catch { }
 
       if (document.readyState === 'loading') {
          return this.listener = window.addEventListener('load', this.apply);

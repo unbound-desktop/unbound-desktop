@@ -25,6 +25,7 @@ if (!windowOptions.webPreferences.nativeWindowOpen) {
 
 Webpack.init().then(() => {
    const Unbound = require('@structures/unbound');
+   const instance = new Unbound();
 
-   new Unbound().start();
+   instance.start();
 });

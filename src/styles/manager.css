@@ -75,7 +75,7 @@
    cursor: pointer;
 }
 
-.unbound-manager-title>* {
+.unbound-manager-title > * {
    flex: unset !important;
 }
 

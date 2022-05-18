@@ -414,7 +414,7 @@ class Webpack {
             if (Array.isArray(s)) {
                const defaultExport = string[string.length - 1];
                if (typeof defaultExport === 'boolean') {
-                  return Webpack.filters.byString(string.splice(string.length, 1), defaultExport)
+                  return Webpack.filters.byString(string.splice(string.length, 1), defaultExport);
                };
             } else {
                return Webpack.filters.byString([string], defaultExport);
