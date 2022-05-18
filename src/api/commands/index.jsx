@@ -14,7 +14,6 @@ const [
    Icons,
    SearchStore,
    Classes,
-   ApplicationIcon,
    SectionIcon,
 ] = bulk(
    filters.byProps('getContextCommands'),
@@ -22,7 +21,6 @@ const [
    filters.byProps('getApplicationIconURL'),
    filters.byProps('SearchManagerStore'),
    filters.byProps('icon', 'selectable', 'wrapper'),
-   filters.byDisplayName('ApplicationCommandDiscoveryApplicationIcon'),
    filters.byDisplayName('ApplicationCommandDiscoverySectionIcon', false),
 );
 

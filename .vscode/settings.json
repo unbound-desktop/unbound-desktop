@@ -39,5 +39,12 @@
    "css.completion.completePropertyWithSemicolon": true,
    "editor.formatOnPaste": true,
    "editor.formatOnSave": true,
-   "html.autoClosingTags": true
+   "html.autoClosingTags": true,
+   "javascript.format.placeOpenBraceOnNewLineForControlBlocks": false,
+   "javascript.format.placeOpenBraceOnNewLineForFunctions": false,
+   "javascript.referencesCodeLens.enabled": false,
+   "javascript.referencesCodeLens.showOnAllFunctions": false,
+   "javascript.suggest.completeFunctionCalls": false,
+   "js/ts.implicitProjectConfig.experimentalDecorators": false,
+   "js/ts.implicitProjectConfig.strictFunctionTypes": true
 }
