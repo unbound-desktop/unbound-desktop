@@ -86,7 +86,7 @@ class Updater {
          const core = await this.fetchUpdates(this.#core);
          res.push(...core);
       } catch (e) {
-         return this.logger.error(`Failed to core updates.`, e);
+         return this.logger.error(`Failed to fetch core updates.`, e);
       }
 
       return res;
