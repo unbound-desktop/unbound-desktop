@@ -38,5 +38,6 @@
    "css.format.braceStyle": "collapse",
    "css.completion.completePropertyWithSemicolon": true,
    "editor.formatOnPaste": true,
-   "editor.formatOnSave": true
+   "editor.formatOnSave": true,
+   "html.autoClosingTags": true
 }
