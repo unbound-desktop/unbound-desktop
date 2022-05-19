@@ -42,25 +42,37 @@ class Git {
    async getNewCommits(path, branch) {
       await this.fetch(path);
 
-      const res = await ipcRenderer.invoke(IPCEvents.SPAWN_GIT, `git log ${branch}..origin/${branch} --pretty=format:"${SEPStart}${SEP}%H${SEP}${SEP}%h${SEP}${SEP}%an${SEP}${SEP}%ar${SEP}${SEP}%s${SEP}${SEP}%b${SEP}${SEPStart}`, path);
+      const res = await ipcRenderer.invoke(IPCEvents.SPAWN_GIT, `git log ${branch}..origin/${branch} --pretty=format:"${SEP}%H${SEP}${SEP}%h${SEP}${SEP}%an${SEP}${SEP}%ar${SEP}${SEP}%s${SEP}`, path);
       return this.#parseCommits(res);
    }
 
    async getCommit(path, branch) {
-      const res = await ipcRenderer.invoke(IPCEvents.SPAWN_GIT, `git log -1 ${branch} --pretty=format:"${SEPStart}${SEP}%H${SEP}${SEP}%h${SEP}${SEP}%an${SEP}${SEP}%ar${SEP}${SEP}%s${SEP}${SEP}%b${SEP}${SEPStart}`, path);
+      const res = await ipcRenderer.invoke(IPCEvents.SPAWN_GIT, `git log -1 ${branch} --pretty=format:"${SEP}%H${SEP}${SEP}%h${SEP}${SEP}%an${SEP}${SEP}%ar${SEP}${SEP}%s${SEP}`, path);
       return this.#parseCommits(res)[0];
    }
 
    async getCommits(path, branch) {
-      const res = await ipcRenderer.invoke(IPCEvents.SPAWN_GIT, `git log ${branch} --pretty=format:"${SEPStart}${SEP}%H${SEP}${SEP}%h${SEP}${SEP}%an${SEP}${SEP}%ar${SEP}${SEP}%s${SEP}${SEP}%b${SEP}${SEPStart}`, path);
+      const res = await ipcRenderer.invoke(IPCEvents.SPAWN_GIT, `git log ${branch} --pretty=format:"${SEP}%H${SEP}${SEP}%h${SEP}${SEP}%an${SEP}${SEP}%ar${SEP}${SEP}%s${SEP}`, path);
       return this.#parseCommits(res);
    }
 
    #parseCommits(res) {
-      return res.split(SEPStart).filter(r => r !== '\n' && Boolean(r)).map(entry => entry.split(SEP).filter(Boolean)).map(info => {
-         const [longHash, short, author, time, message, longMessage = ''] = info;
-         return { longHash, short, author, time, message, longMessage };
+      const commits = res.split('\n').filter(Boolean);
+      const data = commits.map(entry => {
+         const info = entry.split(SEP).filter(Boolean);
+
+         const [longHash, short, author, time, message] = info;
+
+         return {
+            longHash,
+            short,
+            author,
+            time,
+            message
+         };
       });
+
+      return data;
    }
 
    fetch(path) {
