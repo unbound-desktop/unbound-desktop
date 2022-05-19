@@ -226,6 +226,7 @@ class Webpack {
 
       const res = window[Webpack.#global].push([[uuid()], [], p => p]);
       window[Webpack.#global].pop();
+      Webpack.instance = res;
 
       return res;
    }
@@ -331,8 +332,8 @@ class Webpack {
       }, { all, ...rest });
    };
 
-   static getModules(filter) {
-      return Webpack.getModule(filter, { all: true });
+   static getModules(filter, options = {}) {
+      return Webpack.getModule(filter, { ...options, all: true });
    }
 
    static #parseOptions(args, filter = o => typeof o === 'object' && !Array.isArray(o)) {
@@ -529,43 +530,99 @@ class Webpack {
    }
 };
 
-module.exports = {
-   // Cringe
-   get api() {
-      return Webpack.common.API;
+const out = {
+   getByProps: {
+      aliases: [
+         'findByProps',
+         'fetchByProps'
+      ],
    },
-   get stores() {
-      return Webpack.common.stores;
+   getModule: {
+      aliases: [
+         'find',
+         'get',
+         'fetch',
+         'findModule',
+         'fetchModule'
+      ]
    },
-   get ready() {
-      return Webpack.ready;
+   bulk: {
+      aliases: [
+         'batch'
+      ]
    },
-   get instance() {
-      return Webpack.instance;
+   init: {},
+   common: {},
+   getLazy: {
+      aliases: [
+         'findLazy',
+         'fetchLazy'
+      ]
    },
-   set instance(instance) {
-      return Webpack.instance = instance;
+   filters: {},
+   getModules: {
+      aliases: [
+         'findAll',
+         'getAll',
+         'fetchAll'
+      ]
    },
-   bulk: Webpack.bulk,
-   init: Webpack.init,
-   common: Webpack.common,
-   get: Webpack.getModule,
-   find: Webpack.getModule,
-   getLazy: Webpack.getLazy,
-   filters: Webpack.filters,
-   findLazy: Webpack.getLazy,
-   getModule: Webpack.getModule,
-   findModule: Webpack.getModule,
-   getModules: Webpack.getModules,
-   getByProps: Webpack.getByProps,
-   findByProps: Webpack.getByProps,
-   findModules: Webpack.getModules,
-   getByString: Webpack.getByString,
-   findByString: Webpack.getByString,
-   getFluxStore: Webpack.getFluxStore,
-   getByKeyword: Webpack.getByKeyword,
-   findFluxStore: Webpack.getFluxStore,
-   findByKeyword: Webpack.getByKeyword,
-   getByDisplayName: Webpack.getByDisplayName,
-   findByDisplayName: Webpack.getByDisplayName
+   getByString: {
+      aliases: [
+         'findByString',
+         'fetchByString'
+      ]
+   },
+   getFluxStore: {
+      aliases: [
+         'findFluxStore',
+         'fetchFluxStore'
+      ]
+   },
+   getByKeyword: {
+      aliases: [
+         'findByKeyword',
+         'fetchByKeyword'
+      ]
+   },
+   getByDisplayName: {
+      aliases: [
+         'findByDisplayName',
+         'fetchByDisplayName'
+      ]
+   },
+   api: {
+      get: () => Webpack.common.API
+   },
+   stores: {
+      get: () => Webpack.common.stores
+   },
+   ready: {
+      get: () => Webpack.ready
+   },
+   instance: {
+      get: () => Webpack.instance,
+      set: (instance) => Webpack.instance = instance,
+      configurable: true
+   }
 };
+
+// Getters/Setters
+Object.entries(out).map(([name, options]) => {
+   const target = Webpack[name];
+   const instance = target?.bind?.(Webpack) ?? target;
+   if (!instance && !options.get && !options.set) {
+      return;
+   }
+
+   if (options.get || options.set) {
+      Object.defineProperty(module.exports, name, options);
+   } else {
+      module.exports[name] = instance;
+   };
+
+   if (!options.aliases) return;
+   for (const alias of options.aliases) {
+      module.exports[alias] = instance;
+   }
+});
