@@ -30,7 +30,7 @@ module.exports = class Unbound {
          });
 
          this.server.listen(5858, () => {
-            Logger.success(`Server running at port 5858`);
+            Logger.success(`Dev Server running at port 5858`);
          });
       }
 

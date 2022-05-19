@@ -1,4 +1,4 @@
-const { Text, Icon, Popout, SearchBar, FormTitle, ErrorBoundary, RelativeTooltip, Menu } = require('@components');
+const { Caret, Text, Icon, Popout, SearchBar, FormTitle, ErrorBoundary, RelativeTooltip, Menu } = require('@components');
 const { React, Locale: { Messages }, ContextMenu } = require('@webpack/common');
 const { createLogger } = require('@modules/logger');
 const { getByDisplayName } = require('@webpack');
@@ -8,7 +8,6 @@ const { strings } = require('@api/i18n');
 const { shell } = require('electron');
 const path = require('path');
 
-const Caret = getByDisplayName('Caret');
 const AddonCard = require('./AddonCard');
 const DOMWrapper = require('./DOMWrapper');
 

@@ -8,7 +8,6 @@
 const { createLogger } = require('@modules/logger');
 const modules = require('@data/modules');
 const uuid = require('@utilities/uuid');
-const patcher = require('../patcher');
 
 const Logger = createLogger('Webpack');
 const common = {};
@@ -228,13 +227,10 @@ class Webpack {
       const res = window[Webpack.#global].push([[uuid()], [], p => p]);
       window[Webpack.#global].pop();
 
-      if (res) {
-      }
-
       return res;
    }
 
-   static getModule(filter, { all = false, cache = true, force = false, default: defaultExport = true } = {}) {
+   static getModule(filter, { all = false, cache = true, default: defaultExport = true, traverse = [] } = {}) {
       if (typeof filter !== 'function') return void 0;
 
       const finder = Webpack.#request(cache);
@@ -262,6 +258,32 @@ class Webpack {
          if (!mdl || mdl.navigator) continue;
 
          if (typeof mdl === 'object') {
+            if (Array.isArray(traverse) && traverse.length) {
+               function loop(mdl, esModule) {
+                  if (esModule) {
+                     loop(mdl.default, false);
+                  }
+
+                  for (const key in mdl) {
+                     if (!mdl[key] || !traverse.includes(key)) {
+                        continue;
+                     }
+
+                     const childKeys = Object.keys(mdl[key]);
+                     if (childKeys.some(k => traverse.includes(k))) {
+                        for (const childKey of childKeys) {
+                           loop(mdl[key][childKey], false);
+                        }
+                     } else if (filter(mdl[key])) {
+                        found.push(mdl[key]);
+                        if (!all) break;
+                     }
+                  }
+               }
+
+               loop(mdl, mdl.__esModule);
+            }
+
             if (search(mdl, id)) {
                if (!all) return mdl;
                found.push(mdl);
@@ -272,15 +294,6 @@ class Webpack {
 
                if (!all) return value;
                found.push(value);
-            }
-
-            if (force && mdl.__esModule) for (const key in mdl) {
-               if (!mdl[key]) continue;
-
-               if (search(mdl[key], id)) {
-                  if (!all) return mdl[key];
-                  found.push(mdl[key]);
-               }
             }
          } else if (typeof mdl === 'function') {
             if (!search(mdl, id)) continue;
@@ -327,23 +340,34 @@ class Webpack {
    }
 
    static getByDisplayName(...options) {
-      const [names, { bulk = false, default: defaultExport = true, wait = false, ...rest }] = Webpack.#parseOptions(options);
+      const [names, { bulk = false, wait = false, deep = false, default: def = true, ...rest }] = Webpack.#parseOptions(options);
+
+      const filter = deep ?
+         Webpack.filters.byDisplayNameDeep(names[0]) :
+         Webpack.filters.byDisplayName(names[0], def);
 
       if (!bulk && !wait) {
-         return Webpack.getModule(Webpack.filters.byDisplayName(names[0]), { default: defaultExport, ...rest });
+         return Webpack.getModule(filter, deep ? {
+            traverse: ['type', 'render'],
+            ...rest
+         } : rest);
       }
 
       if (wait && !bulk) {
-         return Webpack.#waitFor(Webpack.filters.byDisplayName(names[0]), { default: defaultExport, ...rest });
+         return Webpack.#waitFor(filter, deep ? {
+            traverse: ['type', 'render'],
+            ...rest
+         } : rest);
       }
 
       if (bulk) {
          const filters = names.map(name => {
+            const handler = [deep ? 'byDisplayNameDeep' : 'byDisplayName'];
             if (Array.isArray(name)) {
-               return Webpack.filters.byDisplayName(name[0], name[1]);
+               return Webpack.filters[handler](name[0], name[1]);
             }
 
-            return Webpack.filters.byDisplayName(name, true);
+            return Webpack.filters[handler](name, true);
          }).concat({ wait });
 
          return Webpack.bulk(...filters);
@@ -468,17 +492,16 @@ class Webpack {
       return {
          byProps: (...mdls) => (mdl) => mdls.every(k => mdl[k] !== void 0),
          byDisplayName: (name, def = true) => (mdl) => {
-            if (!mdl) return false;
-
             if (!def) {
                return typeof mdl.default === 'function' && mdl.default.displayName === name;
             } else {
                return typeof mdl === 'function' && mdl.displayName === name;
             }
          },
+         byDisplayNameDeep: (name) => (mdl) => {
+            return mdl.displayName?.includes(`(${name})`);
+         },
          byString: (strings, def = true) => (mdl) => {
-            if (!mdl) return false;
-
             if (!def) {
                return typeof mdl.default === 'function' && strings.every(s => mdl.default?.toString?.()?.includes?.(s));
             } else {
@@ -486,7 +509,6 @@ class Webpack {
             }
          },
          byFluxStore: (name) => (mdl) => {
-            if (!mdl) return false;
             return mdl.getName?.() === name;
          }
       };
@@ -545,5 +567,5 @@ module.exports = {
    findFluxStore: Webpack.getFluxStore,
    findByKeyword: Webpack.getByKeyword,
    getByDisplayName: Webpack.getByDisplayName,
-   findByDisplayName: Webpack.getByDisplayName,
+   findByDisplayName: Webpack.getByDisplayName
 };
