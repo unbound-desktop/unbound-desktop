@@ -198,7 +198,7 @@ class Patcher {
       } else if (!type || typeof type !== 'string' || !['after', 'before', 'instead'].includes(type)) {
          throw new TypeError('fifth argument "type" must be of type string and any of the three: after, before, instead');
       } else if (typeof mdl[func] === 'undefined') {
-         throw new ReferenceError(`function ${func} does not exist on the second argument (object or function)`);
+         throw new ReferenceError(`function ${func} does not exist on the module provided`);
       }
 
       const current = this.get(arguments);
