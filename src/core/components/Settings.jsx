@@ -71,7 +71,7 @@ class GeneralSettings extends React.PureComponent {
             <Category
                title={strings.TOAST_SETTINGS_TITLE}
                description={strings.TOAST_SETTINGS_DESCRIPTION}
-               icon={p => <Icon name='Ban' {...p} />}
+               icon={p => <Icon name='ChatBubble' {...p} />}
                opened={isGeneralOpen}
                onChange={() => this.setState({ isGeneralOpen: !isGeneralOpen })}
             >
