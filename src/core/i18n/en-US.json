@@ -16,7 +16,7 @@
    "MISSING_VERSION": "No version provided.",
    "TOAST_SETTINGS_TITLE": "Toast Settings",
    "TOAST_SETTINGS_DESCRIPTION": "Customize your toasts the way you want them.",
-   "TOAST_EXAMPLE_TITLE": "Toast position changed!",
+   "TOAST_EXAMPLE_TITLE": "Title.",
    "TOAST_EXAMPLE_CONTENT": "This is an example toast.",
    "DEVELOPER_SETTINGS_TITLE": "Developer Settings",
    "DEVELOPER_SETTINGS_DESCRIPTION": "Settings strictly related to Unbound",
