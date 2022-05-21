@@ -14,12 +14,16 @@ const [
    SearchStore,
    Classes,
    SectionIcon,
+   ApplicationCommandItem,
+   ChannelApplicationIcon
 ] = bulk(
    filters.byProps('getBuiltInCommands'),
    filters.byProps('getApplicationIconURL'),
    filters.byProps('useSearchManager'),
    filters.byProps('icon', 'selectable', 'wrapper'),
    filters.byDisplayName('ApplicationCommandDiscoverySectionIcon', false),
+   filters.byDisplayName('ApplicationCommandItem', false),
+   m => m.type.displayName === 'ChannelApplicationIcon'
 );
 
 const Icon = require('./components/SectionIcon');
@@ -40,6 +44,18 @@ class CommandsAPI extends API {
    }
 
    start() {
+      Patcher.before(ChannelApplicationIcon, 'type', (_, [props]) => {
+         if (!props.section && props.command.__unbound) {
+            props.section = this.section;
+         }
+      });
+
+      Patcher.before(ApplicationCommandItem, 'default', (_, [props]) => {
+         if (!props.section && props.command.__unbound) {
+            props.section = this.section;
+         }
+      });
+
       Patcher.instead(SectionIcon, 'default', (self, args, orig) => {
          const [props] = args;
          const isSmall = props.selectable === void 0;
@@ -76,12 +92,18 @@ class CommandsAPI extends API {
          return orig.apply(self, args);
       });
 
-      Patcher.after(SearchStore.default, 'getApplicationSections', (_, args, res) => {
-         res ??= [];
+      Patcher.instead(SearchStore.default, 'getApplicationSections', (_, args, orig) => {
+         try {
+            const res = orig.apply(self, args) ?? [];
 
-         if (!res.find(r => r.id === this.section.id)) {
-            res.push(this.section);
-         };
+            if (!res.find(r => r.id === this.section.id)) {
+               res.push(this.section);
+            };
+
+            return res;
+         } catch {
+            return [];
+         }
       });
 
       Patcher.after(SearchStore.default, 'getQueryCommands', (_, [, , query], res) => {
@@ -104,8 +126,8 @@ class CommandsAPI extends API {
       });
 
 
-      Patcher.after(SearchStore, 'useSearchManager', (_, [, type, a, b, c], res) => {
-         if (type !== 1) return;
+      Patcher.after(SearchStore, 'useSearchManager', (_, [, type], res) => {
+         if (type !== 1 || !this.commands.size) return;
 
          if (!res.sectionDescriptors?.find?.(s => s.id === this.section.id)) {
             res.sectionDescriptors ??= [];
