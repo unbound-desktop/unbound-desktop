@@ -110,5 +110,8 @@ module.exports = {
             props: ['sendMessage', 'receiveMessage']
          },
       }
+   },
+   SettingsActions: {
+      props: ['setSection', 'open']
    }
 };

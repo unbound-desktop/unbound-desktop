@@ -6,11 +6,12 @@ const EntityManager = require('@structures/managers/entities');
 const PatchManager = require('@structures/managers/patches');
 const StyleManager = require('@structures/managers/styles');
 const APIManager = require('@structures/managers/api');
+const Updater = require('@core/updater');
+const Patcher = require('@patcher');
 
 const { createLogger } = require('@modules/logger');
 
 const Logger = createLogger();
-const Patcher = require('@patcher');
 
 module.exports = class Unbound {
    static #styles = new StyleManager();
@@ -61,6 +62,37 @@ module.exports = class Unbound {
 
       const end = new Date() - start;
       Logger.log(`Initialized in ${end >= 1000 ? end / 1000 : `${end}m`}s.`);
+
+      Logger.log('Checking for updates...');
+      try {
+         const updates = await Updater.fetch();
+
+         const { SettingsActions } = this.webpack.common || {};
+
+         if (updates?.length && this.apis?.toasts && this.apis?.i18n) {
+            const { strings } = this.apis.i18n;
+
+            this.apis.toasts.open({
+               title: strings.UPDATER_REMINDER_TITLE,
+               content: strings.UPDATER_REMINDER_DESC,
+               icon: 'UpdateAvailable',
+               buttons: [
+                  {
+                     color: 'green',
+                     text: strings.UPDATER_REMINDER_BUTTON,
+                     onClick: () => {
+                        SettingsActions?.open?.('unbound-updater');
+                     }
+                  }
+               ],
+               color: 'var(--info-positive-foreground)'
+            });
+         }
+
+         Logger.log('Update check complete.');
+      } catch (e) {
+         Logger.error('Failed to check entity updates on startup.');
+      }
    }
 
    async restart() {
