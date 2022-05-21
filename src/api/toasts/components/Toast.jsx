@@ -54,7 +54,8 @@ module.exports = class Toast extends Component {
          timeout,
          onClose,
          buttons,
-         settings
+         settings,
+         toastProps = {},
       } = this.props;
 
       if (this.state.crashed) {
@@ -143,6 +144,7 @@ module.exports = class Toast extends Component {
                   '--blur': `${settings.get('blurAmount', 7.5)}px`
                }}
                className='unbound-toast'
+               {...toastProps}
             >
                <div className='unbound-toast-header' data-has-content={Boolean(Content)}>
                   {
