@@ -10,10 +10,7 @@ Object.keys(components).map(name => {
    let map;
 
    if (options.name) {
-      const byDefaultDisplayName = (m => m.default?.displayName === options.name);
-      const isDefault = options.default ?? true;
-
-      filter = isDefault ? filters.byDisplayName(options.name) : byDefaultDisplayName;
+      filter = filters.byDisplayName(options.name, options.default ?? true);
    } else if (Array.isArray(options.props)) {
       filter = filters.byProps(...options.props);
       if (typeof options.prop === 'string') {
@@ -35,15 +32,14 @@ Object.keys(components).map(name => {
       };
    }
 
-   if (filter) search.push({ filter, name, map, default: options.default ?? false });
+   if (filter) {
+      search.push({ filter, name, map, default: options.default ?? false });
+   }
 });
 
 const res = bulk(...search.map(s => s.filter));
 search.map(({ name, map }, index) => {
-   const mapper = map ?? (m => m);
-   const result = mapper(res[index]);
-
-   exports[name] = result;
+   module.exports[name] = map ? map(res[index]) : res[index];
 });
 
 readdirSync(__dirname).filter(f => f !== basename(__filename)).map(file => {
