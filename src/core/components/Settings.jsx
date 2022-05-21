@@ -198,6 +198,8 @@ class GeneralSettings extends React.PureComponent {
    }
 
    componentWillUnmount() {
+      if (!this.toasts) return;
+
       for (const toast of this.toasts) {
          Toasts.close(toast);
       }
