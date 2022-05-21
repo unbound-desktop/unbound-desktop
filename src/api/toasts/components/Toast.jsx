@@ -75,16 +75,19 @@ module.exports = class Toast extends Component {
          from: {
             opacity: 1,
             height: 0,
+            marginTop: 10,
             transform: `translateY(${isFromTop ? '-100%' : 0}) scale(1)`
          },
          enter: () => (next) => next({
             opacity: 1,
-            height: this.ref.current?.getBoundingClientRect().height ?? 'auto',
+            marginTop: 10,
+            height: this.ref.current?.getBoundingClientRect().height ?? 0,
             transform: `translateY(0) scale(1)`
          }),
          leave: {
             opacity: 0,
             height: 0,
+            marginTop: 0,
             transform: `translateY(0) scale(0.75)`
          },
          onRest: () => {
@@ -102,7 +105,7 @@ module.exports = class Toast extends Component {
             onMouseEnter={() => progress.value.pause()}
             onMouseLeave={() => progress.value.resume()}
             className='unbound-toast-wrapper'
-            style={{ opacity: props.opacity, height: props.height }}
+            style={{ opacity: props.opacity, height: props.height, marginTop: props.marginTop }}
          >
             <animated.div
                ref={this.ref}

@@ -5,8 +5,11 @@
    justify-content: center;
    flex-direction: column;
    z-index: 99999999999999999;
-   gap: .5rem;
    margin: 15px;
+}
+
+.unbound-toasts-container[data-position*='top'] .unbound-toast-wrapper:first-child {
+   margin-top: 0 !important;
 }
 
 .unbound-toasts-container[data-position='bottom-right'] {
