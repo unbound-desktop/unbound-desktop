@@ -18,7 +18,7 @@ class ToastsContainer extends React.PureComponent {
       }
 
       return <div className='unbound-toasts-container' data-position={position}>
-         {Object.values(toasts.storage).sort((a, b) => a.id - b.id).map(data =>
+         {Object.values(toasts.storage).sort((a, b) => a.time - b.time).map(data =>
             <Toast key={data.id} {...data} manager={manager} store={toasts} position={position} />
          )}
       </div>;

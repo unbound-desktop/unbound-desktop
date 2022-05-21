@@ -26,10 +26,16 @@ class Toasts extends API {
    }
 
    open(options) {
-      const id = Date.now();
-      this.toasts.set(id, options);
+      options.id ??= uuid(5);
+      options.time = Date.now();
 
-      return id;
+      if (this.toasts.get(options.id)) {
+         return this.open({ ...options, id: uuid(5) });
+      }
+
+      this.toasts.set(options.id, options);
+
+      return options.id;
    }
 
    close(id) {
