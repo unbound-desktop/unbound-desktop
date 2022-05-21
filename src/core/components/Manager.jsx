@@ -134,7 +134,6 @@ class Manager extends React.PureComponent {
 
    renderOverflowMenu() {
       const { get, set } = this.settings;
-      const { type } = this.props;
 
       const filters = get('filters', {
          name: true,

@@ -94,9 +94,10 @@ class GeneralSettings extends React.PureComponent {
                />
                <Divider style={{ marginTop: 10 }} />
                <Switch
-                  title='Custom Styling'
-                  description='Allows you to change background color, opacity and blur.'
+                  title={strings.TOAST_SETTINGS_CUSTOM_TITLE}
+                  description={strings.TOAST_SETTINGS_CUSTOM_DESCRIPTION}
                   checked={this.settings.get('useCustomColours', false)}
+                  endDivider={this.settings.get('useCustomColours', false)}
                   onChange={() => this.settings.toggle('useCustomColours', false)}
                />
                {this.settings.get('useCustomColours', false) && <>
@@ -106,7 +107,7 @@ class GeneralSettings extends React.PureComponent {
                      onChange={v => this.settings.set('bgColor', v)}
                   />
                   <SliderInput
-                     title='Opacity'
+                     title={strings.TOAST_SETTINGS_OPACITY_TITLE}
                      minValue={1}
                      maxValue={10}
                      stickToMarkers
@@ -117,7 +118,7 @@ class GeneralSettings extends React.PureComponent {
                      onMarkerRender={(v) => `${v / 10}`}
                   />
                   <SliderInput
-                     title='Blur'
+                     title={strings.TOAST_SETTINGS_BLUR_TITLE}
                      minValue={2.5}
                      maxValue={15}
                      stickToMarkers

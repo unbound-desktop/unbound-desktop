@@ -16,6 +16,8 @@
    "MISSING_VERSION": "No version provided.",
    "TOAST_SETTINGS_TITLE": "Toast Settings",
    "TOAST_SETTINGS_DESCRIPTION": "Customize your toasts the way you want them.",
+   "TOAST_SETTINGS_CUSTOM_TITLE": "Custom Styling",
+   "TOAST_SETTINGS_CUSTOM_DESCRIPTION": "Allows you to change background color, opacity and blur.",
    "TOAST_EXAMPLE_TITLE": "Title.",
    "TOAST_EXAMPLE_CONTENT": "This is an example toast.",
    "DEVELOPER_SETTINGS_TITLE": "Developer Settings",
