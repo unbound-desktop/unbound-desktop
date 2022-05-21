@@ -7,7 +7,7 @@ module.exports = class Category extends React.PureComponent {
    render() {
       const { title, description, opened, onChange, children, icon, className, endDivider } = this.props;
 
-      return <div className={classnames('unbound-category', opened && 'unbound-category-opened', className)}>
+      return <div className={classnames(className, 'unbound-category', opened && 'unbound-category-opened')}>
          <div
             className={classnames('unbound-category-header', icon && 'unbound-category-has-icon')}
             onClick={onChange}

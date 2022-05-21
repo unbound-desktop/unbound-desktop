@@ -6,7 +6,7 @@ const SettingsItem = require('./SettingsItem');
 
 module.exports = class SliderInput extends React.PureComponent {
    render() {
-      const { title, description, required, ...rest } = this.props;
+      const { title, description, required, markers, ...rest } = this.props;
       const children = this.props.children;
       delete this.props.children;
 
@@ -19,7 +19,11 @@ module.exports = class SliderInput extends React.PureComponent {
          >
             <Slider
                {...this.props}
-               className={classnames(this.props.className, 'unbound-settings-slider')}
+               className={classnames(
+                  this.props.className,
+                  'unbound-settings-slider',
+                  markers && 'unbound-settings-slider-has-markers'
+               )}
             />
             {children}
          </SettingsItem>

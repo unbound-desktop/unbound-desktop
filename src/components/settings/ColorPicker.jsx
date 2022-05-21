@@ -5,6 +5,7 @@ const { getByProps } = require('@webpack');
 
 const SettingsItem = require('./SettingsItem');
 const AsyncComponent = require('../AsyncComponent');
+const classnames = require('@utilities/classnames');
 
 const Logger = createLogger('Components', 'ColorPicker');
 
@@ -32,7 +33,7 @@ const Picker = AsyncComponent.from(getColorPicker);
 
 module.exports = class ColorPicker extends React.PureComponent {
    render() {
-      const { title, description, required, default: defaultValue, defaultColors = ROLE_COLORS, ...rest } = this.props;
+      const { className, title, description, required, default: defaultValue, defaultColors = ROLE_COLORS, ...rest } = this.props;
       const children = this.props.children;
       delete this.props.children;
 
@@ -47,6 +48,7 @@ module.exports = class ColorPicker extends React.PureComponent {
                colors={defaultColors}
                defaultColor={typeof defaultValue === 'number' ? defaultValue : DEFAULT_ROLE_COLOR}
                {...this.props}
+               className={classnames('unbound-settings-color-picker', className)}
             />
             {children}
          </SettingsItem>

@@ -98,6 +98,22 @@
    background: var(--color);
 }
 
+.unbound-toast[data-use-custom='true'] {
+   background-color: var(--bg);
+   backdrop-filter: blur(var(--blur));
+}
+
+/* hide bound selector sub-text */
+.unbound-settings-toast-category .unbound-category-content > div:first-child > div[class*='colorStandard'] {
+   display: none;
+}
+
+.unbound-settings-toast-category .unbound-category-content > div:first-child > div[class*='wrapper'] {
+   max-width: 512px;
+   padding-bottom: 50%;
+   margin: auto;
+}
+
 .unbound-toast {
    padding: 10px;
    border-left: 4px solid var(--color);

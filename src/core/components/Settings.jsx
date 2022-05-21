@@ -3,7 +3,8 @@ const { React } = require('@webpack/common');
 const { memoize } = require('@utilities');
 const { strings } = require('@api/i18n');
 
-const { Text, ErrorBoundary, Category, FormTitle, Icon, Switch, AsyncComponent } = require('@components');
+const { Divider, Text, ErrorBoundary, Category, FormTitle, Icon, Switch: DSwitch, AsyncComponent } = require('@components');
+const { Switch, SliderInput, ColorPicker } = require('@components/settings');
 const Settings = require('@api/settings');
 const Toasts = require('@api/toasts');
 const Icons = require('./Icons');
@@ -34,7 +35,7 @@ class GeneralSettings extends React.PureComponent {
          <Text className='unbound-settings-category-switch-text' size={Text.Sizes.SIZE_16}>
             {name}
          </Text>
-         <Switch
+         <DSwitch
             className='unbound-settings-category-inner-switch'
             checked={id && this.settings.get(id, defaultValue)}
             onChange={(v) => {
@@ -55,9 +56,8 @@ class GeneralSettings extends React.PureComponent {
 
    render() {
       const {
-         isGeneralOpen = false,
+         isToastsOpen = false,
          isDeveloperOpen = false,
-         isPowercordOpen = false,
          isBdOpen = false
       } = this.state;
 
@@ -72,35 +72,62 @@ class GeneralSettings extends React.PureComponent {
                title={strings.TOAST_SETTINGS_TITLE}
                description={strings.TOAST_SETTINGS_DESCRIPTION}
                icon={p => <Icon name='ChatBubble' {...p} />}
-               opened={isGeneralOpen}
-               onChange={() => this.setState({ isGeneralOpen: !isGeneralOpen })}
+               className='unbound-settings-toast-category'
+               opened={isToastsOpen}
+               onChange={() => {
+                  this.setState({ isToastsOpen: !isToastsOpen });
+                  if (!isToastsOpen) this.onToastsChange();
+               }}
             >
                <BoundSelector
+                  className='unbound-settings-toast-position'
                   position={this.parsePosition(this.settings.get('toastPosition', 'bottom-right'))}
-                  onChange={(e, v) => {
+                  onChange={(_, v) => {
                      const position = this.parsePosition(v);
                      this.settings.set('toastPosition', position);
-
-                     this.toasts ??= [];
-                     if (this.toasts.length) {
-                        for (const toast of this.toasts) {
-                           Toasts.close(toast);
-                        }
-                     }
+                     this.onToastsChange();
 
                      if (position === 'disabled') {
                         Toasts.clear();
                      }
-
-                     this.toasts.push(Toasts.open({
-                        title: strings.TOAST_EXAMPLE_TITLE,
-                        color: 'var(--info-positive-foreground)',
-                        icon: 'CheckmarkCircle',
-                        content: strings.TOAST_EXAMPLE_CONTENT,
-                        timeout: 1000
-                     }));
                   }}
                />
+               <Divider style={{ marginTop: 10 }} />
+               <Switch
+                  title='Custom Styling'
+                  description='Allows you to change background color, opacity and blur.'
+                  checked={this.settings.get('useCustomColours', false)}
+                  onChange={() => this.settings.toggle('useCustomColours', false)}
+               />
+               {this.settings.get('useCustomColours', false) && <>
+                  <ColorPicker
+                     className='unbound-settings-toast-color'
+                     value={this.settings.get('bgColor')}
+                     onChange={v => this.settings.set('bgColor', v)}
+                  />
+                  <SliderInput
+                     title='Opacity'
+                     minValue={1}
+                     maxValue={10}
+                     stickToMarkers
+                     markers={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+                     defaultValue={5}
+                     initialValue={(this.settings.get('bgOpacity', 0.5) * 10)}
+                     onValueChange={(val) => this.settings.set('bgOpacity', val / 10)}
+                     onMarkerRender={(v) => `${v / 10}`}
+                  />
+                  <SliderInput
+                     title='Blur'
+                     minValue={2.5}
+                     maxValue={15}
+                     stickToMarkers
+                     markers={[2.5, 5, 7.5, 10, 12.5, 15]}
+                     defaultValue={7.5}
+                     initialValue={this.settings.get('blurAmount', 7.5)}
+                     onValueChange={(val) => this.settings.set('blurAmount', val)}
+                     onMarkerRender={(v) => `${v}px`}
+                  />
+               </>}
             </Category>
 
             <Category
@@ -168,6 +195,27 @@ class GeneralSettings extends React.PureComponent {
                {setting.items.map(setting => this.handleBDSetting(category, setting))}
             </Category>;
       }
+   }
+
+   componentWillUnmount() {
+      for (const toast of this.toasts) {
+         Toasts.close(toast);
+      }
+   }
+
+   onToastsChange() {
+      this.toasts ??= [];
+
+      for (const toast of this.toasts) {
+         Toasts.close(toast);
+      }
+
+      this.toasts.push(Toasts.open({
+         title: strings.TOAST_EXAMPLE_TITLE,
+         color: 'var(--info-positive-foreground)',
+         icon: 'CheckmarkCircle',
+         content: strings.TOAST_EXAMPLE_CONTENT
+      }));
    }
 };
 

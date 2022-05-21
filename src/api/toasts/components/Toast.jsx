@@ -3,9 +3,16 @@ const { React, ReactSpring } = require('@webpack/common');
 const Component = require('@structures/component');
 const { getByProps } = require('@webpack');
 
-const Markdown = getByProps('reactParserFor', 'parse');
-const Parser = Markdown?.reactParserFor?.(Markdown.defaultRules);
+const [
+   Colors,
+   Markdown
+] = getByProps(
+   ['hex2int'],
+   ['reactParserFor', 'parse'],
+   { bulk: true }
+);
 
+const Parser = Markdown?.reactParserFor?.(Markdown.defaultRules);
 const { useSpring, useTransition, animated } = ReactSpring;
 
 module.exports = class Toast extends Component {
@@ -42,7 +49,8 @@ module.exports = class Toast extends Component {
          id,
          timeout,
          onClose,
-         buttons
+         buttons,
+         settings
       } = this.props;
 
       const progress = useSpring({
@@ -99,6 +107,9 @@ module.exports = class Toast extends Component {
 
       const transition = useTransition(!this.state.closing, spring);
 
+      const bgColor = settings.get('bgColor', 0);
+      const bgOpacity = settings.get('bgOpacity', 0.5);
+
       return <>
          {transition((props, item) => item && (<animated.div
             key={id}
@@ -110,9 +121,12 @@ module.exports = class Toast extends Component {
             <animated.div
                ref={this.ref}
                data-color={color}
+               data-use-custom={settings.get('useCustomColours', false)}
                style={{
                   transform: props.transform,
-                  '--color': color
+                  '--color': color,
+                  '--bg': Colors.int2rgba(bgColor, bgOpacity),
+                  '--blur': `${settings.get('blurAmount', 7.5)}px`
                }}
                className='unbound-toast'
             >
