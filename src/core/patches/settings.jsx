@@ -72,9 +72,7 @@ module.exports = class Settings extends Patch {
             sections.splice = function (...args) {
                const items = args.slice(2);
 
-               const updater = items?.find(i => i.section === 'pc-updater');
                if (
-                  !updater &&
                   items?.length &&
                   items.some(i => blacklisted.labels.some(l => i.label?.includes(l)))
                ) return sections;
