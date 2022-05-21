@@ -37,8 +37,12 @@ module.exports = class Toast extends Component {
       }
    }
 
+   componentDidCatch() {
+      this.setState({ crashed: true });
+   }
+
    render() {
-      const {
+      let {
          icon: CustomIcon,
          color,
          title: Title,
@@ -52,6 +56,16 @@ module.exports = class Toast extends Component {
          buttons,
          settings
       } = this.props;
+
+      if (this.state.crashed) {
+         Title = 'This toast failed to render.';
+         CustomIcon = 'CloseCircle';
+         color = 'var(--info-danger-foreground)';
+         Content = 'The code that sent this toast is most likely broken.';
+         buttons = null;
+         onClose = null;
+         timeout = null;
+      }
 
       const progress = useSpring({
          from: {
