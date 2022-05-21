@@ -15,18 +15,12 @@ module.exports = (data) => {
    let storage = { ...(data ?? {}) };
    const id = uuid(10).toUpperCase();
 
-   const handlers = {
-      get: (key, defaults) => storage[key] ?? defaults,
-      set: (key, value) => Dispatcher.dirtyDispatch({
-         type: `UNBOUND_FLUX_${id}_SET`,
-         key,
-         value
-      }),
-      delete: (key) => handlers.set(key)
-   };
+   class Store extends Flux.Store {
+      get(key, defaults) {
+         return storage[key] ?? defaults;
+      }
 
-   const store = new Flux.Store(Dispatcher, {
-      [`UNBOUND_FLUX_${id}_SET`]: ({ key, value }) => {
+      set(key, value) {
          if (key === '*') {
             return storage = value;
          }
@@ -36,15 +30,23 @@ module.exports = (data) => {
          } else {
             storage[key] = value;
          }
-      }
-   });
 
-   return {
-      ...handlers,
-      store,
+         this.emitChange();
+      };
+
+      delete(key) {
+         this.set(key);
+      }
+
       get storage() {
          return storage;
-      },
-      id,
+      }
+
+      get id() {
+         return id;
+      }
    };
+
+   const store = new Store(Dispatcher, {});
+   return store;
 };
