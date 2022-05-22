@@ -490,7 +490,7 @@ class Webpack {
    static get filters() {
       return {
          byProps: (...props) => (mdl) => props.every(k => mdl[k] !== void 0),
-         byProtoProps: (...props) => (mdl) => props.every(p => mdl.prototype[p] !== void 0),
+         byProtoProps: (...props) => (mdl) => props.every(p => mdl.prototype?.[p] !== void 0),
          byDisplayName: (name, def = true) => (mdl) => {
             if (!def) {
                return typeof mdl.default === 'function' && mdl.default.displayName === name;
