@@ -2,6 +2,7 @@ const { FormTitle, FormText, Caret, Text } = require('@components');
 const { React } = require('@webpack/common');
 const { classnames } = require('@utilities');
 const Divider = require('./Divider');
+const Icon = require('./Icon');
 
 module.exports = class Category extends React.PureComponent {
    render() {
@@ -12,7 +13,10 @@ module.exports = class Category extends React.PureComponent {
             className={classnames('unbound-category-header', icon && 'unbound-category-has-icon')}
             onClick={onChange}
          >
-            {typeof icon === 'function' && icon({ className: 'unbound-category-icon' })}
+            {
+               typeof icon === 'function' && icon({ className: 'unbound-category-icon' }) ||
+               typeof icon === 'string' && <Icon className='unbound-category-icon' name={icon} />
+            }
             <div className='unbound-category-details'>
                <FormTitle
                   color={Text.Colors.HEADER_PRIMARY}
