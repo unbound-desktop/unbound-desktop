@@ -77,7 +77,7 @@ module.exports = class Settings extends Patch {
                   items.some(i => blacklisted.labels.some(l => i.label?.includes(l)))
                ) return sections;
 
-               return updater ? sections._splice(...[...args.slice(0, 2), updater]) : sections._splice(...args);
+               return sections._splice(...args);
             };
 
             return sections;
