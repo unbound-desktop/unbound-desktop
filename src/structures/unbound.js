@@ -63,6 +63,10 @@ module.exports = class Unbound {
       const end = new Date() - start;
       Logger.log(`Initialized in ${end >= 1000 ? end / 1000 : `${end}m`}s.`);
 
+      this.checkForUpdates();
+   }
+
+   async checkForUpdates() {
       Logger.log('Checking for updates...');
       try {
          const updates = await Updater.fetch();
