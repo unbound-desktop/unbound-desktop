@@ -195,24 +195,61 @@ class Webpack {
       return Reflect.apply(Webpack.push, window[Webpack.#global], [chunk]);
    }
 
-   static getLazy(filter) {
-      const cache = Webpack.find(filter);
+   static getLazy(filter, { all = false, default: defaultExport = true, traverse = [] } = {}) {
+      const cache = Webpack.find(filter, { all, default: defaultExport, traverse });
       if (cache) return Promise.resolve(cache);
+
+      const search = function (module) {
+         try {
+            return filter(module);
+         } catch {
+            return false;
+         }
+      };
+
+      const found = [];
 
       return new Promise(resolve => {
          const listener = (m) => {
-            const direct = filter(m);
-            if (direct) {
-               resolve(m);
-               return void remove();
+            if (traverse?.length) {
+               function loop(mdl, esModule) {
+                  if (esModule) {
+                     loop(mdl.default, false);
+                  }
+
+                  for (const key in mdl) {
+                     if (!mdl[key] || !traverse.includes(key)) {
+                        continue;
+                     }
+
+                     const childKeys = Object.keys(mdl[key]);
+                     if (childKeys.some(k => ~traverse.indexOf(k))) {
+                        for (const childKey of childKeys) {
+                           loop(mdl[key][childKey], false);
+                        }
+                     } else if (filter(mdl[key])) {
+                        found.push(mdl[key]);
+                        if (!all) break;
+                     }
+                  }
+               }
+
+               loop(m, m.__esModule);
             }
 
-            if (!m.default) return;
-            const defaultMatch = filter(m.default);
-            if (!defaultMatch) return;
+            if (search(m)) {
+               found.push(m);
+            }
 
-            resolve(m.default);
-            remove();
+            if (m.default && search(m.default)) {
+               const value = defaultExport ? m.default : m;
+               found.push(value);
+            }
+
+            if (found.length) {
+               resolve(all ? found : found[0]);
+               remove();
+            }
          };
 
          const remove = Webpack.addListener(listener);
@@ -341,32 +378,23 @@ class Webpack {
    static getByDisplayName(...options) {
       const [names, { bulk = false, wait = false, deep = false, default: def = true, ...rest }] = Webpack.#parseOptions(options);
 
-      const filter = deep ?
-         Webpack.filters.byDisplayNameDeep(names[0]) :
-         Webpack.filters.byDisplayName(names[0], def);
+      const filter = Webpack.filters.byDisplayName(names[0], def, deep);
 
       if (!bulk && !wait) {
-         return Webpack.find(filter, deep ? {
-            traverse: ['type', 'render'],
-            ...rest
-         } : rest);
+         return Webpack.find(filter, rest);
       }
 
       if (wait && !bulk) {
-         return Webpack.#waitFor(filter, deep ? {
-            traverse: ['type', 'render'],
-            ...rest
-         } : rest);
+         return Webpack.getLazy(filter, rest);
       }
 
       if (bulk) {
          const filters = names.map(name => {
-            const handler = [deep ? 'byDisplayNameDeep' : 'byDisplayName'];
             if (Array.isArray(name)) {
-               return Webpack.filters[handler](name[0], name[1]);
+               return Webpack.filters.byDisplayName(name[0], name[1], name[2] ?? deep);
             }
 
-            return Webpack.filters[handler](name, true);
+            return Webpack.filters.byDisplayName(name, true, deep);
          }).concat({ wait });
 
          return Webpack.bulk(...filters);
@@ -383,7 +411,7 @@ class Webpack {
       }
 
       if (wait && !bulk) {
-         return Webpack.#waitFor(Webpack.filters.byFluxStore(names[0]), { ...rest });
+         return Webpack.getLazy(Webpack.filters.byFluxStore(names[0]), { ...rest });
       }
 
       if (bulk) {
@@ -406,13 +434,36 @@ class Webpack {
       }
 
       if (wait && !bulk) {
-         return Webpack.#waitFor(Webpack.filters.byProps(...props), rest);
+         return Webpack.getLazy(Webpack.filters.byProps(...props), rest);
       }
 
       if (bulk) {
          const filters = props.map(p => Array.isArray(p)
             ? Webpack.filters.byProps(...p)
             : Webpack.filters.byProps(p)
+         ).concat({ wait, ...rest });
+
+         return Webpack.bulk(...filters);
+      }
+
+      return null;
+   }
+
+   static getByPrototype(...options) {
+      const [props, { bulk = false, wait = false, ...rest }] = Webpack.#parseOptions(options);
+
+      if (!bulk && !wait) {
+         return Webpack.find(Webpack.filters.byPrototype(...props), rest);
+      }
+
+      if (wait && !bulk) {
+         return Webpack.getLazy(Webpack.filters.byPrototype(...props), rest);
+      }
+
+      if (bulk) {
+         const filters = props.map(p => Array.isArray(p)
+            ? Webpack.filters.byPrototype(...p)
+            : Webpack.filters.byPrototype(p)
          ).concat({ wait, ...rest });
 
          return Webpack.bulk(...filters);
@@ -429,7 +480,7 @@ class Webpack {
       }
 
       if (wait && !bulk) {
-         return Webpack.#waitFor(Webpack.filters.byString(strings, defaultExport), rest);
+         return Webpack.getLazy(Webpack.filters.byString(strings, defaultExport), rest);
       }
 
       if (bulk) {
@@ -450,19 +501,11 @@ class Webpack {
       return null;
    }
 
-   static async #waitFor(filter, { retries = 100, all = false, forever = false, delay = 50 } = {}) {
-      for (let i = 0; (i < retries || forever); i++) {
-         const module = Webpack.find(filter, { all, cache: false });
-         if (module) return module;
-         await new Promise(res => setTimeout(res, delay));
-      }
-   }
-
    static bulk(...options) {
       const [filters, { wait = false, ...rest }] = Webpack.#parseOptions(options);
 
       const found = new Array(filters.length);
-      const search = wait ? Webpack.#waitFor : Webpack.find;
+      const search = wait ? Webpack.getLazy : Webpack.find;
       const wrapped = filters.map(filter => (m) => {
          try {
             return filter(m);
@@ -489,17 +532,20 @@ class Webpack {
 
    static get filters() {
       return {
-         byProps: (...props) => (mdl) => props.every(k => mdl[k] !== void 0),
-         byProtoProps: (...props) => (mdl) => props.every(p => mdl.prototype?.[p] !== void 0),
-         byDisplayName: (name, def = true) => (mdl) => {
-            if (!def) {
+         byProps: (...mdls) => (mdl) => mdls.every(k => mdl[k] !== void 0),
+         byPrototype: (...props) => (mdl) => props.every(p => mdl.prototype?.[p] !== void 0),
+         byDisplayName: (name, def = true, deep = false) => (mdl) => {
+            if (deep && mdl.type) {
+               const displayName = mdl.type?.displayName;
+               return displayName === name || displayName.includes(`(${name})`);
+            } else if (deep && mdl.render) {
+               const displayName = mdl.render?.displayName;
+               return displayName === name || displayName.includes(`(${name})`);
+            } else if (!def) {
                return typeof mdl.default === 'function' && mdl.default.displayName === name;
             } else {
                return typeof mdl === 'function' && mdl.displayName === name;
             }
-         },
-         byDisplayNameDeep: (name) => (mdl) => {
-            return mdl.displayName?.includes(`(${name})`);
          },
          byString: (strings, def = true) => (mdl) => {
             if (!def) {
@@ -534,6 +580,12 @@ const out = {
       aliases: [
          'findByProps',
          'fetchByProps'
+      ],
+   },
+   getByPrototype: {
+      aliases: [
+         'findByPrototype',
+         'fetchByPrototype'
       ],
    },
    find: {
