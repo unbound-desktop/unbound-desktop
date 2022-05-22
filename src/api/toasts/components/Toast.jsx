@@ -220,4 +220,4 @@ module.exports = class Toast extends Component {
          return content;
       }
    }
-};;
+};

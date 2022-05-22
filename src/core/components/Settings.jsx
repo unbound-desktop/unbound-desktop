@@ -1,6 +1,6 @@
-const { getLazy, filters } = require('@webpack');
+const { getLazy, filters, getByProps } = require('@webpack');
+const { memoize, parseColor } = require('@utilities');
 const { React } = require('@webpack/common');
-const { memoize } = require('@utilities');
 const { strings } = require('@api/i18n');
 
 const { Divider, Text, ErrorBoundary, Category, FormTitle, Icon, Switch: DSwitch, AsyncComponent } = require('@components');
@@ -9,6 +9,7 @@ const Settings = require('@api/settings');
 const Toasts = require('@api/toasts');
 const Icons = require('./Icons');
 
+const Colors = getByProps('hex2int');
 const NotificationSettings = memoize(() => getLazy(filters.byDisplayName('NotificationSettings')));
 const BoundSelector = AsyncComponent.from(NotificationSettings);
 
@@ -63,6 +64,8 @@ class GeneralSettings extends React.PureComponent {
 
       const BDSettings = window.BDInternal?.SettingsManager;
 
+      const defaultBg = parseColor('--background-tertiary');
+
       return (
          <ErrorBoundary>
             <FormTitle tag='h1' className='unbound-settings-title'>
@@ -102,9 +105,10 @@ class GeneralSettings extends React.PureComponent {
                />
                {this.settings.get('useCustomColours', false) && <>
                   <ColorPicker
-                     className='unbound-settings-toast-color'
                      value={this.settings.get('bgColor')}
+                     className='unbound-settings-toast-color'
                      onChange={v => this.settings.set('bgColor', v)}
+                     default={Colors.rgb2int(`rgb(${defaultBg[0]}, ${defaultBg[1]}, ${defaultBg[2]})`)}
                   />
                   <SliderInput
                      title={strings.TOAST_SETTINGS_OPACITY_TITLE}
@@ -112,7 +116,7 @@ class GeneralSettings extends React.PureComponent {
                      maxValue={10}
                      stickToMarkers
                      markers={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-                     defaultValue={5}
+                     defaultValue={10}
                      initialValue={(this.settings.get('bgOpacity', 0.5) * 10)}
                      onValueChange={(val) => this.settings.set('bgOpacity', val / 10)}
                      onMarkerRender={(v) => `${v / 10}`}

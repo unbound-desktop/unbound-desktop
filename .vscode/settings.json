@@ -46,5 +46,6 @@
    "javascript.referencesCodeLens.showOnAllFunctions": false,
    "javascript.suggest.completeFunctionCalls": false,
    "js/ts.implicitProjectConfig.experimentalDecorators": false,
-   "js/ts.implicitProjectConfig.strictFunctionTypes": true
+   "js/ts.implicitProjectConfig.strictFunctionTypes": true,
+   "files.insertFinalNewline": false
 }
