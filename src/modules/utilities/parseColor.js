@@ -1,8 +1,8 @@
 /**
  * @name parseColor
- * @description Allows functionality of a python-like sleep method
- * @param {string} color - A CSS parsable color string or a css variable name in :root.
- * @return {[number, number, number, number?]} Returns an array of the RGB(A) values.
+ * @description Parses a color string into an array of RGB(A) values.
+ * @param {string} color - A CSS parsable color string or a CSS variable name in :root.
+ * @return {[number, number, number, number?]} An array of the RGB(A) values.
  */
 
 module.exports = (color) => {
