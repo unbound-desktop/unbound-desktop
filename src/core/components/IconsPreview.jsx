@@ -1,13 +1,15 @@
-const { Tooltip, Icon } = require('@components');
+const { RelativeTooltip, Icon } = require('@components');
 const React = require('react');
 
-module.exports = class ShowMeTheFuckingIcons extends React.Component {
+module.exports = class IconsPreview extends React.Component {
    render() {
       const icons = [];
 
       for (const icon of Icon.Names) {
-         icons.push(<Tooltip text={icon}>
-            <Icon
+         icons.push(<RelativeTooltip text={icon}>
+            {p => <Icon
+               {...p}
+               className='unbound-show-the-icons-icon'
                author={{
                   getAvatarURL: () => { },
                   isVerifiedBot: () => { },
@@ -40,11 +42,13 @@ module.exports = class ShowMeTheFuckingIcons extends React.Component {
                }}
                direction='RIGHT'
                name={icon}
-            />
-         </Tooltip>
+            />}
+         </RelativeTooltip>
          );
       }
 
-      return icons;
+      return <div className='unbound-show-me-the-icons'>
+         {icons}
+      </div>;
    }
 };
