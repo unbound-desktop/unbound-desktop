@@ -1,6 +1,7 @@
 const { Icon, Text, FormTitle, Button } = require('@components');
 const { React, ReactSpring } = require('@webpack/common');
 const Component = require('@structures/component');
+const { Users } = require('@webpack/stores');
 const { getByProps } = require('@webpack');
 
 const [
@@ -55,6 +56,7 @@ module.exports = class Toast extends Component {
          onClose,
          buttons,
          settings,
+         onTimeout,
          toastProps = {},
       } = this.props;
 
@@ -200,6 +202,7 @@ module.exports = class Toast extends Component {
                         width: progress.value.to(e => {
                            if (e >= 100 && timeout !== 0 && !this.state.closing) {
                               this.setState({ closing: true });
+                              onTimeout();
                            }
 
                            return `${e}%`;
