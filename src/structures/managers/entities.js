@@ -90,6 +90,28 @@ module.exports = class Manager extends Emitter {
          }
       });
 
+      this.watcher.on('add', (path) => {
+         const [, entity] = path.replace(this.path, '').split(/\\|\//);
+
+         const name = basename(entity);
+         try {
+            this.reload(name, true);
+            this.emit('changed');
+         } catch (e) {
+            this.logger.error(`Failed to handle file change for ${name}.`, e);
+         }
+      });
+
+      this.watcher.on('unlink', (path) => {
+         const name = basename(path);
+         try {
+            this.unload(name);
+            this.emit('changed');
+         } catch (e) {
+            this.logger.error(`Failed to handle deleted addon ${name}.`, e);
+         }
+      });
+
       this.watcher.on('addDir', (path) => {
          const name = basename(path);
          try {
