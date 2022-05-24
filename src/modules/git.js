@@ -5,7 +5,6 @@ const { existsSync } = require('fs');
 const { join } = require('path');
 
 const SEP = uuid(4);
-const SEPStart = uuid(4);
 
 class Git {
    isInstalled() {
@@ -84,7 +83,7 @@ class Git {
    }
 
    clone(path, url, branch) {
-      return ipcRenderer.invoke(IPCEvents.SPAWN_GIT, `git clone ${url} ${branch && `-b ${branch}`}`, path);
+      return ipcRenderer.invoke(IPCEvents.SPAWN_GIT, `git clone ${url} ${branch ? `-b ${branch}` : ''}`, path);
    }
 
    async getBranches(path) {
