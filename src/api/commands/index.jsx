@@ -23,7 +23,7 @@ const [
    filters.byProps('icon', 'selectable', 'wrapper'),
    filters.byDisplayName('ApplicationCommandDiscoverySectionIcon', false),
    filters.byDisplayName('ApplicationCommandItem', false),
-   m => m.type.displayName === 'ChannelApplicationIcon'
+   m => m.type?.displayName === 'ChannelApplicationIcon'
 );
 
 const Icon = require('./components/SectionIcon');

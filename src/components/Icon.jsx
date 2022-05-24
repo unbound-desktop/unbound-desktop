@@ -1,8 +1,12 @@
 const { getModules } = require('@webpack');
 const { React } = require('@webpack/common');
 
-const blacklist = ['GuildFeedItemHidden', 'NowPlayingMemberMenuItem', 'HelpButton']
-const icons = getModules(m => ~m?.toString?.()?.indexOf?.('"currentColor"') && !~blacklist.indexOf(m.displayName));
+const blacklist = ['GuildFeedItemHidden', 'NowPlayingMemberMenuItem', 'HelpButton'];
+const icons = getModules(m =>
+   m.toString === Function.toString &&
+   ~m.toString().indexOf('"currentColor"') &&
+   !(m.displayName && ~blacklist.indexOf(m.displayName))
+);
 
 module.exports = class Icon extends React.PureComponent {
    render() {
