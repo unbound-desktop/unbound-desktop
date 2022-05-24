@@ -272,6 +272,7 @@ class Webpack {
       if (typeof filter !== 'function') return null;
 
       const finder = Webpack.#request(cache);
+      const data = { error: null };
       const found = [];
 
       if (!finder) return;
@@ -279,7 +280,8 @@ class Webpack {
       const search = function (module, index) {
          try {
             return filter(module, index);
-         } catch {
+         } catch (error) {
+            data.error ??= ['Uncaught Exception with filter. This can cause lag spikes & slow startup times. Please handle any possible null cases in your filter.', error.message];
             return false;
          }
       };
@@ -321,21 +323,25 @@ class Webpack {
          switch (typeof mdl) {
             case 'object':
                if (search(mdl, id)) {
-                  if (!all) return mdl;
                   found.push(mdl);
+                  if (!all) break;
                }
 
                if (mdl.default && search(mdl.default, id)) {
                   const value = defaultExport ? mdl.default : mdl;
 
-                  if (!all) return value;
                   found.push(value);
+                  if (!all) break;
                }
             case 'function':
                if (!search(mdl, id)) continue;
-               if (!all) return mdl;
                found.push(mdl);
+               if (!all) break;
          }
+      }
+
+      if (data.error) {
+         Logger.warn(...data.error);
       }
 
       return all ? found : found[0];
@@ -503,13 +509,16 @@ class Webpack {
 
    static bulk(...options) {
       const [filters, { wait = false, ...rest }] = Webpack.#parseOptions(options);
+      if (!filters || !filters.length) return;
 
+      const data = { error: null };
       const found = new Array(filters.length);
       const search = wait ? Webpack.getLazy : Webpack.find;
       const wrapped = filters.map(filter => (m) => {
          try {
             return filter(m);
          } catch (error) {
+            data.error ??= ['Uncaught Exception with filter. This can cause lag spikes & slow startup times. Please handle any possible null cases in your filter.', error.message];
             return false;
          }
       });
@@ -525,6 +534,10 @@ class Webpack {
          return found.filter(String).length === filters.length;
       }, rest);
 
+      if (data.error) {
+         Logger.warn(...data.error);
+      }
+
       if (wait) return res.then(() => found);
 
       return found;
@@ -532,15 +545,15 @@ class Webpack {
 
    static get filters() {
       return {
-         byProps: (...mdls) => (mdl) => mdls.every(k => mdl[k] !== void 0),
+         byProps: (...props) => (mdl) => props.every(k => mdl[k] !== void 0),
          byPrototype: (...props) => (mdl) => props.every(p => mdl.prototype?.[p] !== void 0),
          byDisplayName: (name, def = true, deep = false) => (mdl) => {
             if (deep && mdl.type) {
                const displayName = mdl.type?.displayName;
-               return displayName === name || displayName.includes(`(${name})`);
+               return displayName === name || displayName?.includes(`(${name})`);
             } else if (deep && mdl.render) {
                const displayName = mdl.render?.displayName;
-               return displayName === name || displayName.includes(`(${name})`);
+               return displayName === name || displayName?.includes(`(${name})`);
             } else if (!def) {
                return typeof mdl.default === 'function' && mdl.default.displayName === name;
             } else {
