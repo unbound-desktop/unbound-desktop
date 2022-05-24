@@ -1,6 +1,6 @@
 {
    "ext": "*.*",
-   "exec": "curl http://localhost:5858/",
+   "exec": "curl http://localhost:5858/reload",
    "ignore": [
       "settings/**",
       "plugins/**",

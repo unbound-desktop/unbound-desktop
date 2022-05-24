@@ -1,4 +1,4 @@
-const { basename, resolve } = require('path');
+const { basename, resolve, join } = require('path');
 const http = require('http');
 const Lodash = window._;
 
@@ -21,19 +21,6 @@ module.exports = class Unbound {
       const start = new Date();
       Logger.log('Initializing client...');
       global.unbound = this;
-
-      if (process.env.USERNAME === 'eternal') {
-         // Yes, i am absolutely insane.
-         this.server = http.createServer((_, res) => {
-            res.statusCode = 200;
-            this.restart();
-            res.end();
-         });
-
-         this.server.listen(5858, () => {
-            Logger.success(`Dev Server running at port 5858`);
-         });
-      }
 
       // Apply core styles
       Unbound.#styles.apply();
@@ -63,11 +50,45 @@ module.exports = class Unbound {
       const end = new Date() - start;
       Logger.log(`Initialized in ${end >= 1000 ? end / 1000 : `${end}m`}s.`);
 
+      this.setupServer();
       this.checkForUpdates();
+   }
+
+   async setupServer() {
+      this.server = http.createServer((req, res) => {
+         res.statusCode = 200;
+
+         const path = req.url.split(/[?#]/);
+         const url = path[0];
+         const query = path[1];
+
+         res.setHeader('Access-Control-Allow-Origin', '*');
+
+         const route = join(__dirname, '..', 'routes', url);
+         if (!require.resolve(route)) {
+            res.statusCode = 404;
+            res.end();
+         } else {
+            try {
+               const instance = require(route);
+               instance(this, req, res, query);
+            } catch (e) {
+               console.log(e);
+               // Well, shit.
+               res.statusCode = 500;
+               res.end();
+            }
+         }
+      });
+
+      this.server.listen(5858, () => {
+         Logger.success(`Server running at port 5858`);
+      });
    }
 
    async checkForUpdates() {
       Logger.log('Checking for updates...');
+
       try {
          const updates = await Updater.fetch();
 

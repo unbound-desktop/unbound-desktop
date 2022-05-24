@@ -51,14 +51,14 @@ exports.colors = {
 exports.avatar = 'https://github.com/unbound-mod.png';
 
 exports.entities = {
-   'themes': (instance, data) => {
+   themes: (instance, data) => {
       const isJS = typeof instance === 'function';
       if (isJS) return new instance(instance, data);
 
       const Theme = require('@structures/theme');
       return new Theme(instance, data);
    },
-   'plugins': (...args) => new args[0](...args)
+   plugins: (...args) => new args[0](...args)
 };
 
 exports.ReactSymbols = {
