@@ -76,6 +76,7 @@ module.exports = class Manager extends Emitter {
       this.watcher = watch(this.path, {
          ignored: /((^|[\/\\])\..|.git|node_modules)/,
          ignoreInitial: true,
+         usePolling: true,
          persistent: true
       });
 
