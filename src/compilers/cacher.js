@@ -13,7 +13,7 @@ module.exports = class Compiler {
 
    handleFile(mdl, filename) {
       const isUnbound = filename.includes(basename(paths.root));
-      const isNodeModule = filename.includes('node_modules');
+      const isNodeModule = ~filename.indexOf('node_modules');
 
       if (this.type === 'js' && (!isUnbound || isNodeModule)) {
          this.old?.(mdl, filename);

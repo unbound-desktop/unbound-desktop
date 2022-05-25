@@ -287,7 +287,7 @@ class Webpack {
       };
 
       const keys = Object.keys(finder.c);
-      for (let i = 0; i < keys.length; i++) {
+      resolver: for (let i = 0; i < keys.length; i++) {
          const id = keys[i];
          const mdl = finder.c[id].exports;
          if (!mdl || mdl === window) continue;
@@ -312,31 +312,32 @@ class Webpack {
                      }
                   } else if (filter(mdl[key])) {
                      found.push(mdl[key]);
-                     if (!all) break;
+                     if (!all) return mdl[key];
                   }
                }
             }
 
-            loop(mdl, mdl.__esModule);
+            const res = loop(mdl, mdl.__esModule);
+            if (!all && res) break resolver;
          }
 
          switch (typeof mdl) {
             case 'object':
                if (search(mdl, id)) {
                   found.push(mdl);
-                  if (!all) break;
+                  if (!all) break resolver;
                }
 
                if (mdl.default && search(mdl.default, id)) {
                   const value = defaultExport ? mdl.default : mdl;
 
                   found.push(value);
-                  if (!all) break;
+                  if (!all) break resolver;
                }
             case 'function':
                if (!search(mdl, id)) continue;
                found.push(mdl);
-               if (!all) break;
+               if (!all) break resolver;
          }
       }
 
