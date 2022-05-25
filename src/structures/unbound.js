@@ -36,6 +36,7 @@ module.exports = class Unbound {
       // Export miscellaneous
       this.utilities = require('@utilities');
       this.constants = require('@constants');
+      this.patcher = Patcher;
 
       // Initialize built-in managers
       this.managers = {
