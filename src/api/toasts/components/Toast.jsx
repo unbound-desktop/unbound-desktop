@@ -202,7 +202,7 @@ module.exports = class Toast extends Component {
                         width: progress.value.to(e => {
                            if (e >= 100 && timeout !== 0 && !this.state.closing) {
                               this.setState({ closing: true });
-                              onTimeout();
+                              onTimeout?.();
                            }
 
                            return `${e}%`;
