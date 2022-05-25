@@ -1,5 +1,5 @@
 const { statSync, lstatSync, mkdirSync, rmdirSync, existsSync, unlinkSync, readdirSync, readFileSync, writeFileSync } = require('fs');
-const { join, resolve, basename } = require('path');
+const { join, resolve, basename, sep } = require('path');
 const { watch } = require('chokidar');
 const Emitter = require('events');
 
@@ -72,6 +72,7 @@ module.exports = class Manager extends Emitter {
          };
       })();
 
+      this._reloadTimeouts = {};
       this.watcher = watch(this.path, {
          ignored: /((^|[\/\\])\..|.git|node_modules)/,
          ignoreInitial: true,
@@ -79,11 +80,10 @@ module.exports = class Manager extends Emitter {
       });
 
       this.watcher.on('change', (path) => {
-         const [, entity] = path.replace(this.path, '').split(/\\|\//);
+         const name = this._getAddonFromChange(path);
 
-         const name = basename(entity);
          try {
-            this.reload(name, true);
+            this._delayedReload(name);
             this.emit('changed');
          } catch (e) {
             this.logger.error(`Failed to handle file change for ${name}.`, e);
@@ -91,11 +91,10 @@ module.exports = class Manager extends Emitter {
       });
 
       this.watcher.on('add', (path) => {
-         const [, entity] = path.replace(this.path, '').split(/\\|\//);
+         const name = this._getAddonFromChange(path);
 
-         const name = basename(entity);
          try {
-            this.reload(name, true);
+            this._delayedReload(name);
             this.emit('changed');
          } catch (e) {
             this.logger.error(`Failed to handle file change for ${name}.`, e);
@@ -103,7 +102,8 @@ module.exports = class Manager extends Emitter {
       });
 
       this.watcher.on('unlink', (path) => {
-         const name = basename(path);
+         const name = this._getAddonFromChange(path);
+
          try {
             this.unload(name);
             this.emit('changed');
@@ -113,9 +113,10 @@ module.exports = class Manager extends Emitter {
       });
 
       this.watcher.on('addDir', (path) => {
-         const name = basename(path);
+         const name = this._getAddonFromChange(path);
+
          try {
-            this.reload(name, true);
+            this._delayedReload(name);
             this.emit('changed');
          } catch (e) {
             this.logger.error(`Failed to handle new addon ${name}.`, e);
@@ -123,7 +124,8 @@ module.exports = class Manager extends Emitter {
       });
 
       this.watcher.on('unlinkDir', (path) => {
-         const name = basename(path);
+         const name = this._getAddonFromChange(path);
+
          try {
             this.unload(name);
             this.emit('changed');
@@ -321,7 +323,7 @@ module.exports = class Manager extends Emitter {
       }
    }
 
-   reload(id, silent = false) {
+   reload(id) {
       const entity = this.resolve(id);
 
       try {
@@ -332,7 +334,7 @@ module.exports = class Manager extends Emitter {
          this.unload(entity.folder);
          this.load(entity.folder);
       } catch (e) {
-         if (!silent) this.logger.error(`Couldn't reload ${id}`, e);
+         this.logger.error(`Couldn't reload ${id}`, e);
       }
 
       return entity;
@@ -393,6 +395,19 @@ module.exports = class Manager extends Emitter {
       } catch (e) {
          this.logger.error(`Failed to toggle ${entity.id}`, e);
       }
+   }
+
+   _delayedReload(name) {
+      clearTimeout(this._reloadTimeouts[name]);
+
+      this._reloadTimeouts[name] = setTimeout(() => {
+         this._reloadTimeouts[name] = null;
+         this.reload.apply(this, [name]);
+      }, 500);
+   }
+
+   _getAddonFromChange(change) {
+      return change.replace(this.path, '').split(sep)[1];
    }
 
    get get() {
