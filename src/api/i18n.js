@@ -81,7 +81,7 @@ class i18n extends API {
          get(target, prop) {
             return target[_this.locale]?.[prop]
                || target['en-US'][prop]
-               || Messages[target.proxy?.[prop]];
+               || Messages[target.proxy?.[prop] ?? prop];
          }
       });
    }
