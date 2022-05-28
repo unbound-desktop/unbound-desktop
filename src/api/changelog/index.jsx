@@ -1,87 +1,153 @@
-const { findByProps, find, filters: { byProps } } = require('@webpack');
-const { bindAll, classnames } = require('@utilities');
-const { Modal, Flex, Text } = require('@components');
+const { Anchor, Icon, Flex, Text, FormTitle, Changelog, Heading } = require('@components');
+const { Modals, Moment, MarkdownParser } = require('@webpack/common');
 const { makeStore } = require('@api/settings');
-const { Modals } = require('@webpack/common');
+const { Invites } = require('@webpack/api');
+const Unbound = require('@root/index.json');
+const { getByProps } = require('@webpack');
+const { bindAll } = require('@utilities');
+const { strings } = require('@api/i18n');
+const Constants = require('@constants');
 const API = require('@structures/api');
-
-const { Heading } = findByProps('Heading');
-const classes = {
-   ...find(m => Object.keys(m).length === 2 && byProps('modal')(m)),
-   ...findByProps('premiumBanner')
-};
+const React = require('react');
 
 const Settings = makeStore('unbound-changelog-api');
 
-class Changelog extends API {
+const ChangelogItem = require('./components/Item');
+const classes = getByProps('premiumBanner');
+
+class ChangelogAPI extends API {
    constructor() {
       super();
 
-      bindAll(this, ['show', 'Divider']);
-
-      this.Colors = {
-         GREEN: 'green',
-         BLUE: 'blue',
-         YELLOW: 'yellow',
-         RED: 'red',
-         ADDED: 'green',
-         IMPROVED: 'blue',
-         PROGRESS: 'yellow',
-         FIXED: 'red',
-      };
+      bindAll(this, ['show']);
    }
 
    start() {
-      const { Divider } = this;
-      this.show('core', require('@core/../../index.json').version, () => <>
-         <Divider color={this.Colors.ADDED} className={classes.marginTop}>
-            New API
-         </Divider>
-         <ul>
-            <li>
-               Added <strong>Changelog</strong> API.
-            </li>
-         </ul>
-      </>, 'Unbound Changelog', 'May 27, 2022');
+      // Show core changelog for unbound
+      this.show({
+         id: 'core',
+         version: Unbound.version,
+         image: Unbound.changelog.image,
+         content: Unbound.changelog.items,
+         title: 'Unbound',
+         date: Unbound.updated,
+         renderFooter: () => <>
+            <Anchor href='https://twitter.com/unboundrip'>
+               <Icon
+                  className={classes.socialLink}
+                  width={20}
+                  height={20}
+                  name='Twitter'
+               />
+            </Anchor>
+            <Anchor href='https://unbound.rip'>
+               <Icon
+                  className={classes.socialLink}
+                  width={20}
+                  height={20}
+                  name='Public'
+               />
+            </Anchor>
+            <Icon
+               className={classes.socialLink}
+               width={20}
+               height={20}
+               name='Discord'
+               style={{ cursor: 'pointer' }}
+               onClick={() => {
+                  Invites.acceptInviteAndTransitionToInviteChannel(Constants.invite);
+                  Modals.closeAllModals();
+               }}
+            />
+            <Text
+               size={Text.Sizes.SMALL}
+            >
+               {strings.FOLLOW_US_FOR_MORE_UPDATES}
+            </Text>
+         </>
+      });
    }
-
-   stop() { }
 
    /**
     * @name show
     * @description Shows a changelog once everytime the version changes.
-    * @param {string} file The string that will be used to track the changelog state.
+    * @param {string} id The string that will be used to track the changelog state.
     * @param {string} version The version that will be used to track the changelog state.
-    * @param {() => JSX.Element} Content The content (a react component) that will be displayed in the changelog.
+    * @param {object[] | () => JSX.Element} content The content (a react component) that will be displayed in the changelog.
     * @param {string} [title] The title that will be displayed to the left of the close button.
-    * @param {string} [date] The date that will be displayed under the title.
+    * @param {number} [date] The date that will be displayed under the title.
     * @returns {boolean} Wether or not the changelog was shown.
     */
-   show(file, version, Content, title, date) {
-      if (!Settings.get(file) || Settings.get(file) !== version) {
-         Settings.set(file, version);
+   show({ id, version, content, title, date, image, showVersion = true, ...rest } = {}) {
+      if (!id || typeof id !== 'string') {
+         throw new TypeError('first argument file must be of type string');
+      } else if (!version || typeof version !== 'string') {
+         throw new TypeError('second argument version must be of type string');
+      } else if (!content || typeof content !== 'function' && !Array.isArray(content)) {
+         throw new TypeError('third argument content must by a react component or array');
+      } else if (!date || typeof date !== 'number') {
+         throw new TypeError('fifth argument date must be of type number');
+      }
+
+      const Content = !Array.isArray(content) ? content : content.map((item, idx) =>
+         <>
+            <ChangelogItem
+               color={item.type?.toUpperCase()}
+               classes={classes}
+               isFirst={idx === 0}
+            >
+               {item.title}
+            </ChangelogItem>
+            <ul>
+               {item.items.map(i => <li>
+                  {MarkdownParser.parse(i)}
+               </li>)}
+            </ul>
+         </>
+      );
+
+      if (!Settings.get(id) || Settings.get(id) !== version) {
+         Settings.set(id, version);
 
          Modals.openModal(event => (
-            <Modal.ModalRoot {...event} className={classes.modal}>
-               <Modal.ModalHeader align={Flex.Justify.BETWEEN} separator={false}>
-                  <Flex.Child>
+            <Changelog
+               renderHeader={() => <>
+                  <Flex.Child grow={1} shrink={1}>
                      <Heading level={2} variant='heading-lg/medium'>
-                        {title || `${file} Changelog`}
+                        {(title ?? id) + ` - ${strings.WHATS_NEW}`}
                      </Heading>
-                     {date && (
-                        <Text className={classes.date} variant='text-xs/normal'>
-                           {date}
-                        </Text>
-                     )}
+                     <FormTitle tag={FormTitle.Tags.H4}>
+                     </FormTitle>
+                     {date && <Text
+                        size={Text.Sizes.SMALL}
+                        color={Text.Colors.HEADER_SECONDARY}
+                     >
+                        {Moment(date).format('D MMM YYYY')} {showVersion && `- v${version}`}
+                     </Text>}
                   </Flex.Child>
-                  <Flex.Child grow={0}>
-                     <Modal.ModalCloseButton onClick={event.onClose} />
-                  </Flex.Child>
-               </Modal.ModalHeader>
-               <Modal.ModalContent className={classes.content}>
-                  <Content />
-               </Modal.ModalContent>
-            </Modal.ModalRoot>
+               </>}
+               {...rest}
+               {...event}
+            >
+               {image && <img
+                  class={classes.image}
+                  src={image}
+                  width='451'
+                  height='254'
+               />}
+               {Content}
+               <div
+                  aria-hidden='true'
+                  style={{
+                     position: 'absolute',
+                     pointerEvents: 'none',
+                     minHeight: 0,
+                     minWidth: 1,
+                     flex: '0 0 auto',
+                     height: 20
+                  }}
+               />
+            </Changelog>
          ));
 
          return true;
@@ -89,51 +155,6 @@ class Changelog extends API {
          return false;
       }
    }
-
-   /**
-    * A recreation of the divider component used in the real changelog.
-    * 
-    * @param {object} props The props that will be passed to the divider.
-    * @param {string} props.children The text that will be displayed in the divider.
-    * @param {string} props.color The class name that will be applied to the divider.
-    * @param {string} [props.className] The class name that will be applied to the heading element.
-    * @param {object} [props.props] The custom props that will be applied to the heading element.
-    */
-   Divider({ children, color, className, ...props }) {
-      if (typeof children !== 'string') {
-         throw new TypeError('The children of the divider must be a string.');
-      }
-
-      if (typeof color !== 'string') {
-         throw new TypeError('The property "color" must be a string.');
-      }
-
-      /**
-       * The divider will look super wierd without this.
-       */
-      if (!children.endsWith(' ')) {
-         children += ' ';
-      }
-
-      color = function () {
-         switch (color) {
-            case 'green':
-               return classes.added;
-            case 'blue':
-               return classes.improved;
-            case 'yellow':
-               return classes.progress;
-            case 'red':
-               return classes.fixed;
-         }
-      }();
-
-      return (
-         <h1 className={classnames(color, className)} {...props ?? {}}>
-            {children}
-         </h1>
-      );
-   }
 };
 
-module.exports = new Changelog();
+module.exports = new ChangelogAPI();

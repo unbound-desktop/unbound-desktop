@@ -1,7 +1,6 @@
 const { Icon, Text, FormTitle, Button } = require('@components');
 const { React, ReactSpring } = require('@webpack/common');
 const Component = require('@structures/component');
-const { Users } = require('@webpack/stores');
 const { findByProps } = require('@webpack');
 
 const [

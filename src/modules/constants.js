@@ -61,6 +61,8 @@ exports.entities = {
    plugins: (...args) => new args[0](...args)
 };
 
+exports.invite = 'awnvkjJH5p';
+
 exports.ReactSymbols = {
    Ref: Symbol.for('react.forward_ref'),
    Element: Symbol.for('react.element'),

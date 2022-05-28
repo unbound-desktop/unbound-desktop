@@ -16,6 +16,8 @@ Object.keys(components).map(name => {
       if (typeof options.prop === 'string') {
          map = (m) => m[options.prop];
       }
+   } else if (options.filter) {
+      filter = options.filter;
    }
 
    if (options.assign) {
