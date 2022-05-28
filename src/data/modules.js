@@ -35,6 +35,9 @@ module.exports = {
    HighlightJS: {
       props: ['highlight', 'NUMBER_MODE']
    },
+   Moment: {
+      props: ['unix']
+   },
    ReactSpring: {
       props: ['useSpring']
    },
@@ -43,6 +46,9 @@ module.exports = {
    },
    Layers: {
       props: ['popLayer']
+   },
+   MarkdownParser: {
+      props: ['parse', 'defaultRules']
    },
    stores: {
       submodule: true,
@@ -68,26 +74,8 @@ module.exports = {
          SelectedGuilds: {
             storeName: 'SelectedGuildStore'
          },
-         Profiles: {
-            storeName: 'UserProfileStore'
-         },
          Messages: {
             storeName: 'MessageStore'
-         },
-         Games: {
-            storeName: 'LocalActivityStore'
-         },
-         Presence: {
-            storeName: 'PresenceStore'
-         },
-         Auth: {
-            storeName: 'AuthenticationStore'
-         },
-         Profiles: {
-            storeName: 'UserProfileStore'
-         },
-         Typing: {
-            storeName: 'TypingStore'
          }
       }
    },
@@ -103,12 +91,12 @@ module.exports = {
          DMs: {
             props: ['openPrivateChannel']
          },
-         Spotify: {
-            props: ['SpotifyAPI']
-         },
          Messages: {
             props: ['sendMessage', 'receiveMessage']
          },
+         Invites: {
+            props: ['acceptInvite']
+         }
       }
    },
    SettingsActions: {
