@@ -1,4 +1,4 @@
-const { getLazy, filters } = require('@webpack');
+const { findLazy, filters } = require('@webpack');
 const { React } = require('@webpack/common');
 const { memoize } = require('@utilities');
 
@@ -6,7 +6,7 @@ const SettingsItem = require('./SettingsItem');
 const AsyncComponent = require('../AsyncComponent');
 
 const getKeybindRecorder = memoize(async () => {
-   return await getLazy(filters.byDisplayName('KeybindRecorder'));
+   return await findLazy(filters.byDisplayName('KeybindRecorder'));
 });
 
 const KeyRecorder = AsyncComponent.from(getKeybindRecorder);

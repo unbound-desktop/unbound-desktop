@@ -1,7 +1,7 @@
 const { Caret, Text, Icon, Popout, SearchBar, FormTitle, ErrorBoundary, RelativeTooltip, Menu } = require('@components');
 const { React, Locale: { Messages }, ContextMenu } = require('@webpack/common');
 const { createLogger } = require('@modules/logger');
-const { getByDisplayName } = require('@webpack');
+const { findByDisplayName } = require('@webpack');
 const { classnames } = require('@utilities');
 const Settings = require('@api/settings');
 const { strings } = require('@api/i18n');

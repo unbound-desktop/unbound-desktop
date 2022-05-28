@@ -1,9 +1,9 @@
 const { Card, Text, ScrollerThin, Divider, RelativeTooltip } = require('@components');
-const { getByDisplayName } = require('@webpack');
+const { findByDisplayName } = require('@webpack');
 const { React } = require('@webpack/common');
 const { regex } = require('@constants');
 
-const IntegrationInfo = getByDisplayName('IntegrationInfo');
+const IntegrationInfo = findByDisplayName('IntegrationInfo');
 const Icon = require('./Icon');
 
 module.exports = class ErrorBoundary extends React.PureComponent {

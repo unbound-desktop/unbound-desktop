@@ -63,7 +63,7 @@ class MenuPatcher {
    }
 
    static patchOpener() {
-      const Opener = Webpack.getByProps('openContextMenuLazy');
+      const Opener = Webpack.findByProps('openContextMenuLazy');
 
       Patcher.before('unbound-menu-patcher', Opener, 'openContextMenuLazy', (_, args) => {
          const Menu = args[1];

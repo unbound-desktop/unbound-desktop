@@ -1,8 +1,6 @@
 const { Locale: { Messages } } = require('@webpack/common');
-const { Dispatcher } = require('@webpack/common');
-const { getByProps } = require('@webpack');
+const { Dispatcher, Locale } = require('@webpack/common');
 const { bindAll } = require('@utilities');
-const Locales = getByProps('getLocale');
 const API = require('@structures/api');
 const Strings = require('@core/i18n');
 
@@ -12,7 +10,7 @@ class i18n extends API {
 
       bindAll(this, ['updateLocale', 'parse']);
 
-      this.locale = Locales.getLocale();
+      this.locale = Locale.getLocale();
       this.strings = this.parse(Strings);
    }
 

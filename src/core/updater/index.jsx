@@ -1,7 +1,7 @@
-const { ConfirmModal } = require('@components/modals');
 const { contributors, paths } = require('@constants');
 const { Modals, Layers } = require('@webpack/common');
 const { createLogger } = require('@modules/logger');
+const { ConfirmModal } = require('@components');
 const Settings = require('@api/settings');
 const sleep = require('@utilities/sleep');
 const { strings } = require('@api/i18n');

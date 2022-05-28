@@ -1,9 +1,9 @@
 const { React, Constants: { ComponentActions } } = require('@webpack/common');
 const { Button, FormTitle, TextInput, Modal } = require('@components');
-const { getByProps } = require('@webpack');
+const { findByProps } = require('@webpack');
 const { bindAll } = require('@utilities');
 
-const { ComponentDispatch } = getByProps('ComponentDispatcher');
+const { ComponentDispatch } = findByProps('ComponentDispatcher');
 
 /**
  * @name TextInputModal

@@ -1,9 +1,9 @@
 const { Flex, FormItem, FormText, Divider } = require('@components');
 const { classnames } = require('@utilities/');
 const { React } = require('@webpack/common');
-const { getByProps } = require('@webpack');
+const { findByProps } = require('@webpack');
 
-const Classes = getByProps('formText', 'description') || {};
+const Classes = findByProps('formText', 'description') || {};
 
 module.exports = class SettingsItem extends React.PureComponent {
    render() {

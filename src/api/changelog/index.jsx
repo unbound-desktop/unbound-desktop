@@ -1,16 +1,15 @@
-const { getByProps, get, filters: { byProps } } = require('@webpack');
+const { findByProps, find, filters: { byProps } } = require('@webpack');
 const { bindAll, classnames } = require('@utilities');
 const { Modal, Flex, Text } = require('@components');
 const { makeStore } = require('@api/settings');
 const { Modals } = require('@webpack/common');
-const { Heading } = getByProps('Heading');
-
-const classes = {
-   ...get(m => Object.keys(m).length === 2 && byProps('modal')(m)),
-   ...getByProps('premiumBanner')
-};
-
 const API = require('@structures/api');
+
+const { Heading } = findByProps('Heading');
+const classes = {
+   ...find(m => Object.keys(m).length === 2 && byProps('modal')(m)),
+   ...findByProps('premiumBanner')
+};
 
 const Settings = makeStore('unbound-changelog-api');
 

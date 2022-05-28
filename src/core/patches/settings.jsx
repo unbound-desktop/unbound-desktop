@@ -1,4 +1,4 @@
-const { getLazy, filters: { byDisplayName } } = require('@webpack');
+const { findLazy, filters: { byDisplayName } } = require('@webpack');
 const Updater = require('@core/updater/components');
 const { after, unpatchAll } = require('@patcher');
 const Components = require('@core/components');
@@ -16,7 +16,7 @@ module.exports = class Settings extends Patch {
    async apply() {
       this.promises = { cancelled: false };
 
-      const SettingsView = await getLazy(byDisplayName('SettingsView'));
+      const SettingsView = await findLazy(byDisplayName('SettingsView'));
 
       if (this.promises.cancelled) return;
       after('unbound-settings', SettingsView.prototype, 'getPredicateSections', (_, args, sections) => {

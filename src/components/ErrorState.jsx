@@ -1,10 +1,10 @@
 const { classnames } = require('@utilities');
 const { React } = require('@webpack/common');
-const { getByProps } = require('@webpack');
+const { findByProps } = require('@webpack');
 const { Text } = require('@components');
 const Icon = require('./Icon');
 
-const classes = getByProps('error', 'backgroundRed');
+const classes = findByProps('error', 'backgroundRed');
 
 module.exports = class ErrorState extends React.PureComponent {
    render() {

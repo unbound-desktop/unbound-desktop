@@ -3,14 +3,14 @@ const API = require('@structures/api');
 
 const { Channels } = require('@webpack/stores');
 const { Messages } = require('@webpack/api');
-const { getByProps } = require('@webpack');
+const { findByProps } = require('@webpack');
 const { bindAll } = require('@utilities');
 const Lodash = window._;
 
 const [
    MessageUtil,
    Bots
-] = getByProps(
+] = findByProps(
    ['createBotMessage'],
    ['BOT_AVATARS'],
    { bulk: true }

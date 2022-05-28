@@ -1,5 +1,5 @@
-const { ConfirmModal } = require('@components/modals');
 const { createLogger } = require('@modules/logger');
+const { ConfirmModal } = require('@components');
 const { Modals } = require('@webpack/common');
 const { paths } = require('@constants');
 const { Text } = require('@components');

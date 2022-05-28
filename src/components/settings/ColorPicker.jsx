@@ -1,7 +1,7 @@
 const { React, Constants: { DEFAULT_ROLE_COLOR, ROLE_COLORS } } = require('@webpack/common');
 const { findInReactTree, memoize } = require('@utilities');
 const { createLogger } = require('@modules/logger');
-const { getByProps } = require('@webpack');
+const { findByProps } = require('@webpack');
 
 const SettingsItem = require('./SettingsItem');
 const AsyncComponent = require('../AsyncComponent');
@@ -11,7 +11,7 @@ const Logger = createLogger('Components', 'ColorPicker');
 
 const getColorPicker = memoize(async () => {
    try {
-      const FormItems = getByProps('ColorPickerFormItem');
+      const FormItems = findByProps('ColorPickerFormItem');
       if (!FormItems?.ColorPickerFormItem) {
          throw 'ColorPickerFormItem was not found!';
       }

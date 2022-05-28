@@ -1,4 +1,4 @@
-const { getLazy, filters, getByProps } = require('@webpack');
+const { findLazy, filters, findByProps } = require('@webpack');
 const { memoize, parseColor } = require('@utilities');
 const { React } = require('@webpack/common');
 const { strings } = require('@api/i18n');
@@ -9,8 +9,8 @@ const Settings = require('@api/settings');
 const Toasts = require('@api/toasts');
 const Icons = require('./Icons');
 
-const Colors = getByProps('hex2int');
-const NotificationSettings = memoize(() => getLazy(filters.byDisplayName('NotificationSettings')));
+const Colors = findByProps('hex2int');
+const NotificationSettings = memoize(() => findLazy(filters.byDisplayName('NotificationSettings')));
 const BoundSelector = AsyncComponent.from(NotificationSettings);
 
 class GeneralSettings extends React.PureComponent {
