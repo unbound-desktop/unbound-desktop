@@ -659,7 +659,7 @@ const out = {
    },
    findByKeyword: {
       aliases: [
-         'findByDisplayName',
+         'getByKeyword',
          'fetchByKeyword'
       ]
    },
