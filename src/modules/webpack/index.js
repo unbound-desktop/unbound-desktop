@@ -368,18 +368,12 @@ class Webpack {
          byProps: (...props) => (mdl) => props.every(k => mdl[k] !== void 0),
          byPrototypes: (...props) => (mdl) => props.every(p => mdl.prototype?.[p] !== void 0),
          byDisplayName: (name, def = true, deep = false) => (mdl) => {
-            if (deep && mdl.type) {
-               const displayName = mdl.type?.displayName;
-               return displayName === name || displayName?.includes(name);
-            } else if (deep && mdl.render) {
-               const displayName = mdl.render?.displayName;
-               return displayName === name || displayName?.includes(name);
-            } else if (deep && mdl.default) {
-               const displayName = mdl.default?.displayName;
-               return displayName === name || displayName?.includes(name);
+            if (deep && mdl.type?.displayName) {
+               return mdl.type.displayName === name || ~mdl.type.displayName.indexOf(name);
+            } else if (deep && mdl.render?.displayName) {
+               return mdl.render.displayName === name || ~mdl.render.displayName.indexOf(name);
             } else if (deep && mdl.displayName) {
-               const displayName = mdl.displayName;
-               return displayName === name || displayName?.includes(name);
+               return mdl.displayName === name || ~mdl.displayName.indexOf(name);
             } else if (!def) {
                return typeof mdl.default === 'function' && mdl.default.displayName === name;
             } else {
