@@ -370,10 +370,16 @@ class Webpack {
          byDisplayName: (name, def = true, deep = false) => (mdl) => {
             if (deep && mdl.type) {
                const displayName = mdl.type?.displayName;
-               return displayName === name || displayName?.includes(`(${name})`);
+               return displayName === name || displayName?.includes(name);
             } else if (deep && mdl.render) {
                const displayName = mdl.render?.displayName;
-               return displayName === name || displayName?.includes(`(${name})`);
+               return displayName === name || displayName?.includes(name);
+            } else if (deep && mdl.default) {
+               const displayName = mdl.default?.displayName;
+               return displayName === name || displayName?.includes(name);
+            } else if (deep && mdl.displayName) {
+               const displayName = mdl.displayName;
+               return displayName === name || displayName?.includes(name);
             } else if (!def) {
                return typeof mdl.default === 'function' && mdl.default.displayName === name;
             } else {
