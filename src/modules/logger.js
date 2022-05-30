@@ -11,7 +11,7 @@ module.exports = class Logger {
          const styles = [];
 
          tag.map((_, index) => {
-            const isLast = index == tag.length - 1;
+            const isLast = index === tag.length - 1;
 
             if (isLast) {
                style['margin-right'] = '0px';

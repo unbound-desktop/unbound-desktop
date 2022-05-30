@@ -1,3 +1,4 @@
+const { IPCEvents } = require('./modules/constants');
 const { ipcRenderer } = require('electron');
 const alias = require('module-alias');
 const Module = require('module');
@@ -12,7 +13,7 @@ global.isUnbound = true;
 
 const Webpack = require('@modules/webpack');
 
-const { windowOptions } = ipcRenderer.sendSync('UNBOUND_GET_WINDOW_DATA');
+const { windowOptions } = ipcRenderer.sendSync(IPCEvents.GET_WINDOW_OPTIONS);
 if (!windowOptions.webPreferences.nativeWindowOpen) {
    window.__SPLASH__ = true;
 
