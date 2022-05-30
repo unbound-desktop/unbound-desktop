@@ -1,4 +1,3 @@
-const { IPCEvents } = require('./modules/constants');
 const { ipcRenderer } = require('electron');
 const alias = require('module-alias');
 const Module = require('module');
@@ -12,6 +11,7 @@ require('./compilers');
 global.isUnbound = true;
 
 const Webpack = require('@modules/webpack');
+const { IPCEvents } = require('@constants');
 
 const { windowOptions } = ipcRenderer.sendSync(IPCEvents.GET_WINDOW_OPTIONS);
 if (!windowOptions.webPreferences.nativeWindowOpen) {

@@ -1,7 +1,7 @@
 const { IPCEvents } = require('./src/modules/constants');
 const { ipcRenderer } = require('electron');
 
-const { windowOptions } = ipcRenderer.sendSync('UNBOUND_GET_WINDOW_DATA');
+const { windowOptions } = ipcRenderer.sendSync(IPCEvents.GET_WINDOW_OPTIONS);
 if (!window.require && windowOptions.webPreferences.nativeWindowOpen) {
    ipcRenderer.invoke(IPCEvents.PROCESS_ISOLATED);
 } else {
