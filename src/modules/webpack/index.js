@@ -126,9 +126,9 @@ class Webpack {
    }
 
    static findByDisplayName(...options) {
-      const [names, { bulk = false, wait = false, deep = false, default: def = true, ...rest }] = Webpack.#parseOptions(options);
+      const [names, { bulk = false, wait = false, deep = false, exact = false, default: def = true, ...rest }] = Webpack.#parseOptions(options);
 
-      const filter = Webpack.filters.byDisplayName(names[0], def, deep);
+      const filter = Webpack.filters.byDisplayName(names[0], def, deep, exact);
 
       if (!bulk && !wait) {
          return Webpack.find(filter, rest);
@@ -141,10 +141,10 @@ class Webpack {
       if (bulk) {
          const filters = names.map(name => {
             if (Array.isArray(name)) {
-               return Webpack.filters.byDisplayName(name[0], name[1], name[2] ?? deep);
+               return Webpack.filters.byDisplayName(name[0], name[1], name[2] ?? deep, name[3] ?? exact);
             }
 
-            return Webpack.filters.byDisplayName(name, true, deep);
+            return Webpack.filters.byDisplayName(name, true, deep, exact);
          }).concat({ wait });
 
          return Webpack.bulk(...filters);
@@ -367,13 +367,13 @@ class Webpack {
       return {
          byProps: (...props) => (mdl) => props.every(k => mdl[k] !== void 0),
          byPrototypes: (...props) => (mdl) => props.every(p => mdl.prototype?.[p] !== void 0),
-         byDisplayName: (name, def = true, deep = false) => (mdl) => {
+         byDisplayName: (name, def = true, deep = false, exact = false) => (mdl) => {
             if (deep && mdl.type?.displayName) {
-               return mdl.type.displayName === name || ~mdl.type.displayName.indexOf(name);
+               return mdl.type.displayName === name || !exact && ~mdl.type.displayName.indexOf(name);
             } else if (deep && mdl.render?.displayName) {
-               return mdl.render.displayName === name || ~mdl.render.displayName.indexOf(name);
+               return mdl.render.displayName === name || !exact && ~mdl.render.displayName.indexOf(name);
             } else if (deep && mdl.displayName) {
-               return mdl.displayName === name || ~mdl.displayName.indexOf(name);
+               return mdl.displayName === name || !exact && ~mdl.displayName.indexOf(name);
             } else if (!def) {
                return typeof mdl.default === 'function' && mdl.default.displayName === name;
             } else {
