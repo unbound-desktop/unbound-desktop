@@ -45,7 +45,7 @@ exports.console = {
 };
 
 exports.colors = {
-   primary: '#990000'
+   primary: '#C74050'
 };
 
 exports.avatar = 'https://github.com/unbound-mod.png';
