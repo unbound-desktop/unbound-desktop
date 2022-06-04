@@ -50,6 +50,9 @@ module.exports = {
    MarkdownParser: {
       props: ['parse', 'defaultRules']
    },
+   Colors: {
+      props: ['hex2rgb']
+   },
    stores: {
       submodule: true,
       items: {
