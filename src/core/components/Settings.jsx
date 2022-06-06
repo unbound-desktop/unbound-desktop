@@ -123,14 +123,15 @@ class GeneralSettings extends React.PureComponent {
                   />
                   <SliderInput
                      title={strings.TOAST_SETTINGS_BLUR_TITLE}
-                     minValue={2.5}
+                     minValue={0}
                      maxValue={15}
                      stickToMarkers
-                     markers={[2.5, 5, 7.5, 10, 12.5, 15]}
+                     markers={[0, 2.5, 5, 7.5, 10, 12.5, 15]}
                      defaultValue={7.5}
                      initialValue={this.settings.get('blurAmount', 7.5)}
                      onValueChange={(val) => this.settings.set('blurAmount', val)}
                      onMarkerRender={(v) => `${v}px`}
+                     endDivider={false}
                   />
                </>}
             </Category>
