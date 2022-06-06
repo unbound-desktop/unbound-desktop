@@ -30,10 +30,16 @@ if (!fs.existsSync(paths.settings)) {
 }
 
 class Settings extends Flux.Store {
+   static id = 'UNBOUND_SETTINGS';
+
    constructor(Dispatcher, listeners) {
       super(Dispatcher, listeners);
 
       this.addChangeListener(Lodash.debounce(this.save, 200));
+   }
+
+   get id() {
+      return Settings.id;
    }
 
    getSetting(file, setting, defaults) {
@@ -88,4 +94,4 @@ const Events = {
    }
 };
 
-module.exports = new Settings(Dispatcher, Events);
+module.exports = Flux.Store.getAll().find(s => s.id === Settings.id) ?? new Settings(Dispatcher, Events);
