@@ -609,10 +609,10 @@ const out = {
          'fetchByProps'
       ],
    },
-   findByPrototype: {
+   findByPrototypes: {
       aliases: [
-         'getByPrototype',
-         'fetchByPrototype'
+         'getByPrototypes',
+         'fetchByPrototypes'
       ],
    },
    find: {
