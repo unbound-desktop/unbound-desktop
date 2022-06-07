@@ -4,7 +4,8 @@ const sleep = require('./sleep');
  * @name waitFor
  * @description Returns an element once it is found in the DOM
  * @param {string} selector - The query/selector to pass to document.querySelector
- * @return {Promise<HTMLElement>} Returns Promise<HTMLElement>
+ * @param {number} [timeout=0] - The amount of time to wait before cancelling (0 is infinite)
+ * @return {Promise<Element>} Returns Promise<Element>
  */
 
 module.exports = async (selector, timeout = 0) => {
@@ -12,7 +13,7 @@ module.exports = async (selector, timeout = 0) => {
       element: document.querySelector(selector),
       cancelled: false,
       timeout: null
-   }
+   };
 
    if (timeout > 0) {
       data.timeout = setTimeout(() => data.cancelled = true, timeout);
@@ -23,7 +24,7 @@ module.exports = async (selector, timeout = 0) => {
       if (data.cancelled) break;
    };
 
-   clearTimeout(data.timeout)
+   clearTimeout(data.timeout);
 
    return data.element;
 };

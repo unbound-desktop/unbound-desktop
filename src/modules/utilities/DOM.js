@@ -112,7 +112,7 @@ class DOM {
     * @description Finds an element from the unbound's head.
     * @param {string} type - The type of element to search.
     * @param {string} id - The unique identifier for the element.
-    * @return {HTMLElement|void} Returns the found DOM element or null.
+    * @return {Element|void} Returns the found DOM element or null.
     * @private
    */
    #getElement(type, id) {

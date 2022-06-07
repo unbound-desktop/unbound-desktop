@@ -4,9 +4,9 @@ const traverseType = require('./traverseType');
 /**
  * @name getOwnerInstance
  * @description Gets the parent/owner instance the component belongs to.
- * @param {HTMLElement} node - The element to find the instance for
+ * @param {Element} node - The element to find the instance for
  * @param {function} filter - The filter to apply for the search
- * @return {function} Returns the function with a cacheable value
+ * @return {object|void} Returns the owner instance, usually an object
  */
 module.exports = (node, filter = _ => true) => {
    if (!node) return null;
