@@ -148,7 +148,7 @@ class GeneralSettings extends React.PureComponent {
 
             {BDSettings && <Category
                title={strings.BD_SETTINGS_TITLE}
-               description={strings.BD_SETTINGS_DESCRIPTIONf}
+               description={strings.BD_SETTINGS_DESCRIPTION}
                icon={() => <Icons.Bd className='unbound-category-icon' />}
                opened={isBdOpen}
                onChange={() => this.setState({ isBdOpen: !isBdOpen })}
