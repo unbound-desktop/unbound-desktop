@@ -79,7 +79,7 @@ class Git {
    }
 
    reset(path) {
-      return ipcRenderer.invoke(IPCEvents.SPAWN_GIT, 'git reset HEAD~1 --hard', path);
+      return ipcRenderer.invoke(IPCEvents.SPAWN_GIT, 'git reset HEAD --hard', path);
    }
 
    clone(path, url, branch) {
