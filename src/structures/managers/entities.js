@@ -317,7 +317,12 @@ module.exports = class Manager extends Emitter {
 
    delete(id) {
       const entity = this.resolve(id);
-      if (!entity) return this.logger.error(`Addon not found.`);
+      if (!entity) {
+         return {
+            status: false,
+            message: 'Entity not found.'
+         };
+      }
 
       try {
          if (statSync(entity.path).isDirectory()) {
@@ -325,8 +330,18 @@ module.exports = class Manager extends Emitter {
          } else {
             unlinkSync(entity.path);
          }
+
+         return {
+            status: true,
+            message: `Successfully uninstalled ${entity?.data?.name ?? entity?.name ?? id}.`
+         };
       } catch (e) {
          this.logger.error(`Failed to delete entity with ID ${id}`, e);
+
+         return {
+            status: false,
+            message: e.message
+         };
       }
    }
 

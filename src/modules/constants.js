@@ -6,7 +6,8 @@ exports.paths = {
 };
 
 exports.regex = {
-   newline: /\r?\n|\r/g
+   newline: /\r?\n|\r/g,
+   url: /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
 };
 
 exports.contributors = [
