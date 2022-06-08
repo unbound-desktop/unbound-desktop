@@ -70,7 +70,7 @@
    margin-bottom: 20px;
 }
 
-.unbound-manager-title-has-settings .unbound-manager-title-main {
+.unbound-manager-title-unselected {
    color: var(--header-secondary);
    cursor: pointer;
 }
@@ -80,6 +80,5 @@
 }
 
 .unbound-manager-title-caret {
-   margin-left: -5px;
    vertical-align: bottom;
 }

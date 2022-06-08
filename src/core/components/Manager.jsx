@@ -19,7 +19,8 @@ class Manager extends React.PureComponent {
 
       this.state = {
          query: '',
-         settings: null
+         settings: null,
+         breadcrumbs: []
       };
 
       this.settings = props.settings;
@@ -29,6 +30,21 @@ class Manager extends React.PureComponent {
       if (this.state.settings?.entity) {
          const { client, entity } = this.state.settings;
          const settings = this.resolve(entity, 'settings');
+         if (!this.state.breadcrumbs.length && entity) {
+            this.setState({ breadcrumbs: [this.resolve(entity, 'name')] });
+         }
+
+         const router = {
+            breadcrumbs: this.state.breadcrumbs,
+            push: (...items) => this.setState({ breadcrumbs: [...this.state.breadcrumbs, ...items] }),
+            back: (amount) => {
+               if (this.state.breadcrumbs.length - (amount || 1) <= 0)
+                  this.setState({ settings: null, breadcrumbs: [] });
+
+               this.setState({ breadcrumbs: this.state.breadcrumbs.slice(0, -(amount || 1)) });
+            },
+         };
+
 
          try {
             // If a component instance instance is returned, render it. If not, let them do whatever.
@@ -39,7 +55,7 @@ class Manager extends React.PureComponent {
                const res = settings();
 
                if (res) {
-                  const Component = client === 'unbound' ? API.connectStores(id)(res) : res;
+                  const Component = client === 'unbound' ? Flux.connectStores([API.store], () => ({ settings: API.makeStore(id), router }))(res) : res;
 
                   return <ErrorBoundary>
                      {this.renderTitle(null, entity)}
@@ -246,21 +262,29 @@ class Manager extends React.PureComponent {
       };
    }
 
-   renderTitle(amount, settings) {
+   renderTitle(amount) {
       return (
-         <div
-            className={classnames('unbound-manager-title', settings && 'unbound-manager-title-has-settings')}
-            onClick={() => settings && this.setState({ settings: null })}
-         >
-            <FormTitle tag='h1' className='unbound-manager-title-main'>
-               {strings[this.props.type.toUpperCase()]} {amount ? `- ${amount}` : ''} {settings && <Caret
-                  direction={Caret.Directions.RIGHT}
-                  className='unbound-manager-title-caret'
-               />}
+         <div className='unbound-manager-title'>
+            <FormTitle
+               tag='h1'
+               onClick={() => this.setState({ settings: null, breadcrumbs: [] })}
+               className={classnames('unbound-manager-title-main', this.state.breadcrumbs.length && 'unbound-manager-title-unselected')}
+            >
+               {strings[this.props.type.toUpperCase()]} {amount ? `- ${amount}` : ''}
             </FormTitle>
-            {settings && <FormTitle className='unbound-manager-title-settings' tag='h1'>
-               {this.resolve(settings, 'name')}
-            </FormTitle>}
+            {this.state.breadcrumbs.map((breadcrumb, index, breadcrumbs) => (
+               <FormTitle
+                  tag='h1'
+                  className={index + 1 < breadcrumbs.length && 'unbound-manager-title-unselected'}
+                  onClick={() => index + 1 < breadcrumbs.length && this.setState({ breadcrumbs: breadcrumbs.slice(0, index + 1) })}
+               >
+                  <Caret
+                     direction={Caret.Directions.RIGHT}
+                     className='unbound-manager-title-caret'
+                  />
+                  {breadcrumb}
+               </FormTitle>
+            ))}
          </div>
       );
    }
