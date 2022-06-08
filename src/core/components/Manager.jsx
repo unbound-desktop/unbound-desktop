@@ -253,7 +253,7 @@ class Manager extends React.PureComponent {
             onClick={() => settings && this.setState({ settings: null })}
          >
             <FormTitle tag='h1' className='unbound-manager-title-main'>
-               {strings[this.props.type.toUpperCase()]} {amount && `- ${amount}`} {settings && <Caret
+               {strings[this.props.type.toUpperCase()]} - {amount} {settings && <Caret
                   direction={Caret.Directions.RIGHT}
                   className='unbound-manager-title-caret'
                />}
