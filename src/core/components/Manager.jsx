@@ -257,12 +257,12 @@ class Manager extends React.PureComponent {
                className={classnames('unbound-manager-title-main', this.state.breadcrumbs.length && 'unbound-manager-title-unselected')}
             >
                {strings[this.props.type.toUpperCase()]} {amount ? `- ${amount}` : ''}
-               {this.state.breadcrumbs.length && (
+               {this.state.breadcrumbs.length ? (
                   <Caret
                      direction={Caret.Directions.RIGHT}
                      className='unbound-manager-title-caret'
                   />
-               )}
+               ) : ''}
             </FormTitle>
             {this.state.breadcrumbs.map((breadcrumb, index, breadcrumbs) => (
                <FormTitle
