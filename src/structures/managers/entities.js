@@ -267,9 +267,12 @@ module.exports = class Manager extends Emitter {
       if (entity?.instance && !entity.started) {
          try {
             entity.started = true;
+            entity.instance.started = true;
             entity.instance.start?.();
             this.logger.log(`${entity.data.name} was started.`);
          } catch (e) {
+            entity.started = false;
+            entity.instance.started = false;
             this.logger.error(`Couldn't start ${entity.data.name}. You may face issues with your client.\n`, e);
          }
       }
@@ -280,9 +283,12 @@ module.exports = class Manager extends Emitter {
       if (entity?.instance && entity.started) {
          try {
             entity.started = false;
+            entity.instance.started = false;
             entity.instance.stop?.();
             this.logger.log(`${entity.data.name} was stopped.`);
          } catch (e) {
+            entity.started = true;
+            entity.instance.started = true;
             this.logger.error(`Couldn't stop ${entity.data.name}. You may face issues with your client.\n`, e);
          }
       }
