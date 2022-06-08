@@ -6,6 +6,7 @@ const EntityManager = require('@structures/managers/entities');
 const PatchManager = require('@structures/managers/patches');
 const StyleManager = require('@structures/managers/styles');
 const APIManager = require('@structures/managers/api');
+const CoreCommands = require('@core/commands');
 const Updater = require('@core/updater');
 const Patcher = require('@patcher');
 
@@ -16,6 +17,7 @@ const Logger = createLogger();
 module.exports = class Unbound {
    static #styles = new StyleManager();
    static #patches = new PatchManager();
+   static #commands = new CoreCommands();
 
    async start() {
       const start = new Date();
@@ -47,6 +49,9 @@ module.exports = class Unbound {
       // Load all entities
       this.managers.themes.loadAll();
       this.managers.plugins.loadAll();
+
+      // Register core commands
+      Unbound.#commands.register(this);
 
       const end = new Date() - start;
       Logger.log(`Initialized in ${end >= 1000 ? end / 1000 : `${end}m`}s.`);
@@ -135,6 +140,9 @@ module.exports = class Unbound {
       Object.keys(this.managers ?? {}).map(m => {
          this.managers[m].destroy();
       });
+
+      // Remove commands
+      Unbound.#commands.remove();
 
       Unbound.#styles?.remove?.();
       await this.apis?.stop?.();
