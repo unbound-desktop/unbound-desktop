@@ -80,5 +80,6 @@
 }
 
 .unbound-manager-title-caret {
+   margin-left: -5px;
    vertical-align: bottom;
 }
