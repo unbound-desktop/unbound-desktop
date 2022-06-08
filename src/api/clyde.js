@@ -1,8 +1,8 @@
 const { avatar } = require('@constants');
 const API = require('@structures/api');
 
-const { Channels } = require('@webpack/stores');
-const { Messages } = require('@webpack/api');
+const { Messages, Users: AsyncUsers } = require('@webpack/api');
+const { SelectedChannels, Users } = require('@webpack/stores');
 const { findByProps } = require('@webpack');
 const { bindAll } = require('@utilities');
 const Lodash = window._;
@@ -16,6 +16,8 @@ const [
    { bulk: true }
 );
 
+const ID = '934019188450816000';
+
 class Clyde extends API {
    constructor() {
       super();
@@ -26,30 +28,20 @@ class Clyde extends API {
    get defaultMessage() {
       return {
          state: 'SENT',
-         author: {
-            avatar: '__UNBOUND__',
-            id: '-1',
-            bot: true,
-            discriminator: '0000',
-            username: 'Unbound'
-         },
-         content: 'Message.'
+         author: Users.getUser(ID)
       };
    }
 
-   start() {
-      Bots.BOT_AVATARS['__UNBOUND__'] = avatar;
-   }
-
-   stop() {
-      delete Bots.BOT_AVATARS['__UNBOUND__'];
+   async start() {
+      await AsyncUsers.getUser(ID);
    }
 
    send(channel, message) {
-      if (!channel) channel = Channels.getChannelId();
+      if (!channel) channel = SelectedChannels.getChannelId();
 
       Messages?.receiveMessage(channel, Lodash.merge({},
          MessageUtil.createBotMessage(channel, message?.content),
+         { channel_id: channel },
          this.defaultMessage,
          message
       ));
