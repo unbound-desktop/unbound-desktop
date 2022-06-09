@@ -20,7 +20,7 @@ const [
    filters.byProps('getBuiltInCommands'),
    filters.byProps('getApplicationIconURL'),
    filters.byProps('useSearchManager'),
-   filters.byProps('icon', 'selectable', 'wrapper'),
+   m => !m.mask && m.icon && m.selectable && m.wrapper,
    filters.byDisplayName('ApplicationCommandDiscoverySectionIcon', false),
    filters.byDisplayName('ApplicationCommandItem', false),
    m => m.type?.displayName === 'ChannelApplicationIcon'
