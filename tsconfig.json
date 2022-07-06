@@ -1,0 +1,103 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "esnext",
+    "jsx": "preserve",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "baseUrl": "src",
+    "paths": {
+      "@styles/*": [
+        "client/styles/*"
+      ],
+      "react": [
+        "client/modules/webpack/react"
+      ],
+      "@structures/*": [
+        "client/structures/*"
+      ],
+      "@webpack": [
+        "client/modules/webpack/index"
+      ],
+      "@webpack/*": [
+        "client/modules/webpack/*"
+      ],
+      "@utilities": [
+        "common/utilities/index"
+      ],
+      "@utilities/*": [
+        "common/utilities/*"
+      ],
+      "@constants": [
+        "common/constants"
+      ],
+      "@components": [
+        "client/components/index"
+      ],
+      "@components/*": [
+        "client/components/*"
+      ],
+      "@patcher": [
+        "client/modules/patcher/index"
+      ],
+      "@patcher/*": [
+        "client/modules/patcher/*"
+      ],
+      "@api": [
+        "client/api/index"
+      ],
+      "@api/*": [
+        "client/api/*"
+      ],
+      "@core/*": [
+        "client/core/*"
+      ],
+      "@modules/*": [
+        "client/modules/*"
+      ],
+      "@client": [
+        "client/index"
+      ],
+      "@client/*": [
+        "client/*"
+      ],
+      "@entities": [
+        "client/structures/entities/index"
+      ],
+      "@entities/*": [
+        "client/structures/entities/*"
+      ],
+      "@data/*": [
+        "common/data/*"
+      ],
+      "@common/*": [
+        "common/*"
+      ],
+      "@root/*": [
+        "*"
+      ],
+      "@package": [
+        "../package.json"
+      ],
+      "@managers": [
+        "client/managers/index"
+      ],
+      "@managers/*": [
+        "client/managers/*"
+      ],
+      "@compilers/*": [
+        "preload/compilers/*"
+      ],
+      "reactTypes": [
+        "../node_modules/@types/react"
+      ]
+    }
+  }
+}

@@ -1,9 +1,0 @@
-.unbound-settings-switch-container {
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-}
-
-.unbound-settings-switch-title {
-   color: var(--text-normal);
-}

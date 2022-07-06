@@ -1,13 +1,9 @@
 {
-   "ext": "*.*",
-   "exec": "curl http://localhost:5858/reload",
-   "ignore": [
-      "settings/**",
-      "plugins/**",
-      "cache/**",
-      "themes/**",
-      "unisolate/**",
-      ".git/**",
-      "node_modules/**"
-   ]
+  "ext": "*.*",
+  "exec": "swc src -d dist -D --delete-dir-on-start",
+  "ignore": [
+    "./dist",
+    "./.git/**",
+    "./node_modules/**"
+  ]
 }

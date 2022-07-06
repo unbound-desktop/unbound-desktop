@@ -1,0 +1,2 @@
+import './isolated';
+import './window';

@@ -1,8 +1,5 @@
 /node_modules
 /package-lock.json
-/plugins
-/themes
-/settings
-/unisolate/running*
 /cache
-/desktop.ini
+/yarn-lock
+/dist/**

@@ -1,0 +1,115 @@
+{
+  "module": {
+    "type": "commonjs"
+  },
+  "sourceMaps": "inline",
+  "minify": true,
+  "jsc": {
+    "externalHelpers": false,
+    "parser": {
+      "syntax": "typescript",
+      "tsx": true,
+      "decorators": false,
+      "dynamicImport": false
+    },
+    "target": "es2022",
+    "minify": {
+      "compress": {
+        "booleans_as_integers": true,
+        "dead_code": true,
+        "reduce_vars": true,
+        "reduce_funcs": true,
+        "keep_classnames": true,
+        "keep_fargs": true
+      },
+      "keepClassnames": true,
+      "mangle": true
+    },
+    "transform": {
+      "react": {
+        "useBuiltins": true
+      },
+      "optimizer": {
+        "simplify": true
+      }
+    },
+    "baseUrl": "src",
+    "paths": {
+      "@client": [
+        "client/index.ts"
+      ],
+      "@client/*": [
+        "client/*"
+      ],
+      "@styles/*": [
+        "client/styles/*"
+      ],
+      "@entities": [
+        "client/entities/index.ts"
+      ],
+      "@entities/*": [
+        "client/entities/*"
+      ],
+      "@structures/*": [
+        "client/structures/*"
+      ],
+      "@webpack/*": [
+        "client/modules/webpack/*"
+      ],
+      "@utilities/*": [
+        "common/utilities/*"
+      ],
+      "@utilities": [
+        "common/utilities/index.ts"
+      ],
+      "@constants": [
+        "common/constants.ts"
+      ],
+      "@patcher": [
+        "client/modules/patcher/index.ts"
+      ],
+      "@patcher/*": [
+        "client/modules/patcher/*"
+      ],
+      "@components": [
+        "client/components/index.ts"
+      ],
+      "@components/*": [
+        "client/components/*"
+      ],
+      "@api": [
+        "client/api/index"
+      ],
+      "@api/*": [
+        "client/api/*"
+      ],
+      "@core/*": [
+        "client/core/*"
+      ],
+      "@modules/*": [
+        "client/modules/*"
+      ],
+      "@data/*": [
+        "common/data/*"
+      ],
+      "@common/*": [
+        "common/*"
+      ],
+      "@package": [
+        "../package.json"
+      ],
+      "@compilers/*": [
+        "preload/compilers/*"
+      ],
+      "@managers": [
+        "client/managers/index.ts"
+      ],
+      "@managers/*": [
+        "client/managers/*"
+      ],
+      "@root/*": [
+        "*"
+      ]
+    }
+  }
+}
