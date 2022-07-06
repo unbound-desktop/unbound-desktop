@@ -265,7 +265,6 @@ export default class AddonCard extends React.Component<AddonCardProps> {
 
   @bind
   onToggle(name) {
-    console.log(this);
     const { entity } = this.props;
 
     if (![entity.id, entity.entityID, entity.name].includes(name)) {
