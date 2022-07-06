@@ -5,7 +5,9 @@ const overrides = {
   useEffect: () => { },
   useLayoutEffect: () => { },
   useRef: () => ({ current: null }),
-  useCallback: callback => callback
+  useCallback: callback => callback,
+  useImperativeHandle: () => { },
+  useContext: (ctx) => ctx._currentValue
 };
 
 const keys = Object.keys(overrides);
@@ -17,13 +19,13 @@ const keys = Object.keys(overrides);
  * @return {React.Component} Returns the wrapped component's result
  */
 
-function forceRender(component: Fn) {
+function forceRender(component: Fn, options: OptionalKeys<typeof overrides>) {
   return (...args) => {
     const React = require('react');
     const ReactDispatcher = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentDispatcher.current;
     const originals = keys.map(e => [e, ReactDispatcher[e]]);
 
-    Object.assign(ReactDispatcher, overrides);
+    Object.assign(ReactDispatcher, overrides, options);
 
     const res = {
       rendered: null,

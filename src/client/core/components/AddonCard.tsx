@@ -1,9 +1,10 @@
 import { Text, Switch, Anchor, FormText, Markdown, RelativeTooltip, Menu } from '@components/discord';
 import { ContextMenu, Layers, Locale } from '@webpack/common';
 import { Author } from '@client/managers/base';
-import { Icon } from '@components';
 import { Colors } from '@constants';
+import { Icon } from '@components';
 import { DMs } from '@webpack/api';
+import { bind } from '@utilities';
 import React from 'react';
 
 import { Plug, Bd } from './Icons';
@@ -19,12 +20,6 @@ interface AddonCardProps {
 }
 
 export default class AddonCard extends React.Component<AddonCardProps> {
-  constructor(props) {
-    super(props);
-
-    this.onToggle = this.onToggle.bind(this);
-  }
-
   componentWillMount() {
     const global = this.getGlobal();
     const type = this.getType();
@@ -268,7 +263,9 @@ export default class AddonCard extends React.Component<AddonCardProps> {
     }
   }
 
+  @bind
   onToggle(name) {
+    console.log(this);
     const { entity } = this.props;
 
     if (![entity.id, entity.entityID, entity.name].includes(name)) {

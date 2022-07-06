@@ -10,7 +10,7 @@ import findInTree, { findInTreeOptions } from './findInTree';
  */
 
 function findInReactTree(tree: Record<any, any> | any[], filter: (...args: any) => boolean = _ => _, options: findInTreeOptions = {}) {
-  return findInTree(tree, filter, { walkable: ['props', 'children'], ...options });
+  return findInTree(tree, filter, { walkable: ['props', 'children', 'return', 'child', 'sibling'], ...options });
 };
 
 export = findInReactTree;

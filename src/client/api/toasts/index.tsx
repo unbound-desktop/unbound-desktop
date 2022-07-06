@@ -9,9 +9,10 @@ import EventEmitter from 'events';
 styles.append();
 
 export const events = new EventEmitter();
-export const on = events.on.bind(events);
+
 export const once = events.once.bind(events);
 export const off = events.off.bind(events);
+export const on = events.on.bind(events);
 
 export const toasts = { storage: {} };
 export const container = document.createElement('div');

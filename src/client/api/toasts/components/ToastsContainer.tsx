@@ -1,15 +1,9 @@
 import { connectComponent } from '@api/settings';
 import Toast, { ToastOptions } from './Toast';
+import { bind } from '@utilities';
 import React from 'react';
 
 class ToastsContainer extends React.PureComponent<any> {
-  constructor(props) {
-    super(props);
-
-    this.state = {};
-    this.handleChange = this.handleChange.bind(this);
-  }
-
   componentDidMount(): void {
     const { manager } = this.props;
     manager.on('change', this.handleChange);
@@ -20,6 +14,7 @@ class ToastsContainer extends React.PureComponent<any> {
     manager.off('change', this.handleChange);
   }
 
+  @bind
   handleChange() {
     this.forceUpdate();
   }

@@ -1,6 +1,6 @@
 import { Text, Caret, Menu, FormTitle, RelativeTooltip, SearchBar, Popout } from '@components/discord';
+import { bind, capitalize, classnames } from '@utilities';
 import DOMWrapper from '@core/components/DOMWrapper';
-import { capitalize, classnames } from '@utilities';
 import AddonCard from '@core/components/AddonCard';
 import { ErrorBoundary, Icon } from '@components';
 import * as Settings from '@api/settings';
@@ -101,7 +101,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
           {props => (
             <Icon
               {...props}
-              onClick={this.onReload.bind(this)}
+              onClick={this.onReload}
               name='Replay'
               className='unbound-manager-button'
               width={32}
@@ -116,7 +116,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
               animation={Popout.Animation.SCALE}
               align={Popout.Align.RIGHT}
               spacing={12}
-              renderPopout={this.renderOverflowMenu.bind(this)}
+              renderPopout={this.renderOverflowMenu}
             >
               {popoutProps => (
                 <Icon
@@ -259,6 +259,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
     };
   }
 
+  @bind
   renderOverflowMenu() {
     const { settings } = this.props;
 
@@ -354,6 +355,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
     return { addons: { bd: [], powercord: [], unbound: [] }, count: 0 };
   }
 
+  @bind
   onReload() { }
 
   resolve(entity: Record<string, any>, filter: string) {
