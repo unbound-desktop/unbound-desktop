@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),require("./isolated"),require("./window")
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9pcGMvbWFpbi9pbmRleC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgJy4vaXNvbGF0ZWQnO1xyXG5pbXBvcnQgJy4vd2luZG93JzsiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsNEVBQU8sWUFBWSxVQUNaLFVBQVUsQ0FBQyJ9
