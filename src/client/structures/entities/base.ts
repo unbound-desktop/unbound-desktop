@@ -1,9 +1,14 @@
+import type { Manifest } from '@managers/base';
 import { createLogger } from '@common/logger';
 import { Colors } from '@constants';
 
 class Base {
-  logger: ReturnType<typeof createLogger>;
-  data: Record<string, any>;
+  public logger: ReturnType<typeof createLogger>;
+  public started: boolean;
+  public data: Manifest;
+  public folder: string;
+  public path: string;
+  public id: string;
 
   start() {
 

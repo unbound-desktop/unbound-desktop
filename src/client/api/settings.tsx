@@ -37,7 +37,7 @@ export function connectComponent(Component: React.ComponentType<any>, id: string
   };
 }
 
-export function makeStore(id: string): SettingsStore {
+export function makeStore(id: string) {
   return {
     settings: Settings.settings[id] ?? {},
     set: (key, value) => set(id, key, value),

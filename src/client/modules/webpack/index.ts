@@ -16,7 +16,7 @@ interface Options {
 export const listeners = new Set();
 export const common: Record<Common, any> | Record<any, any> = {};
 export const data = {
-  initialized: false,
+  initialized: new Promise<any>(() => { }),
   global: 'webpackChunkdiscord_app',
   instance: null,
   push: null,
@@ -264,7 +264,7 @@ export function bulk(...options: any[]): any[] {
 
 /* MISCELLANEOUS */
 export async function initialize(): Promise<void> {
-  if (data.initialized) return;
+  if ((data.initialized as any as boolean) === true) return;
 
   if (!window.__SPLASH__) {
     await waitForGlobal();
@@ -308,11 +308,10 @@ export async function initialize(): Promise<void> {
     Logger.error('Failed to initialize common modules.', e.message);
   }
 
-  data.initialized = true;
+  data.initialized = Promise.resolve(true);
 }
 
 export function shutdown(): void {
-  if (!data.initialized) return;
   delete window[data.global].push;
 
   Object.defineProperty(window[data.global], 'push', {

@@ -17,20 +17,22 @@ export type Author = {
   id?: number;
 } | string;
 
+export interface Manifest {
+  id: string;
+  name: string;
+  description: string;
+  authors: Author | Author[];
+  version: string;
+};
+
 export interface Entity {
   started: boolean;
   failed: boolean;
+  data: Manifest;
   folder: string;
-  path: string;
   instance: any;
+  path: string;
   id: string;
-  data: {
-    id: string;
-    name: string;
-    description: string;
-    authors: Author | Author[];
-    version: string;
-  };
 }
 
 export type Resolveable = string | Entity;
@@ -42,6 +44,7 @@ class Manager extends Emitter {
   public entity: string;
   public folder: string;
   public name: string;
+  public id: string;
 
   constructor({ name, entity, folder }: ManagerOptions) {
     super();
@@ -60,6 +63,7 @@ class Manager extends Emitter {
       fs.mkdirSync(Paths.storage);
     }
 
+    this.id = folder;
     this.folder = resolve(Paths.storage, folder);
     if (!fs.existsSync(this.folder)) {
       fs.mkdirSync(this.folder);
@@ -275,8 +279,8 @@ class Manager extends Emitter {
     if (!addon) throw new Error('Invalid addon.');
 
     const addons = Settings.get('unbound', 'addon-states', {});
-    addons[this.folder] ??= {};
-    addons[this.folder][addon.id] = false;
+    addons[this.id] ??= {};
+    addons[this.id][addon.id] = false;
 
     if (addon.started) {
       this.stop(addon);
@@ -290,8 +294,8 @@ class Manager extends Emitter {
     if (!addon) throw new Error('Invalid addon.');
 
     const addons = Settings.get('unbound', 'addon-states', {});
-    addons[this.folder] ??= {};
-    addons[this.folder][addon.id] = true;
+    addons[this.id] ??= {};
+    addons[this.id][addon.id] = true;
 
     if (!addon.started) {
       this.start(addon);
@@ -305,10 +309,10 @@ class Manager extends Emitter {
     if (!addon) throw new Error('Invalid addon.');
 
     const addons = Settings.get('unbound', 'addon-states', {});
-    addons[this.folder] ??= {};
-    addons[this.folder][addon.id] = !(addons[this.folder][addon.id] ?? false);
+    addons[this.id] ??= {};
+    addons[this.id][addon.id] = !(addons[this.id][addon.id] ?? false);
 
-    if (addons[this.folder][addon.id]) {
+    if (addons[this.id][addon.id]) {
       this.start(addon);
     } else {
       this.stop(addon);
@@ -322,7 +326,7 @@ class Manager extends Emitter {
     const addon = this.resolve(id);
     if (!addon) throw new Error('Invalid addon.');
 
-    return Settings.get('unbound', 'addon-states', {})[this.folder]?.[addon.id] ?? false;
+    return Settings.get('unbound', 'addon-states', {})[this.id]?.[addon.id] ?? false;
   }
 
   resolvePayload(root: string, data: Record<string, any>, isSplash: boolean = false) {

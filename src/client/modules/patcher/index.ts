@@ -1,12 +1,13 @@
-type BeforeOverwrite<F extends Fn> = (context?: any, args?: any[], original?: F) => Parameters<F> | void;
-type InsteadOverwrite<F extends Fn> = (context?: any, args?: any[], original?: F) => ReturnType<F> | void;
-type AfterOverwrite<F extends Fn> = (context?: any, args?: any[], result?: ReturnType<F>) => ReturnType<F> | void;
 
-type PropOf<M> = {
+export type BeforeOverwrite<F extends Fn> = (context?: any, args?: any[], original?: F) => Parameters<F> | void;
+export type InsteadOverwrite<F extends Fn> = (context?: any, args?: any[], original?: F) => ReturnType<F> | void;
+export type AfterOverwrite<F extends Fn> = (context?: any, args?: any[], result?: ReturnType<F>) => ReturnType<F> | void;
+
+export type PropOf<M> = {
   [K in keyof M]: M[K] extends Fn ? Extract<K, string> : never
 }[keyof M];
 
-interface Patch {
+export interface Patch {
   mdl: Record<string, any> | Function;
   func: string;
   original: Function;
@@ -18,7 +19,7 @@ interface Patch {
   };
 }
 
-interface Patcher {
+export interface Patcher {
   caller: string;
   once: boolean;
   type: Type;
@@ -27,9 +28,9 @@ interface Patcher {
   unpatch: () => void;
 }
 
-type Constructor = (new () => any);
+export type Constructor = (new () => any);
 
-enum Type {
+export enum Type {
   Before = 'before',
   Instead = 'instead',
   After = 'after',
