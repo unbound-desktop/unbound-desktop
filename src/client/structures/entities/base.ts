@@ -18,6 +18,10 @@ class Base {
 
   }
 
+  _stop() {
+    
+  }
+
   load() {
 
   }

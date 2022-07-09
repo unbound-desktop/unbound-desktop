@@ -14,6 +14,11 @@ class Plugin extends Base {
     this.patcher = create(this.data.id);
     this.settings = makeStore(this.data.id);
   }
+
+  _stop() {
+    this.patcher.unpatchAll();
+    this.stop();
+  }
 }
 
 export = Plugin;

@@ -93,7 +93,7 @@ class Manager extends Emitter {
     if (entity?.instance && this.started.has(entity.data?.id)) {
       try {
         this.started.delete(entity.data.id);
-        entity.instance.stop?.();
+        entity.instance._stop?.();
         this.logger.log(`${entity.data.name} was stopped.`);
       } catch (e) {
         this.started.add(entity.data.id);
