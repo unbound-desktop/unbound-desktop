@@ -1,7 +1,7 @@
 import { dialog, ipcMain } from 'electron';
 import { IPCEvents } from '@constants';
 
-ipcMain.on(IPCEvents.PROCESS_ISOLATED, () => {
+ipcMain.handle(IPCEvents.PROCESS_ISOLATED, () => {
   dialog.showMessageBox({
     type: 'warning',
     title: 'Not Supported',

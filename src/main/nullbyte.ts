@@ -7,8 +7,10 @@ const instance = resolve(__dirname, '..', '..', 'nullbyte', `nullbyte-${process.
 if (PATTERNS[process.platform] && existsSync(instance)) {
   try {
     const nullbyte = require(instance);
-    nullbyte.patch(process.pid, PATTERNS[process.platform]);
+    const success = nullbyte.patch(process.pid, PATTERNS[process.platform]);
+    if (!success) throw 0;
   } catch (e) {
+    global.__ABORT__ = true;
     console.error('nullbyte failed patching, expect issues.');
   }
 }

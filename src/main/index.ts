@@ -8,6 +8,9 @@ require('./nullbyte');
 require('../ipc/main');
 
 patch('unbound', (options: BrowserWindowConstructorOptions) => {
+  if (options.webPreferences?.preload?.includes('splash')) return;
+  if (global.__ABORT__) return;
+
   options.webPreferences ??= {};
   options.webPreferences.contextIsolation = false;
   options.webPreferences.nodeIntegration = true;
