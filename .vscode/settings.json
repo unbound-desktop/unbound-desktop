@@ -25,7 +25,6 @@
   "js/ts.implicitProjectConfig.strictNullChecks": true,
   "js/ts.implicitProjectConfig.target": "ESNext",
   "javascript.validate.enable": true,
-  "formatFiles.extensionsToInclude": ".js,.tsx,.jsx,.json,.css",
   "css.format.enable": true,
   "css.format.newlineBetweenRules": true,
   "css.format.newlineBetweenSelectors": true,
