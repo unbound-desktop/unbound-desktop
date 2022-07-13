@@ -1,7 +1,8 @@
+type Arguments<T extends Fn> = T extends (...args: infer P) => any ? P : any[];
 
-export type BeforeOverwrite<F extends Fn> = (context?: any, args?: any[], original?: F) => Parameters<F> | void;
-export type InsteadOverwrite<F extends Fn> = (context?: any, args?: any[], original?: F) => ReturnType<F> | void;
-export type AfterOverwrite<F extends Fn> = (context?: any, args?: any[], result?: ReturnType<F>) => ReturnType<F> | void;
+export type BeforeOverwrite<F extends Fn> = (context?: any, args?: Arguments<F>, original?: F) => Arguments<F> | void;
+export type InsteadOverwrite<F extends Fn> = (context?: any, args?: Arguments<F>, original?: F) => ReturnType<F> | void;
+export type AfterOverwrite<F extends Fn> = (context?: any, args?: Arguments<F>, result?: ReturnType<F>) => ReturnType<F> | void;
 
 export type PropOf<M> = {
   [K in keyof M]: M[K] extends Fn ? Extract<K, string> : never
