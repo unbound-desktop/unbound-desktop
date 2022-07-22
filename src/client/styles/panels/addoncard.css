@@ -8,6 +8,15 @@
   margin: 10px 0 10px 0;
 }
 
+.unbound-addon-card.disabled {
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.unbound-addon-card.disabled .unbound-addon-authors {
+  pointer-events: all;
+}
+
 .unbound-addon-footer {
   display: flex;
 }

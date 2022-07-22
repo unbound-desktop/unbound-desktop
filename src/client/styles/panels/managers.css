@@ -22,6 +22,11 @@
   cursor: pointer;
 }
 
+.unbound-addon-failed {
+  color: var(--info-danger-text);
+  margin-right: 5px;
+}
+
 .unbound-manager-button:hover {
   background: var(--background-modifier-hover);
   border-radius: 5px;

@@ -1,10 +1,10 @@
-import { Text, Switch, Anchor, FormText, Markdown, RelativeTooltip, Menu } from '@components/discord';
+import { Text, Switch, Anchor, FormText, Markdown, RelativeTooltip, Menu, Tooltip } from '@components/discord';
 import { ContextMenu, Layers, Locale } from '@webpack/common';
 import { Author } from '@client/managers/base';
+import { bind, classnames } from '@utilities';
 import { Colors } from '@constants';
 import { Icon } from '@components';
 import { DMs } from '@webpack/api';
-import { bind } from '@utilities';
 import React from 'react';
 
 import { Plug, Bd } from './Icons';
@@ -83,81 +83,83 @@ export default class AddonCard extends React.Component<AddonCardProps> {
     );
 
     return (
-      <div
-        className='unbound-addon-card'
-        style={{ '--entity-color': color }}
-        onContextMenu={(e) => ContextMenu.openContextMenu(e, () =>
-          <Menu.default onClose={ContextMenu.closeContextMenu}>
-            <Menu.MenuItem
-              id='delete'
-              color='colorDanger'
-              label='Delete'
-              action={() => this.delete()}
-            />
-            <Menu.MenuItem
-              id='reload'
-              label='Reload'
-              action={() => this.reload()}
-            />
-          </Menu.default>
-        )}
+      <Tooltip
+        position='left'
+        text={entity.failed ? Locale.Messages[`UNBOUND_ADDON_FAILED_${this.props.type.toUpperCase()}`] : null}
+        hideOnClick={false}
       >
-        <div className='unbound-addon-header'>
-          <Text
-            className='unbound-addon-name'
-            size={Text.Sizes.SIZE_16}
-          >
-            {name}
-          </Text>
-          <Text
-            className='unbound-addon-version'
-            size={Text.Sizes.SIZE_16}
-            color={Text.Colors.INTERACTIVE_NORMAL}
-          >
-            {version}
-          </Text>
-          <Text
-            className='unbound-addon-authors'
-            size={Text.Sizes.SIZE_16}
-            color={Text.Colors.INTERACTIVE_NORMAL}
-          >
-            by {this.renderAuthors(author)}
-          </Text>
-          <div className='unbound-addon-controls'>
-            {this.props.client !== 'unbound' && <RelativeTooltip
-              text={Locale.Messages[`UNBOUND_ADDON_MANAGER_${this.props.client.toUpperCase()}_TOOLTIP`]?.format({ type: 'Plugin' })}
-              hideOnClick={false}
+        <div
+          className={classnames('unbound-addon-card', entity.failed && 'disabled')}
+          style={{ '--entity-color': color }}
+          onContextMenu={(e) => ContextMenu.openContextMenu(e, () =>
+            <Menu.default onClose={ContextMenu.closeContextMenu}>
+              <Menu.MenuItem
+                id='delete'
+                color='colorDanger'
+                label='Delete'
+                action={() => this.delete()}
+              />
+              <Menu.MenuItem
+                id='reload'
+                label='Reload'
+                action={() => this.reload()}
+              />
+            </Menu.default>
+          )}
+        >
+          <div className='unbound-addon-header'>
+            <Text className='unbound-addon-name' size={Text.Sizes.SIZE_16}>
+              {name}
+            </Text>
+            <Text
+              className='unbound-addon-version'
+              size={Text.Sizes.SIZE_16}
+              color={Text.Colors.INTERACTIVE_NORMAL}
             >
-              {p => this.renderType({ ...p })}
-            </RelativeTooltip>}
-            {this.hasSettings() && (
-              <RelativeTooltip text='Settings' hideOnClick={false}>
-                {p => <Icon
-                  {...p}
-                  onClick={() => this.props.openSettings()}
-                  name='Gear'
-                  width={28}
-                  height={28}
-                  className='unbound-addon-control-button'
-                />}
-              </RelativeTooltip>
-            )}
-            <Switch
-              checked={this.isEnabled}
-              onChange={() => this.toggle()}
-              className='unbound-addon-switch'
-            />
+              {version}
+            </Text>
+            <Text
+              className='unbound-addon-authors'
+              size={Text.Sizes.SIZE_16}
+              color={Text.Colors.INTERACTIVE_NORMAL}
+            >
+              by {this.renderAuthors(author)}
+            </Text>
+            <div className='unbound-addon-controls'>
+              {this.props.client !== 'unbound' && <RelativeTooltip
+                text={Locale.Messages[`UNBOUND_ADDON_MANAGER_${this.props.client.toUpperCase()}_TOOLTIP`]?.format({ type: 'Plugin' })}
+                hideOnClick={false}
+              >
+                {p => this.renderType({ ...p })}
+              </RelativeTooltip>}
+              {this.hasSettings() && (
+                <RelativeTooltip text='Settings' hideOnClick={false}>
+                  {p => <Icon
+                    {...p}
+                    onClick={() => this.props.openSettings()}
+                    name='Gear'
+                    width={28}
+                    height={28}
+                    className='unbound-addon-control-button'
+                  />}
+                </RelativeTooltip>
+              )}
+              <Switch
+                checked={this.isEnabled}
+                onChange={() => this.toggle()}
+                className='unbound-addon-switch'
+              />
+            </div>
+          </div>
+          <div className='unbound-addon-footer'>
+            <FormText className='unbound-addon-description'>
+              <Markdown>
+                {description}
+              </Markdown>
+            </FormText>
           </div>
         </div>
-        <div className='unbound-addon-footer'>
-          <FormText className='unbound-addon-description'>
-            <Markdown>
-              {description}
-            </Markdown>
-          </FormText>
-        </div>
-      </div>
-    );
+      </Tooltip>);
   }
 
   renderAuthors(authors: Author) {
