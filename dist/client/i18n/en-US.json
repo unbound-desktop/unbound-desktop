@@ -17,6 +17,8 @@
   "UNBOUND_ADDON_MISSING_DESCRIPTION": "No description provided.",
   "UNBOUND_ADDON_MISSING_NAME": "No name provided.",
   "UNBOUND_ADDON_MISSING_VERSION": "No version provided.",
+  "UNBOUND_ADDON_FAILED_PLUGINS": "This plugin failed to load. Check console for more details.",
+  "UNBOUND_ADDON_FAILED_THEMES": "This theme failed to load. Check console for more details.",
   "UNBOUND_TOAST_SETTINGS_TITLE": "Toast Settings",
   "UNBOUND_TOAST_SETTINGS_DESCRIPTION": "Customize your toasts the way you want them.",
   "UNBOUND_TOAST_SETTINGS_CUSTOM_TITLE": "Custom Styling",
