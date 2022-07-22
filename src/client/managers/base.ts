@@ -72,6 +72,7 @@ class Manager extends Emitter {
 
   start(id: Resolveable) {
     let entity = this.resolve(id);
+
     if (!entity) {
       entity = this.load(id as string);
     }
@@ -130,7 +131,7 @@ class Manager extends Emitter {
     if (other) return other;
   }
 
-  loadMissing() {
+  loadMissing(): { loaded: any[], missing: any[]; } {
     const contents = fs.readdirSync(this.folder);
     const entities = contents.filter(id => {
       const path = resolve(this.folder, id);
@@ -155,7 +156,14 @@ class Manager extends Emitter {
     const status = { failed: 0 };
 
     const contents = fs.readdirSync(this.folder);
-    const entities = contents.filter(e => fs.statSync(resolve(this.folder, e)).isDirectory());
+    const entities = contents.filter(e => {
+      try {
+        const item = resolve(this.folder, e);
+        return fs.statSync(item).isDirectory();
+      } catch {
+        return false;
+      }
+    });
 
     for (const id of entities) {
       try {
@@ -169,6 +177,8 @@ class Manager extends Emitter {
   }
 
   load(id: string): Entity {
+    if (this.resolve(id)) return;
+
     const root = resolve(this.folder, id);
     if (!fs.existsSync(root)) {
       throw new Error(`${id} doesn't exist in the ${this.name} folder.`);
@@ -298,7 +308,7 @@ class Manager extends Emitter {
     addons[this.id][addon.id] = true;
 
     if (!addon.started) {
-      this.start(addon);
+      this.start(addon.folder);
     }
 
     return Settings.set('unbound', 'addon-states', addons);
