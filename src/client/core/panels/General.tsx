@@ -91,8 +91,9 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
         checked={settings.get('toasts.useCustomColours', false)}
         endDivider={settings.get('toasts.useCustomColours', false)}
         onChange={() => settings.toggle('toasts.useCustomColours', false)}
+        bottomMargin={settings.get('toasts.useCustomColours', false) ? 15 : 7.5}
       />
-      {settings.get('toasts.useCustomColours', false) ? <>
+      {settings.get('toasts.useCustomColours', false) && <>
         <ColorPicker
           value={settings.get('toasts.bgColor')}
           className='unbound-settings-toast-color'
@@ -121,8 +122,9 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
           onValueChange={v => settings.set('toasts.blurAmount', v)}
           onMarkerRender={v => `${v}px`}
           endDivider={false}
+          bottomMargin={7.5}
         />
-      </> : <div style={{ marginBottom: 2.5 }} />}
+      </>}
     </Category>;
   }
 
@@ -148,6 +150,7 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
         description={Locale.Messages.UNBOUND_DEV_SETTINGS_EXPERIMENTS_DESCRIPTION}
         checked={settings.get('dev.experiments', false)}
         onChange={() => settings.toggle('dev.experiments', false)}
+        bottomMargin={7.5}
         endDivider={false}
       />
       <div style={{ marginBottom: 2.5 }} />

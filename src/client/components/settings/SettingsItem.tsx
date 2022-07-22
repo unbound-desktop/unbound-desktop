@@ -11,6 +11,7 @@ const Classes = findByProps('formText', 'description') || {};
 
 export interface SettingsItemProps {
   children?: JSX.Element | JSX.Element[];
+  bottomMargin?: number;
   endDivider?: boolean;
   description?: string;
   className?: string;
@@ -22,7 +23,7 @@ export interface SettingsItemProps {
 
 export default class SettingsItem extends React.PureComponent<SettingsItemProps, {}> {
   render() {
-    const { className, title, required, endDivider = true, children, description, ...rest } = this.props;
+    const { bottomMargin = 15, className, title, required, endDivider = true, children, description, ...rest } = this.props;
 
     return (<>
       <FormItem
@@ -50,7 +51,13 @@ export default class SettingsItem extends React.PureComponent<SettingsItemProps,
           </FormText>
         )}
       </FormItem>
-      {endDivider && <Divider className='unbound-settings-item-divider' />}
+      {endDivider ? <Divider
+        style={{ marginTop: bottomMargin }}
+        className='unbound-settings-item-divider'
+      /> : <div
+        style={{ marginTop: bottomMargin }}
+        className='unbound-settings-item-divider invisible'
+      />}
     </>);
   }
 };

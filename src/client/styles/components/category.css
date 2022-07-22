@@ -30,6 +30,10 @@
   cursor: pointer;
 }
 
+.unbound-category-content .unbound-settings-item-divider.invisible {
+  margin-top: 7.5px !important;
+}
+
 .unbound-category-content > .unbound-category {
   padding: 0;
   margin-top: 10px;
