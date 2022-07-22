@@ -151,6 +151,8 @@ export default class Toast extends Component {
     return <>
       {transition((props, item) => item && (<animated.div
         key={id}
+        className='unbound-toast-wrapper'
+        style={{ opacity: props.opacity, height: props.height, marginTop: props.marginTop }}
         onMouseEnter={() => {
           if (settings.get('toasts.resetTimeoutOnHover', false)) {
             progress.value.to(v => {
@@ -176,8 +178,6 @@ export default class Toast extends Component {
             progress.value.resume();
           }
         }}
-        className='unbound-toast-wrapper'
-        style={{ opacity: props.opacity, height: props.height, marginTop: props.marginTop }}
       >
         <animated.div
           ref={this.ref}

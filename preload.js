@@ -1,3 +1,4 @@
+// @ts-nocheck
 const { ipcRenderer } = require('electron');
 
 const { windowOptions } = ipcRenderer.sendSync('GET_WINDOW_OPTIONS');
