@@ -164,11 +164,7 @@ function push(mdl: Record<string, any> | Function, func: string, type = Type.Aft
 
 
   const patched = override(patch);
-  Object.defineProperty(mdl, func, {
-    configurable: true,
-    get: () => patched,
-    set: (value) => patch.original = value
-  });
+  mdl[func] = patched;
 
   const descriptors = Object.getOwnPropertyDescriptors(patch.original);
   delete descriptors.length;
