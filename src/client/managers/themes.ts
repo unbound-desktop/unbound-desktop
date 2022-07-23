@@ -31,6 +31,6 @@ export default class Themes extends Base {
       };
     }
 
-    return payload.__esModule ? payload.default : payload;
+    return payload.default ?? payload;
   }
 }
