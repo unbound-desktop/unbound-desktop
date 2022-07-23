@@ -96,12 +96,12 @@ export default class AddonCard extends React.Component<AddonCardProps> {
               <Menu.MenuItem
                 id='delete'
                 color='colorDanger'
-                label='Delete'
+                label={Locale.Messages.UNBOUND_DELETE}
                 action={() => this.delete()}
               />
               <Menu.MenuItem
                 id='reload'
-                label='Reload'
+                label={Locale.Messages.UNBOUND_RELOAD}
                 action={() => this.reload()}
               />
             </Menu.default>
@@ -133,7 +133,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
                 {p => this.renderType({ ...p })}
               </RelativeTooltip>}
               {this.hasSettings() && (
-                <RelativeTooltip text='Settings' hideOnClick={false}>
+                <RelativeTooltip text={Locale.Messages.UNBOUND_SETTINGS} hideOnClick={false}>
                   {p => <Icon
                     {...p}
                     onClick={() => this.props.openSettings()}

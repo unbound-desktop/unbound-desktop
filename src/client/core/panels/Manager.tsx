@@ -276,7 +276,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
           id='filters'
           control={() => (
             <h5 className='unbound-manager-overflow-title'>
-              Filters
+              {Locale.Messages.UNBOUND_FILTERS}
             </h5>
           )}
         />
@@ -284,7 +284,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
           <Menu.MenuCheckboxItem
             key={`filter-${f}`}
             id={`filter-${f}`}
-            label={capitalize(f)}
+            label={Locale.Messages[`UNBOUND_FILTER_${f.toUpperCase()}`]}
             checked={filters[f]}
             action={() => {
               filters[f] = !filters[f];

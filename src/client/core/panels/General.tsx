@@ -104,25 +104,24 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
           title={Locale.Messages.UNBOUND_TOAST_SETTINGS_OPACITY_TITLE}
           minValue={1}
           maxValue={10}
-          stickToMarkers
           markers={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
           defaultValue={10}
           initialValue={(settings.get('toasts.bgOpacity', 0.5) * 10)}
           onValueChange={v => settings.set('toasts.bgOpacity', v / 10)}
           onMarkerRender={v => `${v / 10}`}
+          onValueRender={v => (v / 10).toFixed(2)}
         />
         <SliderInput
           title={Locale.Messages.UNBOUND_TOAST_SETTINGS_BLUR_TITLE}
           minValue={0}
           maxValue={15}
-          stickToMarkers
           markers={[0, 2.5, 5, 7.5, 10, 12.5, 15]}
           defaultValue={7.5}
           initialValue={settings.get('toasts.blurAmount', 7.5)}
           onValueChange={v => settings.set('toasts.blurAmount', v)}
-          onMarkerRender={v => `${v}px`}
           endDivider={false}
           bottomMargin={7.5}
+          onValueRender={v => v.toFixed(1)}
         />
       </>}
     </Category>;

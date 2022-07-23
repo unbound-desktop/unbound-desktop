@@ -32,17 +32,17 @@ export function initialize() {
         section: 'HEADER'
       },
       {
-        label: 'General',
+        label: Locale.Messages.UNBOUND_GENERAL,
         section: 'Unbound',
         element: General
       },
       {
-        label: 'Plugins',
+        label: Locale.Messages.UNBOUND_PLUGINS,
         section: 'Unbound Plugins',
         element: Plugins
       },
       {
-        label: 'Themes',
+        label: Locale.Messages.UNBOUND_THEMES,
         section: 'Unbound Themes',
         element: Themes
       },
