@@ -217,8 +217,8 @@ class Manager extends Emitter {
          this.#assignData(data, Constructor.prototype, root);
          res.instance = new Constructor();
       } catch (e) {
-         res.failed = true;
          this.logger.error(`Failed to load addon ${id}, registering it with an empty instance.`, e);
+         res.failed = true;
       }
 
       if (res.instance) {
@@ -246,10 +246,10 @@ class Manager extends Emitter {
       const addon: Entity = this.resolve(id);
       if (!addon) throw new Error('Invalid addon');
 
-      this.stop(addon);
-      const cache = Object.keys(require.cache).filter(c => ~c.indexOf(addon.path));
 
       try {
+         const cache = Object.keys(require.cache).filter(c => ~c.indexOf(addon.path));
+
          this.stop(addon);
 
          for (let i = 0, len = cache.length; i < len; i++) {

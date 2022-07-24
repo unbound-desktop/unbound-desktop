@@ -1,3 +1,5 @@
+import { createLogger } from '@common/logger';
+
 type Arguments<T extends Fn> = T extends (...args: infer P) => any ? P : any[];
 
 export type BeforeOverwrite<F extends Fn> = (context?: any, args?: Arguments<F>, original?: F) => Arguments<F> | void;
@@ -38,6 +40,7 @@ export enum Type {
 }
 
 const patches: Patch[] = [];
+const Logger = createLogger('Patcher');
 
 function getPatchesByCaller(id: string) {
    if (!id) return [];
@@ -94,8 +97,7 @@ function override(patch: Patch) {
             if (Array.isArray(temp)) args = temp;
             if (instance.once) instance.unpatch();
          } catch (error) {
-            console.error(`Could not fire before patch for ${patch.func} of ${instance.caller}`);
-            console.error(error);
+            Logger.error(`Could not fire before patch for ${patch.func} of ${instance.caller}`, error);
          }
       }
 
@@ -116,8 +118,7 @@ function override(patch: Patch) {
                if (typeof ret !== 'undefined') res = ret;
                if (instance.once) instance.unpatch();
             } catch (error) {
-               console.error(`Could not fire instead patch for ${patch.func} of ${instance.caller}`);
-               console.error(error);
+               Logger.error(`Could not fire instead patch for ${patch.func} of ${instance.caller}`, error);
             }
          }
       }
@@ -132,8 +133,7 @@ function override(patch: Patch) {
             if (typeof ret !== 'undefined') res = ret;
             if (instance.once) instance.unpatch();
          } catch (error) {
-            console.error(`Could not fire after patch for ${patch.func} of ${instance.caller}`);
-            console.error(error);
+            Logger.error(`Could not fire after patch for ${patch.func} of ${instance.caller}`, error);
          }
       }
 
