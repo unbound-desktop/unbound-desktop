@@ -1,137 +1,137 @@
 .unbound-toasts-container {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 99999999999999999;
-  margin: 15px;
+   position: absolute;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-direction: column;
+   z-index: 99999999999999999;
+   margin: 15px;
 }
 
 .unbound-toasts-container[data-position*='top'] .unbound-toast-wrapper:first-child {
-  margin-top: 0 !important;
+   margin-top: 0 !important;
 }
 
 .unbound-toasts-container[data-position='bottom-right'] {
-  bottom: 0;
-  right: 0;
+   bottom: 0;
+   right: 0;
 }
 
 .unbound-toasts-container[data-position='bottom-left'] {
-  bottom: 0;
+   bottom: 0;
 }
 
 .unbound-toasts-container[data-position='top-right'] {
-  top: 15px;
-  right: 0;
+   top: 15px;
+   right: 0;
 }
 
 .unbound-toasts-container[data-position='top-left'] {
-  top: 15px;
+   top: 15px;
 }
 
 .unbound-toast-button {
-  width: 45%;
-  flex-grow: 1;
-  box-sizing: border-box;
-  justify-content: space-between;
-  text-align: center;
-  padding: 5px;
+   width: 45%;
+   flex-grow: 1;
+   box-sizing: border-box;
+   justify-content: space-between;
+   text-align: center;
+   padding: 5px;
 }
 
 .unbound-toast-buttons {
-  margin-top: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  box-sizing: border-box;
-  gap: 0.25rem;
+   margin-top: 10px;
+   display: flex;
+   flex-wrap: wrap;
+   box-sizing: border-box;
+   gap: 0.25rem;
 }
 
 .unbound-toast-icon {
-  margin-right: 7.5px;
-  color: var(--color);
-  fill: var(--color, white);
-  width: 20px;
-  height: 20px;
-  justify-content: center;
-  align-items: center;
+   margin-right: 7.5px;
+   color: var(--color);
+   fill: var(--color, white);
+   width: 20px;
+   height: 20px;
+   justify-content: center;
+   align-items: center;
 }
 
 .unbound-toasts-container[data-position='bottom-right'] .unbound-toast-wrapper,
 .unbound-toasts-container[data-position='top-right'] .unbound-toast-wrapper {
-  display: flex;
-  justify-content: flex-end;
+   display: flex;
+   justify-content: flex-end;
 }
 
 .unbound-toast-title {
-  margin: 0;
-  margin-right: 10px;
+   margin: 0;
+   margin-right: 10px;
 }
 
 .unbound-toast-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+   display: flex;
+   justify-content: center;
+   align-items: center;
 }
 
 .unbound-toast-header[data-has-content='true'] {
-  margin-bottom: 5px;
+   margin-bottom: 5px;
 }
 
 .unbound-toast-close {
-  margin-left: auto;
-  cursor: pointer;
-  padding: 5px;
-  width: 16px;
-  height: 16px;
+   margin-left: auto;
+   cursor: pointer;
+   padding: 5px;
+   width: 16px;
+   height: 16px;
 }
 
 .unbound-toast-content {
-  max-width: 375px;
+   max-width: 375px;
 }
 
 .unbound-toast-wrapper {
-  z-index: 99999999999999999999999;
+   z-index: 99999999999999999999999;
 }
 
 .unbound-toast[data-color] .unbound-toast-progress-bar {
-  background: var(--color);
+   background: var(--color);
 }
 
 .unbound-toast[data-use-custom='true'] {
-  background-color: var(--bg);
-  backdrop-filter: blur(var(--blur));
+   background-color: var(--bg);
+   backdrop-filter: blur(var(--blur));
 }
 
 .unbound-toast {
-  border-left: 4px solid var(--color);
-  pointer-events: auto;
-  background-color: var(--background-tertiary);
-  border-radius: 4px;
-  position: absolute;
-  min-width: 200px;
-  min-height: 25px;
-  color: white;
-  width: max-content;
-  overflow: hidden;
-  box-shadow: 0 3px 10px rgb(0 0 0 / 0.15);
+   border-left: 4px solid var(--color);
+   pointer-events: auto;
+   background-color: var(--background-tertiary);
+   border-radius: 4px;
+   position: absolute;
+   min-width: 200px;
+   min-height: 25px;
+   color: white;
+   width: max-content;
+   overflow: hidden;
+   box-shadow: 0 3px 10px rgb(0 0 0 / 0.15);
 }
 
 .unbound-toast-progress {
-  box-sizing: border-box;
-  margin-bottom: 5px;
-  border-radius: 10px;
-  padding: 0 5px;
-  width: 100%;
-  height: 4px;
-  bottom: 0;
-  right: 0;
-  left: 0;
+   box-sizing: border-box;
+   margin-bottom: 5px;
+   border-radius: 10px;
+   padding: 0 5px;
+   width: 100%;
+   height: 4px;
+   bottom: 0;
+   right: 0;
+   left: 0;
 }
 
 .unbound-toast-progress-bar {
-  background: var(--brand-experiment);
-  margin-bottom: 5px;
-  border-radius: 10px;
-  height: 4px;
+   background: var(--brand-experiment);
+   margin-bottom: 5px;
+   border-radius: 10px;
+   height: 4px;
 }
