@@ -1,5 +1,5 @@
-import { createLogger } from '@common/logger';
 import type { Common } from '@common/data/modules';
+import { createLogger } from '@common/logger';
 import modules from '@common/data/modules';
 import splash from '@common/data/splash';
 
@@ -10,13 +10,33 @@ interface Options {
   cache?: boolean;
   interop?: boolean;
   traverse?: string[];
+  initial?: any[];
 }
+
+interface LazyOptions {
+  all?: boolean;
+  interop?: boolean;
+}
+
+interface WaitOptions extends LazyOptions {
+  wait: true;
+}
+
+type DebugOptions = (Options | WaitOptions) & {
+  bulk?: boolean;
+  wait?: boolean;
+  short?: boolean;
+};
+
+type SearchFilter = (module: any, id?: string | number) => boolean;
+type BulkFilter = SearchFilter | SearchFilter[] | [...SearchFilter[], Options | WaitOptions];
 
 /* SETUP */
 export const listeners = new Set();
 export const common: Record<Common, any> | Record<any, any> = {};
 export const data = {
-  initialized: new Promise<any>(() => { }),
+  initialized: false,
+  cache: {},
   global: 'webpackChunkdiscord_app',
   instance: null,
   push: null,
@@ -26,45 +46,235 @@ export const data = {
   },
 };
 
-
 /* FILTERS */
-export const filters = {
-  byProps: (...props) => (mdl) => {
-    for (let i = 0, len = props.length; i < len; i++) {
-      if (mdl[props[i]] === void 0) {
+export namespace filters {
+  /**
+   * Searches a modules properties for matching keys.
+   *
+   * Props are caught with spread args and the options go last.
+   *
+   * ```js
+   * filters.byProps('prop1');
+   * filters.byProps('prop1', 'prop2');
+   * filters.byProps('prop1', 'prop2', true);
+   * filters.byProps('prop1', 'prop2', 'prop3', ['prototype']);
+   * filters.byProps('prop1', ['default', 'constructor']);
+   * ```
+   *
+   * If the last arg is `true` it will search in `exports.default`; meaning it will return the module outside of `default` meaning you can patch it.
+   *
+   * If the last arg is `string[]` it will traverse down that tree (`strings.reduce((m, s) => m?.[s], module);`).
+   *
+   * Else, it will function like normal (keep in mind normal behavior searches both `exports` and `exports.default` and returns inside whatever matches).
+   */
+  export function byProps(...props: string[]): SearchFilter;
+  export function byProps(...args: [...props: string[], def: boolean]): SearchFilter;
+  export function byProps(...args: [...props: string[], traverse: string[]]): SearchFilter;
+  export function byProps(...args: [...props: string[], traverse: boolean | string[]] | string[]): SearchFilter {
+    const filter = (l) => typeof l === 'boolean' || Array.isArray(l);
+    const [props, traverse] = parseOptions<string[] | boolean>(args, filter, false);
+
+    /* These computations are heavy so we avoid doing them in the module search. */
+    const def = traverse && typeof traverse === 'boolean';
+    const arr = !def && Array.isArray(traverse);
+
+    return (mdl) => {
+      if (def && mdl.default === undefined) {
         return false;
       }
-    }
 
-    return true;
-  },
-  byPrototypes: (...props) => (mdl) => {
-    for (let i = 0, len = props.length; i < len; i++) {
-      if (mdl.prototype?.[props[i]] === void 0) {
+      for (let i = 0, len = props.length; i < len; i++) {
+        if (arr) {
+          for (let i = 0, len = traverse.length; i < len; i++) {
+            mdl = mdl?.[traverse[i]];
+          }
+        }
+
+        if ((def ? mdl.default : mdl)?.[props[i]] === undefined) {
+          return false;
+        }
+      }
+
+      return true;
+    };
+  }
+
+  /**
+   * Searches a modules prototype properties for matching keys.
+   *
+   * Props are caught with spread args and the options go last.
+   *
+   * ```js
+   * filters.byProps('prop1');
+   * filters.byProps('prop1', 'prop2');
+   * filters.byProps('prop1', 'prop2', true);
+   * filters.byProps('prop1', 'prop2', 'prop3', ['prototype']);
+   * filters.byProps('prop1', ['default', 'constructor']);
+   * ```
+   *
+   * If the last arg is `true` it will search in `exports.default`; meaning it will return the module outside of `default` meaning you can patch it.
+   *
+   * If the last arg is `string[]` it will traverse down that tree (`strings.reduce((m, s) => m?.[s], module);`).
+   *
+   * Else, it will function like normal (keep in mind normal behavior searches both `exports` and `exports.default` and returns inside whatever matches).
+   */
+  export function byPrototypes(...props: string[]): SearchFilter;
+  export function byPrototypes(...args: [...props: string[], def: boolean]): SearchFilter;
+  export function byPrototypes(...args: [...props: string[], traverse: string[]]): SearchFilter;
+  export function byPrototypes(...args: [...props: string[], traverse: boolean | string[]] | string[]): SearchFilter {
+    const filter = (l) => typeof l === 'boolean' || Array.isArray(l);
+    const [props, traverse] = parseOptions<string[] | boolean>(args, filter, false);
+
+    /* These computations are heavy so we avoid doing them in the module search. */
+    const def = traverse && typeof traverse === 'boolean';
+    const arr = !def && Array.isArray(traverse);
+
+    return (mdl) => {
+      if (def && mdl.default === undefined) {
         return false;
       }
-    }
 
-    return true;
-  },
-  byDisplayName: (name, def = true, deep = false, exact = true) => (mdl) => {
-    if (deep && mdl.type?.displayName) {
-      return mdl.type.displayName === name || !exact && ~mdl.type.displayName.indexOf(name);
-    } else if (deep && mdl.render?.displayName) {
-      return mdl.render.displayName === name || !exact && ~mdl.render.displayName.indexOf(name);
-    } else if (deep && mdl.displayName) {
-      return mdl.displayName === name || !exact && ~mdl.displayName.indexOf(name);
-    } else if (!def) {
-      return typeof mdl.default === 'function' && mdl.default.displayName === name;
-    } else {
-      return typeof mdl === 'function' && mdl.displayName === name;
-    }
-  },
-  byString: (...strings) => (mdl) => {
-    return typeof mdl === 'function' && mdl?.toString === Object.toString && strings.every(s => mdl.toString?.()?.includes?.(s));
-  },
-  byStoreName: (name) => (mdl) => {
-    return mdl.getName?.() === name;
+      for (let i = 0, len = props.length; i < len; i++) {
+        if (arr) {
+          for (let i = 0, len = traverse.length; i < len; i++) {
+            mdl = mdl?.[traverse[i]];
+          }
+        }
+
+        if ((def ? mdl.default : mdl)?.prototype?.[props[i]] === undefined) {
+          return false;
+        }
+      }
+
+      return true;
+    };
+  }
+
+  /**
+   * Searches a module for a string matching it's "displayName" property0.
+   *
+   * @param name The displayName to search for.
+   * @param def If true, it will check `exports.default`, manually making it export outside of `default`, making it patchable.
+   * @param deep If true, will check `(exports|exports.default).type` and `(exports|exports.default).render`.
+   * @param exact Only used when deep is true; will use an `indexOf() > -1` match instead of the normal strict-equal-to operator.
+   */
+  export function byDisplayName(name: string, def = true, deep = false, exact = true) {
+    return (mdl: any) => {
+      if (deep && mdl.type?.displayName) {
+        return mdl.type.displayName === name || !exact && ~mdl.type.displayName.indexOf(name);
+      } else if (deep && mdl.render?.displayName) {
+        return mdl.render.displayName === name || !exact && ~mdl.render.displayName.indexOf(name);
+      } else if (deep && mdl.displayName) {
+        return mdl.displayName === name || !exact && ~mdl.displayName.indexOf(name);
+      } else if (!def) {
+        return typeof mdl.default === 'function' && mdl.default.displayName === name;
+      } else {
+        return typeof mdl === 'function' && mdl.displayName === name;
+      }
+    };
+  }
+
+  export function byStrings(...strings: string[]): SearchFilter;
+  export function byStrings(...args: [...strings: string[], def: boolean]): SearchFilter;
+  export function byStrings(...args: [...strings: string[], def: boolean] | string[]): SearchFilter {
+    const [strings, def] = parseOptions<boolean>(args, (l) => typeof l === 'boolean', false);
+    return (mdl) => {
+      mdl = def ? mdl.default : mdl;
+      if (!mdl || typeof mdl !== 'function') {
+        return false;
+      }
+
+      for (let i = 0, len = strings.length; i < len; i++) {
+        if (!~mdl.toString?.()?.indexOf?.(strings[i])) {
+          return false;
+        }
+      }
+
+      return true;
+    };
+  };
+
+  export function byStoreName(name: string, short: boolean = true): SearchFilter {
+    return (mdl) => mdl.getName?.() === (short && !name.endsWith('Store') ? `${name}Store` : name);
+  }
+
+  /**
+   * A utility function for combining filters efficiently (by not recreating functions).
+   *
+   * For example, say you want to get a module with props 'icon', 'selectable', 'wrapper', and NOT props 'mask'.
+   *
+   * Your first attempt would probably end up with something like this:
+   * ```js
+   * (mdl) => !mdl.mask && filters.byProps('icon', 'selectable', 'wrapper')(mdl);
+   * ```
+   *
+   * This is actually very slow as it creates a "byProps" function everytime with spread args and option parsing.
+   *
+   * All we care about is the filter itself so using this function we can isolate and memoize that filter and have the combine function handle the merging.
+   *
+   * A more performant version of the above function would look something like this:
+   * ```js
+   * filters.combine((mdl) => !mdl.mask, filters.byProps('icon', 'selectable', 'wrapper'));
+   * ```
+   */
+  export function combine(...filters: SearchFilter[]): SearchFilter {
+    return (mdl, id) => {
+      for (let i = 0, len = filters.length; i < len; i++) {
+        if (!filters[i](mdl, id)) {
+          return false;
+        }
+      }
+
+      return true;
+    };
+  };
+
+  // TODO: "or" util
+
+  /**
+   * A utility function to make inverse logic easier with the combine utility function.
+   *
+   * In the combine example we use a simple `(mdl) => !mdl.mask` filter but if you were to want to use `byProps` in that case you would have to write it like:
+   * ```js
+   * filters.combine(((f) => (m) => !f(m))(filters.byProps('mask'), ...);
+   * ```
+   *
+   * This utility function lets you write this expression in a more prettier format.
+   * ```js
+   * filters.combine(filters.inverse(filters.byProps('mask')), ...);
+   * ```
+   */
+  export function inverse(filter: SearchFilter): SearchFilter {
+    return (mdl, id) => !filter(mdl, id);
+  }
+
+  /**
+   * A utility function to traverse down a prop or an collection of props before running the filter.
+   *
+   * Works the same way as the last arg of `byProps` but now it can be used with other filters.
+   */
+  export function traverse(filter: SearchFilter, props: string | string[]): SearchFilter {
+    return (mdl, id) => {
+      if (Array.isArray(props)) {
+        for (let i = 0, len = props.length; i < len; i++) {
+          const prop = mdl[props[i]];
+          if (prop === undefined) {
+            return false;
+          }
+
+          mdl = prop;
+        }
+      } else {
+        const prop = mdl[props];
+        if (prop === undefined) {
+          return false;
+        }
+
+        mdl = prop;
+      }
+
+      return filter(mdl, id);
+    };
   }
 };
 
@@ -79,24 +289,24 @@ export function removeListener(listener: (...args) => any) {
   return listeners.delete(listener);
 }
 
-
 /* FILTER FINDERS */
-export function find(filter: (...args) => any, {
-  all = false,
-  cache = true,
-  interop = true
-}: Options = {}) {
-  if (!filter) {
+export function find(...filters: SearchFilter[]): any;
+export function find(...args: [...filters: SearchFilter[], options: Options]): any;
+export function find(...args: [...filters: SearchFilter[], options: Options] | SearchFilter[]): any {
+  const [search, { all, cache = true, interop = true, initial }] = parseOptions<Options, SearchFilter[]>(args);
+
+  if (!search?.length) {
     throw new Error('Webpack searches require a filter to search by.');
   }
 
-  const instance = request(cache);
+  const instance = request(true);
   if (!instance) return;
 
   let error = false;
-  const found = [];
+  const found = initial ?? [];
 
-  function search(mdl: any, index: number | string) {
+  const filter = filters.combine(...search);
+  const validate: SearchFilter = (mdl, index) => {
     try {
       return filter(mdl, index);
     } catch (e) {
@@ -109,18 +319,23 @@ export function find(filter: (...args) => any, {
     }
   };
 
-  for (const id in instance.c) {
+  const payload = cache ? data.cache : instance.c;
+  for (const id in payload) {
     const mdl = instance.c[id].exports;
-    if (!mdl || mdl === window) continue;
+    if (!mdl || mdl === window || ~found.indexOf(interop && mdl.default ? mdl.default : mdl)) {
+      continue;
+    }
 
     switch (typeof mdl) {
       case 'object':
-        if (search(mdl, id)) {
+        if (validate(mdl, id)) {
+          data.cache[id] = mdl;
           if (!all) return mdl;
           found.push(mdl);
         }
 
-        if (mdl.default && search(mdl.default, id)) {
+        if (mdl.default && validate(mdl.default, id)) {
+          data.cache[id] = mdl;
           const value = interop ? mdl.default : mdl;
 
           if (!all) return value;
@@ -128,13 +343,20 @@ export function find(filter: (...args) => any, {
         }
 
         break;
-      case 'function':
-        if (!search(mdl, id)) continue;
+      default:
+        if (!validate(mdl, id)) continue;
+        data.cache[id] = mdl;
         if (!all) return mdl;
         found.push(mdl);
 
         break;
     }
+  }
+
+  if (cache && !all && !found.length) {
+    return find(filter, { all, cache: false, interop });
+  } else if (cache && all) {
+    return find(filter, { all, cache: false, interop, initial: found });
   }
 
   return all ? found : found[0];
@@ -152,13 +374,17 @@ export function findByIndex(id: number): any {
   return data.instance.c[id];
 }
 
-export function findLazy(filter: (...args: any[]) => any, { all = false, interop = true } = {}) {
-  const cache = find(filter, { all, interop });
+export function findLazy(...filters: SearchFilter[]): Promise<any>;
+export function findLazy(...args: [...filters: SearchFilter[], options: LazyOptions]): Promise<any>;
+export function findLazy(...args: [...filters: SearchFilter[], options: LazyOptions] | SearchFilter[]) {
+  const [search, { all = false, interop = true }] = parseOptions<LazyOptions, SearchFilter[]>(args);
+  const cache = find(...search, { all, interop });
   if (cache) return Promise.resolve(cache);
 
-  const search = function (module) {
+  const filter = filters.combine(...search);
+  const validate: SearchFilter = (mdl, index) => {
     try {
-      return filter(module);
+      return filter(mdl, index);
     } catch {
       return false;
     }
@@ -167,13 +393,13 @@ export function findLazy(filter: (...args: any[]) => any, { all = false, interop
   const found = [];
 
   return new Promise(resolve => {
-    const listener = (m) => {
-      if (search(m)) {
-        found.push(m);
+    const listener = (mdl: any) => {
+      if (validate(mdl)) {
+        found.push(mdl);
       }
 
-      if (m.default && search(m.default)) {
-        const value = interop ? m.default : m;
+      if (mdl.default && validate(mdl.default)) {
+        const value = interop ? mdl.default : mdl;
         found.push(value);
       }
 
@@ -187,71 +413,111 @@ export function findLazy(filter: (...args: any[]) => any, { all = false, interop
   });
 }
 
+function _find(args: any[], options: DebugOptions, filter: Fn) {
+  const { bulk: _, wait, ...rest } = options;
+
+  if (options.bulk) {
+    return bulk(...args.map(a => filter(...a)), options);
+  } else if (wait) {
+    return findLazy(filter(...args), rest as WaitOptions);
+  } else {
+    return find(filter(...args), rest);
+  }
+}
+
 export function findByProps(...options: any[]): any {
-  const [props, { bulk = false, wait = false, ...rest }] = parseOptions(options);
+  const [props, opts] = parseOptions(options);
 
-  if (bulk) {
-    return exports.bulk(...props.map(p => filters.byProps(...p)), { wait, ...rest });
-  } else if (wait) {
-    return findLazy(filters.byProps(...props), rest);
-  }
-
-  return find(filters.byProps(...props), rest);
+  return _find(props, opts, filters.byProps);
 }
 
-export function findByString(...options: any[]): any {
-  const [strings, { bulk = false, iterop = true, wait = false, ...rest }] = parseOptions(options);
+export function findByPrototypes(...options: any[]): any {
+  const [props, opts] = parseOptions(options);
 
-  if (bulk) {
-    return exports.bulk(...strings.map(p => filters.byString(...p)), { wait, ...rest });
-  } else if (wait) {
-    return findLazy(filters.byString(...strings), rest);
-  }
-
-  return find(filters.byString(...strings), rest);
+  return _find(props, opts, filters.byPrototypes);
 }
+
+export function findByKeyword(...options: any[]): any {
+  const [name, { caseSensitive = false, ...rest }] = parseOptions(options);
+
+  return _find(name, rest, (keyword) => (mdl) => {
+    const mdls = [...Object.keys(mdl), ...Object.keys(mdl.__proto__)];
+
+    for (let i = 0; i < mdls.length; i++) {
+      const instance = mdls[i];
+
+      if (caseSensitive) {
+        if (~instance.indexOf(keyword)) {
+          return true;
+        }
+      } else {
+        const key = keyword.toLowerCase();
+
+        if (~instance.toLowerCase().indexOf(key)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  });
+}
+
+export function findStore(...options: any[]): any {
+  const [name, { short = false, ...rest }] = parseOptions(options);
+
+  return _find(name, { short, ...rest }, filters.byStoreName);
+}
+
+export function findByStrings(...options: any[]): any {
+  const [strings, { interop = true, ...rest }] = parseOptions(options);
+
+  return _find(strings, { interop, ...rest }, filters.byStrings);
+}
+
 
 export function findByDisplayName(...options: any[]): any {
-  const [displayName, { bulk = false, interop = true, deep = false, exact = true, wait = false, ...rest }] = parseOptions(options);
+  const [displayNames, { interop = true, deep = false, exact = true, ...rest }] = parseOptions(options);
 
-  if (bulk) {
-    return bulk(displayName.map(filters.byDisplayName, interop, deep, exact), { wait, ...rest });
-  } else if (wait) {
-    return findLazy(filters.byDisplayName(displayName[0], interop, deep, exact), rest);
-  }
-
-  return find(filters.byDisplayName(displayName[0], interop, deep, exact), rest);
+  return _find(displayNames, { interop, ...rest }, (displayName) => filters.byDisplayName(displayName, interop, deep, exact));
 }
 
-export function bulk(...options: any[]): any[] {
-  const [filters, { wait = false, ...rest }] = parseOptions(options);
-  if (!filters || !filters.length) return;
+export function bulk(...filters: BulkFilter[]): any[];
+export function bulk(...args: [...filters: BulkFilter[], options: Options]): any[];
+export function bulk(...args: [...filters: BulkFilter[], options: WaitOptions]): Promise<any[]>;
+export function bulk(...args: [...filters: BulkFilter[], options: Options | WaitOptions] | BulkFilter[]): any[] | Promise<any[]> {
+  const [search, { wait = false, ...rest }] = parseOptions<Options & WaitOptions, BulkFilter[]>(args);
+  if (!search || !search.length) return;
 
   let error = false;
-  const found = new Array(filters.length);
-  const search = wait ? findLazy : find;
-  const wrapped = filters.map(filter => (mdl) => {
-    try {
-      return filter(mdl);
-    } catch (e) {
-      if (!error) {
-        Logger.warn('Uncaught Exception with filter. This can cause lag spikes & slow startup times. Please handle any possible null cases in your filter.', e.message);
-        error = true;
-      }
+  const found = new Array(search.length);
+  const get = wait ? findLazy : find;
 
-      return false;
-    }
+  const wrapped: SearchFilter[] = search.map((filter) => {
+    const searcher = Array.isArray(filter) ? filters.combine(...search as SearchFilter[]) : filter;
+    return (mdl, id) => {
+      try {
+        return searcher(mdl, id);
+      } catch (e) {
+        if (!error) {
+          Logger.warn('Uncaught Exception with filter. This can cause lag spikes & slow startup times. Please handle any possible null cases in your filter.', e.message);
+          error = true;
+        }
+
+        return false;
+      }
+    };
   });
 
-  const res = search((module) => {
+  const res = get((mdl, id) => {
     for (let i = 0; i < wrapped.length; i++) {
       const filter = wrapped[i];
-      if (typeof filter !== 'function' || !filter(module) || found[i] != null) continue;
+      if (typeof filter !== 'function' || !filter(mdl, id) || found[i] != null) continue;
 
-      found[i] = module;
+      found[i] = mdl;
     }
 
-    return found.filter(String).length === filters.length;
+    return found.filter(String).length === search.length;
   }, rest);
 
   if (wait) {
@@ -264,7 +530,7 @@ export function bulk(...options: any[]): any[] {
 
 /* MISCELLANEOUS */
 export async function initialize(): Promise<void> {
-  if ((data.initialized as any as boolean) === true) return;
+  if (data.initialized) return;
 
   if (!window.__SPLASH__) {
     await waitForGlobal();
@@ -308,10 +574,11 @@ export async function initialize(): Promise<void> {
     Logger.error('Failed to initialize common modules.', e.message);
   }
 
-  data.initialized = Promise.resolve(true);
+  data.initialized = true;
 }
 
 export function shutdown(): void {
+  if (!data.initialized) return;
   delete window[data.global].push;
 
   Object.defineProperty(window[data.global], 'push', {
@@ -430,8 +697,12 @@ export function request(cache = true) {
   return res;
 }
 
-function parseOptions(args, filter = o => typeof o === 'object' && !Array.isArray(o)) {
-  return [args, filter(args[args.length - 1]) ? args.pop() : {}];
+function parseOptions<O, A extends any[] = string[]>(
+  args: [...A, any] | A,
+  filter = (last) => typeof last === 'object' && !Array.isArray(last),
+  fallback = {}
+): [A, O] {
+  return [args as A, filter(args[args.length - 1]) ? args.pop() : fallback];
 }
 
 function waitForGlobal(): Promise<void> {

@@ -2,7 +2,7 @@ import { filters, bulk } from '@webpack';
 import { Locale } from '@webpack/common';
 
 const Modules = bulk(
-  filters.byString('devtools-closed'),
+  filters.byStrings('devtools-closed'),
   filters.byProps('hideToken'),
   { wait: true }
 );
