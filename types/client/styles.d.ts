@@ -1,4 +1,4 @@
 declare module '*.css' {
-  const append: () => void;
-  const remove: () => void;
+   const append: () => void;
+   const remove: () => void;
 }

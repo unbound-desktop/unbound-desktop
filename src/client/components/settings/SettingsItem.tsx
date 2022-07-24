@@ -10,54 +10,54 @@ Styles.append();
 const Classes = findByProps('formText', 'description') || {};
 
 export interface SettingsItemProps {
-  children?: JSX.Element | JSX.Element[];
-  bottomMargin?: number;
-  endDivider?: boolean;
-  description?: string;
-  className?: string;
-  required?: boolean;
-  title?: string;
+   children?: JSX.Element | JSX.Element[];
+   bottomMargin?: number;
+   endDivider?: boolean;
+   description?: string;
+   className?: string;
+   required?: boolean;
+   title?: string;
 
-  [key: string]: any;
+   [key: string]: any;
 }
 
 export default class SettingsItem extends React.PureComponent<SettingsItemProps, {}> {
-  render() {
-    const { bottomMargin = 15, className, title, required, endDivider = true, children, description, ...rest } = this.props;
+   render() {
+      const { bottomMargin = 15, className, title, required, endDivider = true, children, description, ...rest } = this.props;
 
-    return (<>
-      <FormItem
-        {...rest}
-        title={title}
-        required={required}
-        className={[
-          className,
-          Flex.Direction.VERTICAL,
-          Flex.Justify.START,
-          Flex.Align.STRETCH,
-          Flex.Wrap.NO_WRAP,
-          'unbound-settings-item-form'
-        ].filter(Boolean).join(' ')}
-      >
-        {children}
-        {description && (
-          <FormText
-            className={classnames(
-              Classes.description,
-              'unbound-settings-item-text'
+      return (<>
+         <FormItem
+            {...rest}
+            title={title}
+            required={required}
+            className={[
+               className,
+               Flex.Direction.VERTICAL,
+               Flex.Justify.START,
+               Flex.Align.STRETCH,
+               Flex.Wrap.NO_WRAP,
+               'unbound-settings-item-form'
+            ].filter(Boolean).join(' ')}
+         >
+            {children}
+            {description && (
+               <FormText
+                  className={classnames(
+                     Classes.description,
+                     'unbound-settings-item-text'
+                  )}
+               >
+                  {description}
+               </FormText>
             )}
-          >
-            {description}
-          </FormText>
-        )}
-      </FormItem>
-      {endDivider ? <Divider
-        style={{ marginTop: bottomMargin }}
-        className='unbound-settings-item-divider'
-      /> : <div
-        style={{ marginTop: bottomMargin }}
-        className='unbound-settings-item-divider invisible'
-      />}
-    </>);
-  }
+         </FormItem>
+         {endDivider ? <Divider
+            style={{ marginTop: bottomMargin }}
+            className='unbound-settings-item-divider'
+         /> : <div
+            style={{ marginTop: bottomMargin }}
+            className='unbound-settings-item-divider invisible'
+         />}
+      </>);
+   }
 };

@@ -14,68 +14,68 @@ import * as Webpack from '@webpack';
 const Logger = createLogger();
 
 class Unbound {
-  apis: Record<string, any>;
-  webpack = Webpack;
-  managers: {
-    plugins: Managers.Plugins;
-  };
+   apis: Record<string, any>;
+   webpack = Webpack;
+   managers: {
+      plugins: Managers.Plugins;
+   };
 
-  async initialize(): Promise<void> {
-    (global.unbound as any) = this;
+   async initialize(): Promise<void> {
+      (global.unbound as any) = this;
 
-    Logger.log('Initializing...');
-    const start = performance.now();
+      Logger.log('Initializing...');
+      const start = performance.now();
 
-    this.apis = {
-      settings: Settings
-    };
+      this.apis = {
+         settings: Settings
+      };
 
-    // Initialize APIs
-    for (const api in this.apis) {
-      const instance = this.apis[api];
-      await instance.initialize();
-    }
+      // Initialize APIs
+      for (const api in this.apis) {
+         const instance = this.apis[api];
+         await instance.initialize();
+      }
 
-    this.managers = {
-      plugins: new Managers.Plugins()
-    };
+      this.managers = {
+         plugins: new Managers.Plugins()
+      };
 
-    this.managers.plugins.initialize();
+      this.managers.plugins.initialize();
 
-    Logger.log(`Initialized in ${Math.round(performance.now() - start)}ms.`);
-  }
+      Logger.log(`Initialized in ${Math.round(performance.now() - start)}ms.`);
+   }
 
-  async shutdown(): Promise<void> {
-    Logger.log('Shutting down...');
+   async shutdown(): Promise<void> {
+      Logger.log('Shutting down...');
 
-    this.managers.plugins.shutdown();
+      this.managers.plugins.shutdown();
 
-    await Webpack.shutdown();
+      await Webpack.shutdown();
 
-    // Clear require cache to allow for any code changes to apply
-    const parent = basename(resolve(__dirname, '..', '..', '..'));
-    const cache = Object.keys(require.cache).filter(c => ~c.indexOf(parent));
-    cache.map(c => delete require.cache[c]);
+      // Clear require cache to allow for any code changes to apply
+      const parent = basename(resolve(__dirname, '..', '..', '..'));
+      const cache = Object.keys(require.cache).filter(c => ~c.indexOf(parent));
+      cache.map(c => delete require.cache[c]);
 
-    delete global.unbound;
-    (global.unbound as any) = {
-      initialize: async () => {
-        const Webpack = require('@webpack');
-        await Webpack.initialize();
+      delete global.unbound;
+      (global.unbound as any) = {
+         initialize: async () => {
+            const Webpack = require('@webpack');
+            await Webpack.initialize();
 
-        const Client = require('./unbound');
-        const instance = new Client();
-        await instance.initialize();
-      },
-      restart: () => global.unbound.initialize(),
-      shutdown: () => { }
-    };
-  }
+            const Client = require('./unbound');
+            const instance = new Client();
+            await instance.initialize();
+         },
+         restart: () => global.unbound.initialize(),
+         shutdown: () => { }
+      };
+   }
 
-  async restart(): Promise<void> {
-    await this.shutdown();
-    await global.unbound?.initialize?.();
-  }
+   async restart(): Promise<void> {
+      await this.shutdown();
+      await global.unbound?.initialize?.();
+   }
 };
 
 export = Unbound;

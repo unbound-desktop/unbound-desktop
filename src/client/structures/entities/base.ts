@@ -3,41 +3,41 @@ import { createLogger } from '@common/logger';
 import { Colors } from '@constants';
 
 class Base {
-  public logger: ReturnType<typeof createLogger>;
-  public started: boolean;
-  public data: Manifest;
-  public folder: string;
-  public path: string;
-  public id: string;
+   public logger: ReturnType<typeof createLogger>;
+   public started: boolean;
+   public data: Manifest;
+   public folder: string;
+   public path: string;
+   public id: string;
 
-  start() {
+   start() {
 
-  }
+   }
 
-  stop() {
+   stop() {
 
-  }
+   }
 
-  _stop() {
-    
-  }
+   _stop() {
 
-  load() {
+   }
 
-  }
+   load() {
 
-  async reload() {
-    await this.stop();
-    await this.start();
-  }
+   }
 
-  get color() {
-    return Colors.BRAND;
-  }
+   async reload() {
+      await this.stop();
+      await this.start();
+   }
 
-  get manifest() {
-    return this.data;
-  }
+   get color() {
+      return Colors.BRAND;
+   }
+
+   get manifest() {
+      return this.data;
+   }
 }
 
 export = Base;

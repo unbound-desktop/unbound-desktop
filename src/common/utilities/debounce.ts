@@ -7,12 +7,12 @@
 */
 
 function debounce(func: (...args) => any, ms: number): (...args) => void {
-  let timer;
+   let timer;
 
-  return function (...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => func.apply(this, args), ms);
-  };
+   return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => func.apply(this, args), ms);
+   };
 };
 
 export = debounce;

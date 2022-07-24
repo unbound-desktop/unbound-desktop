@@ -7,11 +7,11 @@
  */
 
 function parseStyleObject(style: Record<any, any>, line: boolean = false): string {
-  if (!style || (typeof style !== 'object' && !Array.isArray(style))) {
-    throw new TypeError('parseStyleObject\'s first argument must be of type object');
-  }
+   if (!style || (typeof style !== 'object' && !Array.isArray(style))) {
+      throw new TypeError('parseStyleObject\'s first argument must be of type object');
+   }
 
-  return Object.entries(style).map(([a, b]) => `${a}: ${b};`).join(line ? '\n' : ' ');
+   return Object.entries(style).map(([a, b]) => `${a}: ${b};`).join(line ? '\n' : ' ');
 };
 
 export = parseStyleObject;

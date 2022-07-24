@@ -2,24 +2,24 @@ import { filters, bulk } from '@webpack';
 import { Locale } from '@webpack/common';
 
 const Modules = bulk(
-  filters.byStrings('devtools-closed'),
-  filters.byProps('hideToken'),
-  { wait: true }
+   filters.byStrings('devtools-closed'),
+   filters.byProps('hideToken'),
+   { wait: true }
 );
 
 export const data = {
-  name: 'DevTools Warning',
-  id: 'dev.devtoolsWarning',
-  default: false,
-  wait: false
+   name: 'DevTools Warning',
+   id: 'dev.devtoolsWarning',
+   default: false,
+   wait: false
 };
 
 export async function initialize() {
-  await Modules;
-  DiscordNative.window.setDevtoolsCallbacks(() => { }, () => { });
+   await Modules;
+   DiscordNative.window.setDevtoolsCallbacks(() => { }, () => { });
 }
 
 export async function shutdown() {
-  const [setDevToolsCallback, Manager] = await Modules;
-  setDevToolsCallback(Locale, Manager, DiscordNative);
+   const [setDevToolsCallback, Manager] = await Modules;
+   setDevToolsCallback(Locale, Manager, DiscordNative);
 }

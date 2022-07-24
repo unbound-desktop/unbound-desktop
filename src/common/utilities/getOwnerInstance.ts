@@ -9,23 +9,23 @@ import traverseType from './traverseType';
  * @return {object|void} Returns the owner instance, usually an object
  */
 function getOwnerInstace(node: Element, filter: (...args) => any = _ => true, stateNode: boolean = true) {
-  if (!node) return null;
-  const fiber = getReactInstance(node);
-  let current = fiber;
+   if (!node) return null;
+   const fiber = getReactInstance(node);
+   let current = fiber;
 
-  const matches = () => {
-    if (!current?.stateNode || typeof current.type === 'string') return false;
-    const type = traverseType(current);
-    if (!type) return false;
+   const matches = () => {
+      if (!current?.stateNode || typeof current.type === 'string') return false;
+      const type = traverseType(current);
+      if (!type) return false;
 
-    return type && filter(current?.stateNode);
-  };
+      return type && filter(current?.stateNode);
+   };
 
-  while (!matches()) {
-    current = current?.return;
-  }
+   while (!matches()) {
+      current = current?.return;
+   }
 
-  return stateNode ? current?.stateNode : current;
+   return stateNode ? current?.stateNode : current;
 };
 
 export = getOwnerInstace;

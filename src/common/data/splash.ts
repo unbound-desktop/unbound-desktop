@@ -1,10 +1,10 @@
 const modules = {
-  React: {
-    props: ['createElement', 'Component'],
-  },
-  ReactDOM: {
-    props: ['hydrate', 'findDOMNode']
-  }
+   React: {
+      props: ['createElement', 'Component'],
+   },
+   ReactDOM: {
+      props: ['hydrate', 'findDOMNode']
+   }
 };
 
 // @ts-ignore

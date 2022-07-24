@@ -1,30 +1,30 @@
 .unbound-settings-title {
-  display: flex;
-  margin-bottom: 20px;
+   display: flex;
+   margin-bottom: 20px;
 }
 
 .unbound-settings-category-switch {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding: 0 10px;
+   display: flex;
+   justify-content: space-between;
+   margin-top: 10px;
+   padding: 0 10px;
 }
 
 .unbound-settings-toast-color {
-  margin-left: auto;
-  margin-right: auto;
+   margin-left: auto;
+   margin-right: auto;
 }
 
 .unbound-settings-toast-category .unbound-category-content > div:first-child > div[class*='colorStandard'] {
-  display: none;
+   display: none;
 }
 
 .unbound-bd-category .unbound-category-header {
-  margin: 0 5px;
+   margin: 0 5px;
 }
 
 .unbound-settings-toast-category .unbound-category-content > div:first-child > div[class*='wrapper'] {
-  max-width: 512px;
-  padding-bottom: 50%;
-  margin: auto;
+   max-width: 512px;
+   padding-bottom: 50%;
+   margin: auto;
 }

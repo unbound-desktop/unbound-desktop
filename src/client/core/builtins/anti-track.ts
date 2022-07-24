@@ -6,69 +6,69 @@ const Patcher = create('unbound-anti-track');
 const Logger = createLogger('Anti-Track');
 
 const [
-  Metadata,
-  Analytics,
-  Properties,
-  Reporter
+   Metadata,
+   Analytics,
+   Properties,
+   Reporter
 ] = findByProps(
-  ['trackWithMetadata'],
-  ['AnalyticsActionHandlers'],
-  ['encodeProperties', 'track'],
-  ['submitLiveCrashReport'],
-  { bulk: true }
+   ['trackWithMetadata'],
+   ['AnalyticsActionHandlers'],
+   ['encodeProperties', 'track'],
+   ['submitLiveCrashReport'],
+   { bulk: true }
 );
 
 export const data = {
-  name: 'Anti-Track',
-  id: 'misc.antiTrack',
-  wait: false,
-  default: false
+   name: 'Anti-Track',
+   id: 'misc.antiTrack',
+   wait: false,
+   default: false
 };
 
 export function initialize() {
-  try {
-    patchMetadata();
-  } catch (e) {
-    Logger.error('Failed to patch metadata', e.message);
-  }
+   try {
+      patchMetadata();
+   } catch (e) {
+      Logger.error('Failed to patch metadata', e.message);
+   }
 
-  try {
-    patchAnalytics();
-  } catch (e) {
-    Logger.error('Failed to patch analytics', e.message);
-  }
+   try {
+      patchAnalytics();
+   } catch (e) {
+      Logger.error('Failed to patch analytics', e.message);
+   }
 
-  try {
-    patchProperties();
-  } catch (e) {
-    Logger.error('Failed to patch properties', e.message);
-  }
+   try {
+      patchProperties();
+   } catch (e) {
+      Logger.error('Failed to patch properties', e.message);
+   }
 
-  try {
-    patchReporter();
-  } catch (e) {
-    Logger.error('Failed to patch crash reporter', e.message);
-  }
+   try {
+      patchReporter();
+   } catch (e) {
+      Logger.error('Failed to patch crash reporter', e.message);
+   }
 }
 
 export function shutdown() {
-  Patcher.unpatchAll();
+   Patcher.unpatchAll();
 }
 
 function patchMetadata(): void {
-  Patcher.instead(Metadata, 'trackWithMetadata', () => { });
-  Patcher.instead(Metadata, 'trackWithGroupMetadata', () => { });
-  Patcher.instead(Metadata, 'trackWithGroupMetadata', () => { });
+   Patcher.instead(Metadata, 'trackWithMetadata', () => { });
+   Patcher.instead(Metadata, 'trackWithGroupMetadata', () => { });
+   Patcher.instead(Metadata, 'trackWithGroupMetadata', () => { });
 }
 
 function patchAnalytics(): void {
-  Patcher.instead(Analytics.AnalyticsActionHandlers, 'handleTrack', () => { });
+   Patcher.instead(Analytics.AnalyticsActionHandlers, 'handleTrack', () => { });
 }
 
 function patchProperties(): void {
-  Patcher.instead(Properties, 'track', () => { });
+   Patcher.instead(Properties, 'track', () => { });
 }
 
 function patchReporter(): void {
-  Patcher.instead(Reporter, 'submitLiveCrashReport', () => { });
+   Patcher.instead(Reporter, 'submitLiveCrashReport', () => { });
 }

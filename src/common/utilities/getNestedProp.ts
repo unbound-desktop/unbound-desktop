@@ -7,9 +7,9 @@
  */
 
 function getNestedProp(object: Record<any, any>, path: string): any {
-  return path.split('.').reduce((parent, key) => {
-    return parent && parent[key];
-  }, object);
+   return path.split('.').reduce((parent, key) => {
+      return parent && parent[key];
+   }, object);
 };
 
 export = getNestedProp;

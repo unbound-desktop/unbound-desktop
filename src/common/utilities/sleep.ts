@@ -6,7 +6,7 @@
  */
 
 function sleep(time: number): Promise<void> {
-  return new Promise(f => setTimeout(f, time));
+   return new Promise(f => setTimeout(f, time));
 }
 
 export = sleep;

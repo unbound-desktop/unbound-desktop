@@ -1,5 +1,5 @@
 {
-  "editor.tabSize": 2,
+  "editor.tabSize": 3,
   "javascript.autoClosingTags": true,
   "javascript.format.enable": true,
   "javascript.format.insertSpaceAfterCommaDelimiter": true,

@@ -6,12 +6,12 @@
  */
 
 function memoize<T extends Fn>(func: T): T {
-  let cache;
+   let cache;
 
-  return function (...args: any) {
-    cache ??= func.apply(this, args);
-    return cache;
-  } as T;
+   return function (...args: any) {
+      cache ??= func.apply(this, args);
+      return cache;
+   } as T;
 };
 
 export = memoize;

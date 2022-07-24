@@ -8,15 +8,15 @@ require('./nullbyte');
 require('../ipc/main');
 
 patch('unbound', (options: BrowserWindowConstructorOptions) => {
-  if (global.__ABORT__) return;
+   if (global.__ABORT__) return;
 
-  options.webPreferences ??= {};
-  options.webPreferences.contextIsolation = false;
-  options.webPreferences.nodeIntegration = true;
+   options.webPreferences ??= {};
+   options.webPreferences.contextIsolation = false;
+   options.webPreferences.nodeIntegration = true;
 });
 
 try {
-  CSP.remove();
+   CSP.remove();
 } catch {
-  console.error('Failed to remove CSP, expect issues.');
+   console.error('Failed to remove CSP, expect issues.');
 }

@@ -1,6 +1,6 @@
 interface Response {
-  element: HTMLElement;
-  remove: () => void;
+   element: HTMLElement;
+   remove: () => void;
 }
 
 /**
@@ -11,18 +11,18 @@ interface Response {
  * @return {object} Returns an object containing the removal function and the DOM element.
 */
 export function appendScript(id: string, url: string): Promise<Response> {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.id = id;
-    script.src = url;
-    script.onerror = reject;
-    script.onload = () => resolve({
-      element: script,
-      remove: () => script.remove()
-    });
+   return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.id = id;
+      script.src = url;
+      script.onerror = reject;
+      script.onload = () => resolve({
+         element: script,
+         remove: () => script.remove()
+      });
 
-    document.head.appendChild(script);
-  });
+      document.head.appendChild(script);
+   });
 }
 
 /**
@@ -34,22 +34,22 @@ export function appendScript(id: string, url: string): Promise<Response> {
  * @return {object} Returns an object containing the removal function and the DOM element.
 */
 export function appendStyle(id: string, instance: string, url: boolean = false): Response {
-  let element;
+   let element;
 
-  if (url) {
-    element = document.createElement('link');
-    element.rel = 'stylesheet';
-    element.href = instance;
-  } else {
-    element = document.createElement('style');
-    element.id = id;
-    element.textContent = instance;
-  }
+   if (url) {
+      element = document.createElement('link');
+      element.rel = 'stylesheet';
+      element.href = instance;
+   } else {
+      element = document.createElement('style');
+      element.id = id;
+      element.textContent = instance;
+   }
 
-  document.head.appendChild(element);
+   document.head.appendChild(element);
 
-  return {
-    element,
-    remove: () => element.remove()
-  };
+   return {
+      element,
+      remove: () => element.remove()
+   };
 }
