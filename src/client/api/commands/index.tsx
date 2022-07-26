@@ -248,7 +248,7 @@ export function shutdown() {
 
 export function register(options: CommandWithCommandName | CommandWithName) {
    const { command, name, description, executor, ...cmd } = options;
-   if (!command) return;
+   if ((!command && !name) || !description) return;
 
    commands.set(command, {
       type: 3,
