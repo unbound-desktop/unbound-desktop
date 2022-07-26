@@ -13,6 +13,10 @@ export enum IDs {
    BOT = '934019188450816000'
 }
 
+export const SplashQuotes = [
+   'Unleash the chains'
+];
+
 export const BuildInfo = JSON.parse(readFileSync(resolve(process.resourcesPath, 'build_info.json'), 'utf-8'));
 
 export enum IPCEvents {
