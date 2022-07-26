@@ -9,6 +9,45 @@ const Patcher = create('unbound-commands');
 
 import Icon from './components/SectionIcon';
 
+interface CommandOption {
+   serverLocalizedName?: string;
+   displayDescription?: string;
+   displayName?: string;
+   description: string;
+   choices?: any[];
+   name: string;
+   options: any;
+   type: number;
+}
+
+interface Command {
+   defaultMemberPermissions?: any;
+   serverLocalizedName?: string;
+   defaultPermission?: boolean;
+   options?: CommandOption[];
+   subCommandPath?: string;
+   applicationId?: string;
+   dmPermission?: boolean;
+   description: string;
+   inputType?: number;
+   listed?: boolean;
+   guildId?: string;
+   target?: number;
+   type?: number;
+   executor: Fn;
+   id?: string;
+}
+
+interface CommandWithName extends Command {
+   name: string;
+   command?: never;
+}
+
+interface CommandWithCommandName extends Command {
+   name?: never;
+   command: string;
+}
+
 const [
    CommandsStore,
    Icons,
@@ -207,21 +246,23 @@ export function shutdown() {
    Patcher.unpatchAll();
 }
 
-export function register(options) {
-   const { command, executor, ...cmd } = options;
+export function register(options: CommandWithCommandName | CommandWithName) {
+   const { command, name, description, executor, ...cmd } = options;
    if (!command) return;
 
    commands.set(command, {
       type: 3,
       target: 1,
-      id: command,
-      name: command,
+      id: command || name,
+      name: command || name,
+      displayName: command || name,
+      displayDescription: description,
       applicationId: section.id,
       options: [],
       __unbound: true,
       listed: true,
       dmPermission: true,
-      execute: () => { },
+      executor: () => { },
       ...cmd
    });
 }
