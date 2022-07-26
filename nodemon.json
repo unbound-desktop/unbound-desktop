@@ -1,9 +1,9 @@
 {
-  "ext": "*.*",
-  "exec": "swc src -d dist -D --delete-dir-on-start",
-  "ignore": [
-    "./dist",
-    "./.git/**",
-    "./node_modules/**"
-  ]
+   "ext": "*.*",
+   "exec": "swc src -d dist -D --delete-dir-on-start",
+   "ignore": [
+      "./dist",
+      "./.git/**",
+      "./node_modules/**"
+   ]
 }

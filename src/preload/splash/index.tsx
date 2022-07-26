@@ -1,7 +1,7 @@
 import { findInReactTree, getOwnerInstance } from '@utilities';
 import Unbound from './structures/unbound';
 import { SplashQuotes } from '@constants';
-import { React } from '@webpack/common';
+import React from 'react';
 
 import Style from './style.css';
 
