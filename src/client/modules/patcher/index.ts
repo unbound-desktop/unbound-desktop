@@ -271,20 +271,20 @@ function create(name: string) {
       before<
          M extends Record<P, Fn>,
          P extends PropOf<M>
-      >(mdl: M, func: P, callback: BeforeOverwrite<M[P]>) {
-         return before(name, mdl, func, callback);
+      >(mdl: M, func: P, callback: BeforeOverwrite<M[P]>, once: boolean = false) {
+         return before(name, mdl, func, callback, once);
       },
       instead<
          M extends Record<P, Fn>,
          P extends PropOf<M>
-      >(mdl: M, func: P, callback: InsteadOverwrite<M[P]>) {
-         return instead(name, mdl, func, callback);
+      >(mdl: M, func: P, callback: InsteadOverwrite<M[P]>, once: boolean = false) {
+         return instead(name, mdl, func, callback, once);
       },
       after<
          M extends Record<P, Fn>,
          P extends PropOf<M>
-      >(mdl: M, func: P, callback: AfterOverwrite<M[P]>) {
-         return after(name, mdl, func, callback);
+      >(mdl: M, func: P, callback: AfterOverwrite<M[P]>, once: boolean = false) {
+         return after(name, mdl, func, callback, once);
       },
       unpatchAll: () => unpatchAll(name),
    };
