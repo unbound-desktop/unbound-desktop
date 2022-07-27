@@ -36,6 +36,7 @@ export const listeners = new Set();
 export const common: Record<Common, any> | Record<any, any> = {};
 export const data = {
    initialized: false,
+   available: new Promise(() => { }),
    cache: {},
    global: 'webpackChunkdiscord_app',
    instance: null,
@@ -561,6 +562,7 @@ export async function initialize(): Promise<void> {
    }
 
    data.initialized = true;
+   data.available = Promise.resolve();
 }
 
 export function shutdown(): void {

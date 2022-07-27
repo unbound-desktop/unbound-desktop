@@ -1,5 +1,7 @@
 import { createLogger } from '@common/logger';
 
+import './menu';
+
 type Arguments<T extends Fn> = T extends (...args: infer P) => any ? P : any[];
 
 export type BeforeOverwrite<F extends Fn> = (context?: any, args?: Arguments<F>, original?: F) => Arguments<F> | void;
@@ -141,11 +143,10 @@ function override(patch: Patch) {
    };
 }
 
-function push(mdl: Record<string, any> | Function, func: string, type = Type.After): Patch {
+function push(mdl: Record<string, any> | Function, func: string): Patch {
    const patch = {
       mdl,
       func,
-      id: patches?.[type]?.length ?? 0,
       original: mdl[func],
       unpatch: () => {
          patch.mdl[patch.func] = patch.original;
@@ -187,11 +188,11 @@ function push(mdl: Record<string, any> | Function, func: string, type = Type.Aft
    return patch;
 }
 
-function get(mdl: Record<string, any> | Function, func: string, type = Type.After) {
+function get(mdl: Record<string, any> | Function, func: string) {
    const patch = patches.find(p => p.mdl === mdl && p.func === func);
    if (patch) return patch;
 
-   return push(mdl, func, type);
+   return push(mdl, func);
 }
 
 function patch<F extends Fn>(caller: string, mdl: Record<string, any> | Function, func: string, callback: BeforeOverwrite<F> | InsteadOverwrite<F> | AfterOverwrite<F>, type = Type.After, once = false): () => void {
@@ -209,7 +210,7 @@ function patch<F extends Fn>(caller: string, mdl: Record<string, any> | Function
       throw new ReferenceError(`function ${func} does not exist on the second argument (object or function)`);
    }
 
-   const current = get(mdl, func, type);
+   const current = get(mdl, func);
 
    const patch = {
       caller,
