@@ -40,18 +40,21 @@ export function connectComponent(Component: React.ComponentType<any>, id: string
 export function makeStore(id: string) {
    return {
       settings: Settings.settings[id] ?? {},
-      set: (key, value) => set(id, key, value),
-      get: (key, defaults) => get(id, key, defaults),
-      toggle: (key, defaults) => toggle(id, key, defaults)
+      set: (key: string, value: any) => set(id, key, value),
+      get: (key: string, defaults: any) => get(id, key, defaults),
+      toggle: (key: string, defaults: any) => toggle(id, key, defaults),
+      subscribe: (callback: Fn) => subscribe(id, callback),
+      unsubscribe: (callback: Fn) => unsubscribe(id, callback),
+      connectComponent: (component: React.ComponentType<any>, predicate?: Fn) => connectComponent(component, id, predicate)
    };
 }
 
-export function subscribe(id: string, callback: (...args) => any) {
+export function subscribe(id: string, callback: Fn) {
    listeners[id] ??= new Set();
    listeners[id].add(callback);
 }
 
-export function unsubscribe(id: string, callback: (...args) => any) {
+export function unsubscribe(id: string, callback: Fn) {
    listeners[id]?.delete(callback);
 
    if (listeners[id]?.size === 0) {
