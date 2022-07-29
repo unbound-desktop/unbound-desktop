@@ -2,6 +2,7 @@ import { connectComponent } from '@api/settings';
 import { Plug } from '@core/components/Icons';
 import { Flex } from '@components/discord';
 import * as Toasts from '@api/toasts';
+import { bind } from '@utilities';
 import Manager from './Manager';
 
 class Plugins extends Manager {
@@ -52,6 +53,7 @@ class Plugins extends Manager {
       return { addons, count: Object.values(addons).flat().length };
    }
 
+   @bind
    override onReload() {
       const missing = {
          unbound: [],
@@ -88,15 +90,15 @@ class Plugins extends Manager {
          }
 
          return content;
-      }).filter(Boolean) as any as JSX.Element;
+      }).filter(Boolean) as any as JSX.Element[];
 
-      if (!(res as any as []).length) return;
+      if (!res.length) return;
 
       Toasts.open({
          title: 'Missing plugins found:',
          icon: 'CheckmarkCircle',
          color: 'var(--info-positive-foreground)',
-         content: () => res
+         content: (): JSX.Element => res as any as JSX.Element
       });
    }
 }

@@ -133,7 +133,7 @@ function handleMenu(props, render) {
    return res;
 }
 
-Webpack.data.available.then(() => {
+function initialize() {
    const Opener = Webpack.findByProps('openContextMenuLazy');
 
    Patcher.instead('unbound-menu-patcher', Opener, 'openContextMenuLazy', (self, args, orig) => {
@@ -149,6 +149,9 @@ Webpack.data.available.then(() => {
 
       return orig.call(self, ...args);
    });
-});
+}
+
+// Offload patch to another thread as its not instantly needed
+setImmediate(() => Webpack.data.available.then(initialize));
 
 export default { instead, create, before, after, patches };
