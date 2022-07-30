@@ -27,7 +27,7 @@ export function appendScript(id: string, url: string): Promise<Response> {
 
 /**
  * @name appendStyle
- * @description Appends a style to the unbound's head.
+ * @description Appends a style to the document's head.
  * @param {string} id - The unique identifier for this style.
  * @param {string} instance - The CSS/URL string to apply to the DOM.
  * @param {boolean} [url=false] - Whether to treat the css as a URL rather than a stylesheet.
