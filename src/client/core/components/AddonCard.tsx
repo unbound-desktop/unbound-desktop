@@ -1,10 +1,9 @@
 import { Text, Switch, Anchor, FormText, Markdown, RelativeTooltip, Menu, Tooltip } from '@components/discord';
-import { ContextMenu, Layers, Locale } from '@webpack/common';
+import { ContextMenu, Dispatcher, Locale, Constants } from '@webpack/common';
 import { Author } from '@client/managers/base';
 import { bind, classnames } from '@utilities';
-import { Colors } from '@constants';
+import { Users } from '@webpack/api';
 import { Icon } from '@components';
-import { DMs } from '@webpack/api';
 import React from 'react';
 
 import { Plug, Bd } from './Icons';
@@ -141,9 +140,14 @@ export default class AddonCard extends React.Component<AddonCardProps> {
             res.push(hasId ?
                <Anchor
                   className='unbound-addon-author'
-                  onClick={() => {
-                     Layers?.popLayer?.();
-                     DMs?.openPrivateChannel?.([author.id ?? author.discord_id]);
+                  onClick={async () => {
+                     const id = author.id ?? author.discord_id;
+
+                     await Users?.getUser(id);
+                     Dispatcher.dirtyDispatch({
+                        type: Constants.ActionTypes.USER_PROFILE_MODAL_OPEN,
+                        userId: id
+                     });
                   }}
                >
                   {author.name}
