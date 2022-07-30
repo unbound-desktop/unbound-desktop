@@ -73,7 +73,7 @@ class Themes extends Manager {
          const content = [];
 
          for (const addon of addons) {
-            const name = this.resolve(addon, 'name');
+            const name = this.resolve(addon, client, 'name');
 
             content.push(<Flex
                direction={Flex.Direction.HORIZONTAL}

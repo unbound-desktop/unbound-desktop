@@ -96,6 +96,11 @@
    cursor: pointer;
 }
 
+.unbound-addon-control-button[data-is-disabled='true'] {
+   opacity: 0.5;
+   pointer-events: none;
+}
+
 .unbound-addon-control-button:hover {
    background: var(--background-modifier-hover);
    border-radius: 5px;

@@ -13,9 +13,10 @@ import Styles from '@styles/panels/addoncard.css';
 Styles.append();
 
 interface AddonCardProps {
-   type: string;
    openSettings: Fn;
    client: string;
+   type: string;
+   resolve: Fn;
    entity: any;
 }
 
@@ -38,49 +39,13 @@ export default class AddonCard extends React.Component<AddonCardProps> {
    }
 
    render() {
-      const { entity } = this.props;
+      const { entity, client, resolve } = this.props;
 
-      const name = (
-         entity.instance?._config?.info?.name ??
-         entity.manifest?.name ??
-         entity.displayName ??
-         entity.data?.name ??
-         entity.name ??
-         Locale.Messages.UNBOUND_ADDON_MISSING_NAME
-      );
-
-      const description = (
-         entity.instance?._config?.info?.description ??
-         entity.manifest?.description ??
-         entity.data?.description ??
-         entity.description ??
-         Locale.Messages.UNBOUND_ADDON_MISSING_DESCRIPTION
-      );
-
-      const author = (
-         entity.instance?._config?.info?.authors ??
-         entity.manifest?.author ??
-         entity.data?.authors ??
-         entity.getAuthor?.() ??
-         entity.author ??
-         Locale.Messages.UNBOUND_ADDON_MISSING_AUTHOR
-      );
-
-      const color = this.props.client === 'bd' ? '#3E82E5' : (
-         entity?.color ??
-         entity?.data?.color ??
-         entity?.instance?.color ??
-         Colors.BRAND
-      );
-
-      const version = (
-         entity.instance?._config?.info?.version ??
-         entity.manifest?.version ??
-         entity.getVersion?.() ??
-         entity.data?.version ??
-         entity.version ??
-         Locale.Messages.UNBOUND_ADDON_MISSING_VERSION
-      );
+      const author = resolve(entity, client, 'author', { raw: true });
+      const description = resolve(entity, client, 'description');
+      const version = resolve(entity, client, 'version');
+      const color = resolve(entity, client, 'color');
+      const name = resolve(entity, client, 'name');
 
       return (
          <Tooltip
@@ -137,6 +102,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
                            {p => <Icon
                               {...p}
                               onClick={() => this.props.openSettings()}
+                              data-is-disabled={!this.isEnabled}
                               name='Gear'
                               width={28}
                               height={28}
@@ -213,7 +179,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
       props.width ??= 16;
       props.height ??= 16;
 
-      switch (client.toLowerCase()) {
+      switch (client) {
          case 'bd':
             return <Bd {...props} />;
          case 'powercord':
@@ -224,7 +190,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
    }
 
    get isEnabled() {
-      const name = this.getName();
+      const name = this.getId();
       const global = this.getGlobal();
       const type = this.getType();
 
@@ -233,7 +199,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
    }
 
    delete() {
-      const name = this.getName();
+      const name = this.getId();
       const global = this.getGlobal();
       const type = this.getType();
 
@@ -242,7 +208,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
    }
 
    toggle() {
-      const name = this.getName();
+      const name = this.getId();
       const global = this.getGlobal();
       const type = this.getType();
 
@@ -252,7 +218,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
    }
 
    reload() {
-      const name = this.getName();
+      const name = this.getId();
       const global = this.getGlobal();
       const type = this.getType();
 
@@ -279,7 +245,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
    getType() {
       const { type, client } = this.props;
 
-      switch (client.toLowerCase()) {
+      switch (client) {
          case 'powercord':
             return type === 'plugins' ? 'pluginManager' : 'styleManager';
          case 'bd':
@@ -292,7 +258,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
    getGlobal() {
       const { client } = this.props;
 
-      switch (client.toLowerCase()) {
+      switch (client) {
          case 'powercord':
             return 'powercord';
          case 'bd':
@@ -303,36 +269,41 @@ export default class AddonCard extends React.Component<AddonCardProps> {
    }
 
    hasSettings() {
+      const { client, entity } = this.props;
       const id = this.getId();
-      const name = this.getName();
 
-      return this.isEnabled && (
-         this.props.entity.instance?.getSettingsPanel ??
-         this.props.entity.getSettingsPanel ??
-         [...window?.powercord?.api?.settings?.settings?.keys() ?? []].includes(id) ??
-         [...window?.powercord?.api?.settings?.settings?.values() ?? []].find?.(e => {
-            const searchable = [e.label, e.category];
-            if (searchable.includes(id) || searchable.includes(name)) {
+      switch (client) {
+         case 'powercord':
+            const settings = powercord.api.settings.settings;
+
+            if (settings.has(id)) {
                return true;
             }
-         })
-      );
-   }
 
-   getName() {
-      return (
-         this.props.entity.entityID ??
-         this.props.entity.id ??
-         this.props.entity.manifest?.name ??
-         this.props.entity.name
-      );
+            const values = [...settings.values()];
+            return values.find(e => {
+               const searchable = [e.label, e.category];
+
+               if (searchable.includes(id)) {
+                  return true;
+               }
+            });
+         case 'unbound':
+         case 'bd':
+            return entity.instance?.getSettingsPanel;
+      }
    }
 
    getId() {
-      return (
-         this.props.entity.id ??
-         this.props.entity.entityID ??
-         this.props.entity.name
-      );
+      const { client, entity } = this.props;
+
+      switch (client) {
+         case 'powercord':
+            return entity.entityID;
+         case 'bd':
+            return entity.name;
+         case 'unbound':
+            return entity.id;
+      }
    }
 };

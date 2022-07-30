@@ -1,12 +1,12 @@
 import { Text, Caret, Menu, FormTitle, RelativeTooltip, SearchBar, Popout } from '@components/discord';
-import { bind, capitalize, classnames } from '@utilities';
 import DOMWrapper from '@core/components/DOMWrapper';
 import AddonCard from '@core/components/AddonCard';
 import { ErrorBoundary, Icon } from '@components';
+import { bind, classnames } from '@utilities';
+import { Colors, Paths } from '@constants';
 import * as Settings from '@api/settings';
 import { Locale } from '@webpack/common';
 import * as Toasts from '@api/toasts';
-import { Paths } from '@constants';
 import { shell } from 'electron';
 import React from 'react';
 
@@ -183,6 +183,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
       return (
          <AddonCard
             type={this.type}
+            resolve={this.resolve}
             client={client}
             entity={entity}
             openSettings={() => this.setState({ settings: { entity, client } })}
@@ -204,8 +205,8 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
 
       const res = Object.entries(addons).flatMap(([client, value]: [string, any]) => {
          const entities = value.sort((a, b) => {
-            const first = this.resolve(a, 'name').toUpperCase();
-            const second = this.resolve(b, 'name').toUpperCase();
+            const first = this.resolve(a, client, 'name').toUpperCase();
+            const second = this.resolve(b, client, 'name').toUpperCase();
 
             return (first < second) ? -1 : (first > second) ? 1 : 0;
          });
@@ -219,7 +220,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
                for (const filter in filterable) {
                   if (!filterable[filter]) continue;
 
-                  const value = this.resolve(entity, filter)?.toLowerCase?.();
+                  const value = this.resolve(entity, client, filter)?.toLowerCase?.();
                   const query = search.toLowerCase();
 
                   if (value?.includes(query)) {
@@ -298,9 +299,9 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
 
    renderSettings() {
       const { client, entity } = this.state.settings;
-      const settings = this.resolve(entity, 'settings');
+      const settings = this.resolve(entity, client, 'settings');
       if (!this.state.breadcrumbs.length && entity) {
-         this.setState({ breadcrumbs: [this.resolve(entity, 'name')] });
+         this.setState({ breadcrumbs: [this.resolve(entity, client, 'name')] });
       }
 
       const router = {
@@ -315,7 +316,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
       };
 
       try {
-         const id = this.resolve(entity, 'id');
+         const id = this.resolve(entity, client, 'id');
 
          if (typeof settings === 'function') {
             const res = settings();
@@ -346,7 +347,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
             </ErrorBoundary>;
          }
       } catch (e) {
-         console.error(`Failed to open settings for ${this.resolve(entity, 'name')} (${client} addon)`, e);
+         console.error(`Failed to open settings for ${this.resolve(entity, client, 'name')} (${client} addon)`, e);
       }
    }
 
@@ -358,58 +359,24 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
    @bind
    onReload() { }
 
-   resolve(entity: Record<string, any>, filter: string) {
+   @bind
+   resolve(entity: Record<string, any>, client: string, filter: string, options: Record<string, any> = {}) {
       switch (filter) {
          case 'name':
-            return (
-               entity.instance?._config?.info?.name ??
-               entity.manifest?.name ??
-               entity.displayName ??
-               entity.data?.name ??
-               entity.name ??
-               Locale.Messages.UNBOUND_ADDON_MISSING_NAME
-            );
+            return this.resolveName(client, entity);
          case 'id':
-            return (
-               entity.id ??
-               entity.entityID ??
-               entity.name
-            );
+            return this.resolveId(client, entity);
          case 'description':
-            return (
-               entity.instance?._config?.info?.description ??
-               entity.manifest?.description ??
-               entity.data?.description ??
-               entity.description ??
-               Locale.Messages.UNBOUND_ADDON_MISSING_DESCRIPTION
-            );
+            return this.resolveDescription(client, entity);
          case 'author':
-            if (Array.isArray(entity.instance?._config?.info?.authors)) {
-               const authors = entity.instance._config.info.authors;
-               return authors.map(a => a?.name?.toLowerCase?.()).filter(Boolean).join(', ');
-            } else if (Array.isArray(entity.data?.author)) {
-               const authors = entity.data.author;
-               return authors.map(a => (a?.name ?? a)?.toLowerCase?.()).filter(Boolean).join(', ');
-            }
-
-            return (
-               entity.manifest?.author ??
-               entity.getAuthor?.() ??
-               entity.data?.author ??
-               entity.author ??
-               Locale.Messages.UNBOUND_ADDON_MISSING_AUTHOR
-            );
+            return this.resolveAuthors(client, entity, options);
          case 'version':
-            return (
-               entity.instance?._config?.info?.version ??
-               entity.getVersion?.() ??
-               entity.data?.version ??
-               entity.version ??
-               Locale.Messages.UNBOUND_ADDON_MISSING_VERSION
-            );
+            return this.resolveVersion(client, entity);
+         case 'color':
+            return this.resolveColor(client, entity);
          case 'settings':
-            const id = this.resolve(entity, 'id');
-            const name = this.resolve(entity, 'name');
+            const id = this.resolve(entity, client, 'id');
+            const name = this.resolve(entity, client, 'name');
 
             const powercord = window.powercord?.api?.settings;
 
@@ -434,6 +401,100 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
          default:
             return 'Not Found';
       }
+   }
+
+   resolveName(client: string, entity) {
+      const fallback = Locale.Messages.UNBOUND_ADDON_MISSING_NAME;
+
+      switch (client) {
+         case 'bd':
+            return entity.name ?? fallback;
+         case 'unbound':
+            return entity.data.name ?? fallback;
+         case 'powercord':
+            return entity.displayName ?? fallback;
+      }
+
+      return fallback;
+   }
+
+   resolveId(client: string, entity) {
+      switch (client) {
+         case 'bd':
+            return entity.name;
+         case 'powercord':
+            return entity.entityID;
+         case 'unbound':
+            return entity.id;
+      }
+   }
+
+   resolveDescription(client: string, entity) {
+      const fallback = Locale.Messages.UNBOUND_ADDON_MISSING_DESCRIPTION;
+
+      switch (client) {
+         case 'bd':
+            return entity.description ?? fallback;
+         case 'unbound':
+            return entity.data.description ?? fallback;
+         case 'powercord':
+            return entity.manifest.description ?? fallback;
+      }
+
+      return fallback;
+   }
+
+   resolveAuthors(client: string, entity, { raw = false }) {
+      const fallback = Locale.Messages.UNBOUND_ADDON_MISSING_AUTHOR;
+
+      switch (client) {
+         case 'bd':
+            const zlib = entity.instance._config?.info?.authors;
+            if (!raw && Array.isArray(zlib)) {
+               return zlib.map(a => a?.name?.toLowerCase()).filter(Boolean).join(', ');
+            }
+
+            return entity.getAuthor?.() ?? entity.author ?? fallback;
+         case 'unbound':
+            const authors = entity.data.authors;
+            if (!raw && Array.isArray(authors)) {
+               return authors.map(a => (a?.name ?? a)?.toLowerCase()).filter(Boolean).join(', ');
+            }
+
+            return entity.data.authors ?? fallback;
+         case 'powercord':
+            return entity.manifest.author ?? fallback;
+      }
+
+      return fallback;
+   }
+
+   resolveVersion(client: string, entity) {
+      const fallback = Locale.Messages.UNBOUND_ADDON_MISSING_VERSION;
+
+      switch (client) {
+         case 'bd':
+            return entity.getVersion?.() ?? entity.version ?? fallback;
+         case 'powercord':
+            return entity.manifest.version ?? fallback;
+         case 'unbound':
+            return entity.data.version ?? fallback;
+      }
+
+      return fallback;
+   }
+
+   resolveColor(client: string, entity) {
+      switch (client) {
+         case 'bd':
+            return '#3E82E5';
+         case 'powercord':
+            return entity.color ?? entity.manifest.color ?? Colors.BRAND;
+         case 'unbound':
+            return entity.data.color ?? Colors.BRAND;
+      }
+
+      return Colors.BRAND;
    }
 }
 
