@@ -12,7 +12,6 @@ if (fse.existsSync(temp)) fse.removeSync(temp);
 
 const bundle = path.resolve(root, 'dist');
 
-// Copy all preload/main/renderer handlers
 const dist = (() => {
    try {
       return fse.readdirSync(bundle);
@@ -56,15 +55,6 @@ try {
    log('success', 'Copied nullbyte binaries');
 } catch {
    log('error', 'Failed to copy nullbyte binaries');
-}
-
-for (const file of ['main', 'preload']) {
-   try {
-      fse.copySync(path.resolve(root, `${file}.js`), path.resolve(temp, `${file}.js`));
-      log('success', `Copied ${file} handler`);
-   } catch {
-      log('error', `Failed to copy ${file} handler`);
-   }
 }
 
 try {
