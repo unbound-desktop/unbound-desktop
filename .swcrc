@@ -20,7 +20,7 @@
             "unused": true,
             "ecma": "2020",
             "reduce_vars": true,
-            "reduce_funcs": false,
+            "reduce_funcs": true,
             "keep_classnames": true,
             "keep_fargs": false,
             "keep_fnames": true
