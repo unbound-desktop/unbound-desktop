@@ -11,6 +11,7 @@ interface Options {
    interop?: boolean;
    traverse?: string[];
    initial?: any[];
+   raw?: boolean;
 }
 
 interface LazyOptions {
@@ -280,7 +281,7 @@ export function removeListener(listener: (...args) => any) {
 export function find(...filters: SearchFilter[]): any;
 export function find(...args: [...filters: SearchFilter[], options: Options]): any;
 export function find(...args: [...filters: SearchFilter[], options: Options] | SearchFilter[]): any {
-   const [search, { all, cache = true, interop = true, initial }] = parseOptions<Options, SearchFilter[]>(args);
+   const [search, { all, cache = true, raw = false, interop = true, initial }] = parseOptions<Options, SearchFilter[]>(args);
 
    if (!search?.length) {
       throw new Error('Webpack searches require a filter to search by.');
@@ -316,14 +317,16 @@ export function find(...args: [...filters: SearchFilter[], options: Options] | S
       switch (typeof mdl) {
          case 'object':
             if (validate(mdl, id)) {
-               data.cache[id] = mdl;
-               if (!all) return mdl;
-               found.push(mdl);
+               data.cache[id] = instance.c[id];
+
+               const payload = raw ? instance.c[id] : mdl;
+               if (!all) return payload;
+               found.push(payload);
             }
 
             if (mdl.default && validate(mdl.default, id)) {
-               data.cache[id] = mdl;
-               const value = interop ? mdl.default : mdl;
+               data.cache[id] = instance.c[id];
+               const value = raw ? instance.c[id] : interop ? mdl.default : mdl;
 
                if (!all) return value;
                found.push(value);
@@ -332,18 +335,20 @@ export function find(...args: [...filters: SearchFilter[], options: Options] | S
             break;
          default:
             if (!validate(mdl, id)) continue;
-            data.cache[id] = mdl;
-            if (!all) return mdl;
-            found.push(mdl);
+            data.cache[id] = instance.c[id];
+
+            const payload = raw ? instance.c[id] : mdl;
+            if (!all) return payload;
+            found.push(payload);
 
             break;
       }
    }
 
    if (cache && !all && !found.length) {
-      return find(filter, { all, cache: false, interop });
+      return find(filter, { all, raw, cache: false, interop });
    } else if (cache && all) {
-      return find(filter, { all, cache: false, interop, initial: found });
+      return find(filter, { all, raw, cache: false, interop, initial: found });
    }
 
    return all ? found : found[0];
