@@ -494,18 +494,16 @@ class Webpack {
 
          const [
             Dispatcher,
-            { ActionTypes } = {},
             { getCurrentUser } = {}
          ] = await Webpack.findByProps(
             ['dirtyDispatch'],
-            ['API_HOST', 'ActionTypes'],
             ['getCurrentUser', 'getUser'],
             { cache: false, bulk: true, wait: true, forever: true }
          );
 
          const listener = function () {
             Logger.log('Initialization complete.');
-            Dispatcher.unsubscribe(ActionTypes.ACCESSIBILITY_SYSTEM_PREFERS_REDUCED_MOTION_CHANGED, listener.bind(Webpack));
+            Dispatcher.unsubscribe('ACCESSIBILITY_SYSTEM_PREFERS_REDUCED_MOTION_CHANGED', listener.bind(Webpack));
 
             const filters = [];
             for (const name in modules) {
@@ -546,7 +544,7 @@ class Webpack {
          if (getCurrentUser?.() !== void 0) {
             return listener();
          } else {
-            Dispatcher.subscribe(ActionTypes.ACCESSIBILITY_SYSTEM_PREFERS_REDUCED_MOTION_CHANGED, listener.bind(Webpack));
+            Dispatcher.subscribe('ACCESSIBILITY_SYSTEM_PREFERS_REDUCED_MOTION_CHANGED', listener.bind(Webpack));
          }
       }));
    }
