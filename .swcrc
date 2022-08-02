@@ -17,13 +17,19 @@
          "compress": {
             "booleans_as_integers": true,
             "dead_code": true,
+            "unused": true,
+            "ecma": "2020",
             "reduce_vars": true,
-            "reduce_funcs": true,
+            "reduce_funcs": false,
             "keep_classnames": true,
-            "keep_fargs": true
+            "keep_fargs": false,
+            "keep_fnames": true
          },
-         "keepClassnames": true,
-         "mangle": true
+         "mangle": {
+            "keepClassNames": true,
+            "keepFnNames": true,
+            "keepPrivateProps": true
+         }
       },
       "transform": {
          "react": {

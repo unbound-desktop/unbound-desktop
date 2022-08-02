@@ -13,6 +13,11 @@ export enum IDs {
    BOT = '934019188450816000'
 }
 
+export const Owners = {
+   // eternal#1000
+   eternal: '263689920210534400'
+};
+
 export const SplashQuotes = [
    'Unleash the chains'
 ];

@@ -1,16 +1,19 @@
+import { basename, join, resolve } from 'path';
 import * as Utilities from '@common/utilities';
 import { createLogger } from '@common/logger';
 import * as BuiltIns from '@core/builtins';
 import * as Patches from '@core/patches';
-import { basename, resolve } from 'path';
 import * as Managers from '@managers';
 import * as Webpack from '@webpack';
+import { createServer } from 'http';
 import Patcher from '@patcher';
 import * as APIs from '@api';
 
 const Logger = createLogger();
 
 class Unbound {
+   #sockets: any = new Set();
+   server: any;
    apis: Record<string, any>;
    utilities = Utilities;
    patcher = Patcher;
@@ -50,9 +53,20 @@ class Unbound {
       this.managers.plugins.initialize();
 
       Logger.log(`Initialized in ${Math.round(performance.now() - start)}ms.`);
+
+      // Offload server to another thread
+      this.#setupServer();
    }
 
    async shutdown(): Promise<void> {
+      // Destroy all pending HTTP sockets
+      for (const socket of this.#sockets) {
+         socket.destroy();
+         this.#sockets.delete(socket);
+      }
+
+      this.server?.close?.(() => Logger.debug('Server closed'));
+
       Logger.log('Shutting down...');
 
       this.managers.plugins.shutdown();
@@ -109,6 +123,56 @@ class Unbound {
    async restart(): Promise<void> {
       await this.shutdown();
       await global.unbound?.initialize?.();
+   }
+
+   #setupServer() {
+      this.server = createServer(this.#onRequest.bind(this));
+
+      this.server.on('connection', (socket) => {
+         this.#sockets.add(socket);
+
+         this.server.once('close', () => {
+            this.#sockets.delete(socket);
+         });
+      });
+
+      this.server.listen(9859, () => Logger.debug('Server running at port 9859'));
+   }
+
+   #onRequest(req, res) {
+      res.statusCode = 200;
+
+      const method = req.method.toLowerCase();
+      const path = req.url.split(/[?#]/);
+      const query = path[1];
+      const url = path[0];
+
+      res.setHeader('Access-Control-Allow-Origin', '*');
+
+      if (!url || url === '/') return res.end();
+
+      const route = join(__dirname, '..', 'routes', url);
+      if (!require.resolve(route)) {
+         res.statusCode = 404;
+         res.end();
+      } else {
+         try {
+            const instance = require(route);
+
+            // 405 Method Not Allowed
+            if (!instance[method]) {
+               res.statusCode = 405;
+               return res.end();
+            }
+
+            instance[method](this, req, res, query);
+         } catch (e) {
+            // Well, shit.
+            Logger.error(`Router failed to route request. (URL: ${url})`, e);
+            res.statusCode = 500;
+            res.end();
+         }
+      }
    }
 };
 

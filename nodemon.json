@@ -1,6 +1,6 @@
 {
    "ext": "*.*",
-   "exec": "swc src -d dist -D --delete-dir-on-start",
+   "exec": "swc src -d dist -D --delete-dir-on-start && curl -X POST http://localhost:9859/reload -s -f || true",
    "ignore": [
       "./dist",
       "./.git/**",
