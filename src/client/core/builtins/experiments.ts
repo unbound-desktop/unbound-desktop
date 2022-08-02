@@ -1,3 +1,4 @@
+import { Constants } from '@webpack/common';
 import { Users } from '@webpack/stores';
 import { create } from '@patcher';
 
@@ -17,13 +18,13 @@ export function initialize() {
       return new Proxy({}, {
          get(_, prop) {
             if (prop === 'hasFlag') {
-               return function (...args) {
-                  if (args[0] === 1) {
+               return function (flag) {
+                  if (flag === Constants.UserFlags.STAFF) {
                      unpatch();
                      return true;
                   }
 
-                  return res.hasFlag.apply(this, args);
+                  return res.hasFlag.call(this, flag);
                };
             }
 
