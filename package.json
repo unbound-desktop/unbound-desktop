@@ -17,7 +17,7 @@
    "license": "See LICENSE",
    "scripts": {
       "build": "swc src -d dist -D --delete-dir-on-start",
-      "package": "node scripts/pack.mjs",
+      "package": "pnpm build -s false && node scripts/pack.mjs",
       "dev": "nodemon"
    },
    "aliases": {
