@@ -1,5 +1,7 @@
 {
    "UNBOUND_ADDON_AUTHOR": "Author",
+   "UNBOUND_RESTART": "Restart",
+   "UNBOUND_RESTART_SETTING_DESC": "This setting requires a reload to apply, would you like to reload discord to apply this setting?",
    "UNBOUND_ADDON_FAILED_PLUGINS": "This plugin failed to load. Contact the author(s) for support.",
    "UNBOUND_ADDON_FAILED_THEMES": "This theme failed to load. Contact the author(s) for support.",
    "UNBOUND_ADDON_MANAGER_BD_TOOLTIP": "BetterDiscord {type}",
