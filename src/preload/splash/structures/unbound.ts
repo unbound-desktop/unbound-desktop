@@ -18,6 +18,7 @@ class Unbound {
    webpack = Webpack;
    managers: {
       plugins: Managers.Plugins;
+      themes: Managers.Themes;
    };
 
    async initialize(): Promise<void> {
@@ -37,10 +38,12 @@ class Unbound {
       }
 
       this.managers = {
-         plugins: new Managers.Plugins()
+         plugins: new Managers.Plugins(),
+         themes: new Managers.Themes(),
       };
 
       this.managers.plugins.initialize();
+      this.managers.themes.initialize();
 
       Logger.log(`Initialized in ${Math.round(performance.now() - start)}ms.`);
    }

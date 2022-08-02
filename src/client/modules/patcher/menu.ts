@@ -152,6 +152,8 @@ function initialize() {
 }
 
 // Offload patch to another thread as its not instantly needed
-setImmediate(() => Webpack.data.available.then(initialize));
+if (!window.__SPLASH__) {
+   setImmediate(() => Webpack.data.available.then(initialize));
+}
 
 export default { instead, create, before, after, patches };
