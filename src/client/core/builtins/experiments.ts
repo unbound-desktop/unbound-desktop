@@ -1,6 +1,7 @@
-import { findByProps } from '@webpack';
+import { Users } from '@webpack/stores';
+import { create } from '@patcher';
 
-const Developer = findByProps('isDeveloper');
+const Patcher = create('unbound-experiments');
 
 export const data = {
    name: 'Experiments',
@@ -10,27 +11,28 @@ export const data = {
 };
 
 export function initialize() {
-   Developer._isDeveloper = Developer.isDeveloper;
-   Object.defineProperty(Developer, 'isDeveloper', {
-      configurable: true,
-      get: () => true,
-      set: (value) => {
-         delete Developer.isDeveloper;
+   const unpatch = Patcher.after(Users, 'getCurrentUser', (_, __, res) => {
+      if (!res) return;
 
-         Object.defineProperty(Developer, 'isDeveloper', {
-            get: () => value,
-            configurable: true
-         });
-      },
+      return new Proxy({}, {
+         get(_, prop) {
+            if (prop === 'hasFlag') {
+               return function (...args) {
+                  if (args[0] === 1) {
+                     unpatch();
+                     return true;
+                  }
+
+                  return res.hasFlag.apply(this, args);
+               };
+            }
+
+            return res[prop];
+         }
+      });
    });
-
-   setImmediate(Developer.emitChange.bind(Developer));
 }
 
 export function shutdown() {
-   if (Developer._isDeveloper !== void 0) {
-      Developer.isDeveloper = Developer._isDeveloper;
-   }
-
-   setImmediate(Developer.emitChange.bind(Developer));
+   Patcher.unpatchAll();
 }
