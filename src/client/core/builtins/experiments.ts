@@ -8,6 +8,7 @@ export const data = {
    name: 'Experiments',
    id: 'dev.experiments',
    default: false,
+   restart: true,
    wait: false
 };
 
