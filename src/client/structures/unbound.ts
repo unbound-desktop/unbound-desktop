@@ -38,7 +38,7 @@ class Unbound {
          const name = api.toLowerCase();
 
          this.apis[name] = APIs[api];
-         await this.apis[name].initialize();
+         await this.apis[name].initialize?.();
       }
 
       this.managers = {

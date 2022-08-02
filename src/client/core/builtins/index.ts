@@ -63,9 +63,9 @@ export async function start(name: string) {
 
    try {
       if (instance.data.wait) {
-         await instance.initialize();
+         await instance.initialize?.();
       } else {
-         instance.initialize();
+         instance.initialize?.();
       }
 
       started[instance.data.id] = true;
@@ -84,9 +84,9 @@ export async function stop(name: string) {
 
    try {
       if (instance.data.wait) {
-         await instance.shutdown();
+         await instance.shutdown?.();
       } else {
-         instance.shutdown();
+         instance.shutdown?.();
       }
 
       delete started[instance.data.id];
