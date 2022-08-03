@@ -12,7 +12,7 @@ const modules = {
       ]
    },
    Dispatcher: {
-      props: ['_dispatch', 'dirtyDispatch']
+      props: ['_dispatch', 'dispatch']
    },
    Modals: {
       props: ['openModal', 'openModalLazy']
