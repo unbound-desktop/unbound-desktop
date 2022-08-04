@@ -1,4 +1,4 @@
-import { findByDisplayName, findByString } from '@webpack';
+import { findByDisplayName, findByStrings } from '@webpack';
 import React from 'react';
 
 const cache = {
@@ -25,7 +25,7 @@ class Icon extends React.PureComponent<IconProps> {
 
    static get Names() {
       if (!cache.webpack) {
-         cache.webpack = findByString('"currentColor"', { all: true });
+         cache.webpack = findByStrings('"currentColor"', { all: true });
 
          for (let i = 0; i < cache.webpack?.length; i++) {
             const mdl = cache.webpack[i];
