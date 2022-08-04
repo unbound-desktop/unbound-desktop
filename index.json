@@ -3,8 +3,8 @@
    "author": "eternal",
    "id": "eternal.unbound",
    "description": "A discord client aimed at giving the user control, stability, a beautiful appearance, and freeing them from the chains of other client modifications.",
-   "version": "1.1.2",
-   "updated": 1653748593486,
+   "version": "1.1.3",
+   "updated": 1659651330023,
    "main": "dist/main",
    "preload": "dist/preload",
    "changelog": {
@@ -14,14 +14,7 @@
             "type": "added",
             "title": "Added",
             "items": [
-               "Changelog API"
-            ]
-         },
-         {
-            "type": "fixed",
-            "title": "Refactor",
-            "items": [
-               "Refactored some internal APIs for performance"
+               "Customizable splash screen quotes!"
             ]
          }
       ]
