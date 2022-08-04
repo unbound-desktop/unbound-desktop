@@ -449,7 +449,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
 
       switch (client) {
          case 'bd':
-            const zlib = entity.instance._config?.info?.authors;
+            const zlib = entity.instance?._config?.info?.authors;
             if (!raw && Array.isArray(zlib)) {
                return zlib.map(a => a?.name?.toLowerCase()).filter(Boolean).join(', ');
             }
