@@ -28,3 +28,85 @@
    padding-bottom: 50%;
    margin: auto;
 }
+
+.unbound-settings-splash-quotes {
+   border-radius: 5px;
+   width: 100%;
+   height: auto;
+   display: flex;
+   flex-direction: column;
+   gap: .25rem;
+}
+
+.unbound-settings-splash-quote {
+   width: 100%;
+   text-overflow: ellipsis;
+   display: flex;
+   align-items: center;
+   padding: 7.5px;
+   border-radius: 5px;
+   color: var(--interactive-normal);
+}
+
+.unbound-settings-splash-quote:hover {
+   background: var(--background-modifier-hover);
+}
+
+.unbound-settings-splash-quote:hover {
+   color: var(--interactive-hover);
+}
+
+.unbound-settings-splash-quote.is-hovered .unbound-settings-splash-quote-remove {
+   opacity: 0.75;
+}
+
+.unbound-settings-splash-quote-remove {
+   text-transform: uppercase;
+   transition: opacity .1s;
+   font-size: .65rem;
+   margin-left: auto;
+   opacity: 0;
+}
+
+.unbound-settings-splash-quote-wrapper {
+   background: var(--background-secondary-alt);
+   border-radius: 5px;
+   display: flex;
+   align-items: center;
+   padding-right: 10px;
+   margin-top: 5px;
+}
+
+.unbound-settings-splash-quotes[data-count='0'] .unbound-settings-splash-quote-wrapper {
+   margin-top: 0 !important;
+}
+
+.unbound-settings-splash-quote-tooltip {
+   height: 18px;
+}
+
+.unbound-settings-splash-quote-add {
+   appearance: none;
+   width: 100%;
+   padding: 10px;
+   background: none;
+   color: var(--text-normal);
+   box-shadow: none;
+   border: none;
+}
+
+.unbound-settings-splash-quote-add-icon {
+   color: var(--interactive-normal);
+}
+
+.unbound-settings-splash-quote-add-icon:hover {
+   color: var(--interactive-hover);
+}
+
+.unbound-settings-splash-quote-add-icon:active {
+   color: var(--interactive-active);
+}
+
+.unbound-settings-splash-quote-add::placeholder {
+   color: var(--text-muted);
+}
