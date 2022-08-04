@@ -22,6 +22,8 @@ function init() {
    const Quotes = Settings.get('unbound', 'splashQuotes', ['Unleash the chains']);
    if (!Quotes.length) return;
 
+   const quote = Quotes[Quotes.length * Math.random() | 0];
+
    const oRender = Splash.prototype.render;
    Splash.prototype.render = function (...args) {
       const res = oRender.apply(this, args);
@@ -29,7 +31,7 @@ function init() {
       const children = findInReactTree(res, r => r.find?.(c => c?.props?.className === 'splash-status'));
       if (children) {
          children.splice(1, 0, <span className='unbound-splash-text'>
-            {Quotes[Quotes.length * Math.random() | 0]}
+            {quote}
          </span>);
       }
 
