@@ -97,6 +97,7 @@
 
 .unbound-settings-splash-quote-add-icon {
    color: var(--interactive-normal);
+   cursor: pointer;
 }
 
 .unbound-settings-splash-quote-add-icon:hover {
