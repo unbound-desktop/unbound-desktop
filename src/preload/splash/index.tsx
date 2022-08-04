@@ -1,8 +1,8 @@
 import { findInReactTree, getOwnerInstance } from '@utilities';
 import Unbound from './structures/unbound';
-import { SplashQuotes } from '@constants';
 import React from 'react';
 
+import * as Settings from '@common/settings';
 import Style from './style.css';
 
 function init() {
@@ -19,6 +19,9 @@ function init() {
 
    const Splash = splash.type;
 
+   const Quotes = Settings.get('unbound', 'splashQuotes', ['Unleash the chains']);
+   if (!Quotes.length) return;
+
    const oRender = Splash.prototype.render;
    Splash.prototype.render = function (...args) {
       const res = oRender.apply(this, args);
@@ -26,7 +29,7 @@ function init() {
       const children = findInReactTree(res, r => r.find?.(c => c?.props?.className === 'splash-status'));
       if (children) {
          children.splice(1, 0, <span className='unbound-splash-text'>
-            {SplashQuotes[SplashQuotes.length * Math.random() | 0]}
+            {Quotes[Quotes.length * Math.random() | 0]}
          </span>);
       }
 

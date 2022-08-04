@@ -1,14 +1,15 @@
-import { ErrorBoundary, Category, AsyncComponent, Divider } from '@components';
 import type Toast from '@api/toasts/components/Toast';
+
+import { ColorPicker, SettingsItem, SliderInput, Switch } from '@components/settings';
+import { ErrorBoundary, Category, AsyncComponent, Divider, Icon } from '@components';
+import { FormTitle, Tooltip } from '@components/discord';
 import { connectComponent } from '@api/settings';
 import { Locale, Colors } from '@webpack/common';
 import { memoize, parseColor } from '@utilities';
-import { FormTitle } from '@components/discord';
 import { filters, findLazy } from '@webpack';
 import * as Toasts from '@api/toasts';
 import React from 'react';
 
-import { ColorPicker, SliderInput, Switch } from '@components/settings';
 
 import Styles from '@styles/panels/general.css';
 import { Bd } from '@core/components/Icons';
@@ -37,7 +38,9 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
       this.state = {
          toasts: false,
          developer: false,
-         bd: false
+         splash: false,
+         bd: false,
+         splashAdd: ''
       };
    }
 
@@ -47,6 +50,7 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
             {Locale.Messages.UNBOUND_GENERAL}
          </FormTitle>
          {this.renderToasts()}
+         {this.renderSplash()}
          {this.renderDeveloper()}
          {this.renderBDSettings()}
       </ErrorBoundary>;
@@ -152,6 +156,80 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
             bottomMargin={7.5}
             endDivider={false}
          />
+         <div style={{ marginBottom: 2.5 }} />
+      </Category>;
+   }
+
+   renderSplash() {
+      const { settings } = this.props;
+
+      const quotes = settings.get('splashQuotes', ['Unleash the chains']);
+
+      return <Category
+         title={Locale.Messages.UNBOUND_SPLASH_SETTINGS_TITLE}
+         description={Locale.Messages.UNBOUND_SPLASH_SETTINGS_DESCRIPTION}
+         icon='Fullscreen'
+         className='unbound-settings-splash-category'
+         opened={this.state.splash}
+         onChange={() => this.setState(s => ({ ...s, splash: !s.splash }))}
+      >
+         <SettingsItem
+            title={Locale.Messages.UNBOUND_SPLASH_SETTINGS_QUOTES_TITLE}
+            endDivider={false}
+         >
+            <div className='unbound-settings-splash-quotes' data-count={quotes.length ?? 0}>
+               {Array.isArray(quotes) && quotes.map(quote =>
+                  <div
+                     onMouseEnter={e => (e.target as any).classList.add('is-hovered')}
+                     onMouseLeave={e => (e.target as any).classList.remove('is-hovered')}
+                     className='unbound-settings-splash-quote'
+                     onClick={() => {
+                        const idx = quotes.indexOf(quote);
+                        if (idx > -1) {
+                           quotes.splice(idx, 1);
+                           settings.set('splashQuotes', quotes);
+                        }
+                     }}
+                  >
+                     <span>{quote}</span>
+                     <span className='unbound-settings-splash-quote-remove'>
+                        {Locale.Messages.UNBOUND_SPLASH_SETTINGS_QUOTES_REMOVE}
+                     </span>
+                  </div>
+               )}
+               <div className='unbound-settings-splash-quote-wrapper'>
+                  <input
+                     placeholder={Locale.Messages.UNBOUND_SPLASH_SETTINGS_QUOTES_ADD}
+                     className='unbound-settings-splash-quote-add'
+                     onChange={e => this.setState({ splashAdd: e.target.value })}
+                     value={this.state.splashAdd}
+                  />
+                  <Tooltip
+                     className='unbound-settings-splash-quote-tooltip'
+                     text={Locale.Messages.UNBOUND_SPLASH_SETTINGS_QUOTES_TOOLTIP}
+                  >
+                     <div
+                        onClick={() => {
+                           if ([...this.state.splashAdd].filter(Boolean).length === 0) {
+                              return;
+                           }
+
+                           quotes.push(this.state.splashAdd);
+                           settings.set('splashQuotes', quotes);
+                           this.setState({ splashAdd: '' });
+                        }}
+                     >
+                        <Icon
+                           className='unbound-settings-splash-quote-add-icon'
+                           width={24}
+                           height={18}
+                           name='PlusCircle'
+                        />
+                     </div>
+                  </Tooltip>
+               </div>
+            </div>
+         </SettingsItem>
          <div style={{ marginBottom: 2.5 }} />
       </Category>;
    }

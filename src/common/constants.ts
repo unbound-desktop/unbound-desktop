@@ -18,10 +18,6 @@ export const Owners = {
    eternal: '263689920210534400'
 };
 
-export const SplashQuotes = [
-   'Unleash the chains'
-];
-
 export const BuildInfo = JSON.parse(readFileSync(resolve(process.resourcesPath, 'build_info.json'), 'utf-8'));
 
 export enum IPCEvents {
