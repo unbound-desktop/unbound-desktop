@@ -159,13 +159,9 @@ export namespace filters {
       };
    }
 
-   export function byStrings(...strings: string[]): SearchFilter;
-   export function byStrings(...args: [...strings: string[], def: boolean]): SearchFilter;
-   export function byStrings(...args: [...strings: string[], def: boolean] | string[]): SearchFilter {
-      const [strings, def] = parseOptions<boolean>(args, (l) => typeof l === 'boolean', false);
+   export function byStrings(...strings: string[]): SearchFilter {
       return (mdl) => {
-         mdl = def ? mdl.default : mdl;
-         if (!mdl || typeof mdl !== 'function') {
+         if (!mdl || typeof mdl !== 'function' || (mdl.__original?.toString ?? mdl.toString) !== Function.prototype.toString) {
             return false;
          }
 
