@@ -1,6 +1,5 @@
 import { Constants, Dispatcher } from '@webpack/common';
 import { Users } from '@webpack/stores';
-import { sleep } from '@utilities';
 import { create } from '@patcher';
 
 const Patcher = create('unbound-experiments');
@@ -19,7 +18,7 @@ export async function initialize() {
    data.cancelled = false;
 
    // Wait for dispatcher handlers
-   const events = Object.values(Dispatcher._dependencyGraph.nodes);
+   const events: any[] = Object.values(Dispatcher._dependencyGraph.nodes);
 
    // Don't run code block incase experiments is toggled before the above resolves
    if (data.cancelled) return;
