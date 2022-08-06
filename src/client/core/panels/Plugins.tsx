@@ -4,6 +4,7 @@ import { Flex } from '@components/discord';
 import * as Toasts from '@api/toasts';
 import { bind } from '@utilities';
 import Manager from './Manager';
+import React from 'react';
 
 class Plugins extends Manager {
    constructor(props) {

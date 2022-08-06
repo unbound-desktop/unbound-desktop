@@ -3,6 +3,7 @@ import { Plug } from '@core/components/Icons';
 import { Flex } from '@components/discord';
 import * as Toasts from '@api/toasts';
 import Manager from './Manager';
+import React from 'react';
 
 class Themes extends Manager {
    constructor(props) {
