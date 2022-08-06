@@ -2,6 +2,7 @@ import { Text, Switch, Anchor, FormText, Markdown, RelativeTooltip, Menu, Toolti
 import { ContextMenu, Dispatcher, Locale, Constants } from '@webpack/common';
 import { Author } from '@client/managers/base';
 import { bind, classnames } from '@utilities';
+import * as Toasts from '@api/toasts';
 import { Users } from '@webpack/api';
 import { Icon } from '@components';
 import React from 'react';
@@ -61,12 +62,43 @@ export default class AddonCard extends React.Component<AddonCardProps> {
                         id='delete'
                         color='colorDanger'
                         label={Locale.Messages.UNBOUND_DELETE}
-                        action={() => this.delete()}
+                        action={() => {
+                           try {
+                              this.delete();
+                           } catch (e) {
+                              Toasts.open({
+                                 title: Locale.Messages.UNBOUND_ADDON_FAILED_DELETE,
+                                 content: Locale.Messages.UNBOUND_ADDON_FAILED_DELETE_DESC.format({ addon: name }),
+                                 icon: 'Close',
+                                 color: 'var(--info-danger-foreground)',
+                                 timeout: 3500
+                              });
+                           }
+                        }}
                      />
                      <Menu.MenuItem
                         id='reload'
                         label={Locale.Messages.UNBOUND_RELOAD}
-                        action={() => this.reload()}
+                        action={() => {
+                           try {
+                              this.reload();
+                              Toasts.open({
+                                 title: Locale.Messages.UNBOUND_ADDON_RELOADED,
+                                 content: Locale.Messages.UNBOUND_ADDON_RELOADED_DESC.format({ addon: name }),
+                                 timeout: 2500,
+                                 icon: 'CheckmarkCircle',
+                                 color: 'var(--info-positive-foreground)',
+                              });
+                           } catch (e) {
+                              Toasts.open({
+                                 title: Locale.Messages.UNBOUND_ADDON_FAILED_RELOAD,
+                                 content: Locale.Messages.UNBOUND_ADDON_FAILED_RELOAD_DESC.format({ addon: name }),
+                                 icon: 'Close',
+                                 color: 'var(--info-danger-foreground)',
+                                 timeout: 3500,
+                              });
+                           }
+                        }}
                      />
                   </Menu.default>
                )}

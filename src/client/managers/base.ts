@@ -103,6 +103,19 @@ class Manager extends Emitter {
       }
    }
 
+   delete(id: Resolveable): void {
+      const entity = this.resolve(id);
+      if (!entity) throw new Error('Invalid entity.');
+
+      try {
+         fs.unlinkSync(entity.path);
+         this.unload(entity.id);
+      } catch (e) {
+         this.logger.error(`Failed to delete ${entity.id}`, e);
+         throw e;
+      }
+   }
+
    reload(id: Resolveable): Entity {
       const entity = this.resolve(id);
 
