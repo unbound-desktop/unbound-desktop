@@ -103,7 +103,7 @@ class Themes extends Manager {
       }
 
       Toasts.open({
-         title: Locale.Messages.UNBOUND_ADDONS_FOUND.format({ type: 'plugins' }),
+         title: Locale.Messages.UNBOUND_ADDONS_FOUND.format({ type: 'themes' }),
          icon: 'CheckmarkCircle',
          timeout: 5000,
          color: 'var(--info-positive-foreground)',
