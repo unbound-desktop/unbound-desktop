@@ -1,5 +1,11 @@
 {
    "UNBOUND_ADDON_AUTHOR": "Author",
+   "UNBOUND_ADDON_FAILED_DELETE": "Failed to delete",
+   "UNBOUND_ADDON_FAILED_DELETE_DESC": "Couldn't delete {addon}, is it being used by another proccess?",
+   "UNBOUND_ADDON_FAILED_RELOAD": "Failed to reload",
+   "UNBOUND_ADDON_RELOADED": "Reloaded",
+   "UNBOUND_ADDON_RELOADED_DESC": "{addon} was successfully reloaded.",
+   "UNBOUND_ADDON_FAILED_RELOAD_DESC": "Couldn't reload {addon}, check DevTools for more information.",
    "UNBOUND_ADDON_FAILED_PLUGINS": "This plugin failed to load. Contact the author(s) for support.",
    "UNBOUND_ADDON_FAILED_THEMES": "This theme failed to load. Contact the author(s) for support.",
    "UNBOUND_ADDON_MANAGER_BD_TOOLTIP": "BetterDiscord {type}",
