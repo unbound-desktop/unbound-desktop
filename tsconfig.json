@@ -1,4 +1,8 @@
 {
+   "exclude": [
+      "typings",
+      "node_modules"
+   ],
    "compilerOptions": {
       "skipLibCheck": true,
       "checkJs": false,

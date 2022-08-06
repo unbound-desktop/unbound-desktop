@@ -1,12 +1,9 @@
 import Sheet from '@compilers/structures/stylesheet';
-import { createLogger } from '@common/logger';
 import { Theme } from '@entities';
 import { resolve } from 'path';
 import Base from './base';
 
 export default class Themes extends Base {
-   logger = createLogger('Managers', 'Themes');
-
    constructor() {
       super({
          name: 'Themes',

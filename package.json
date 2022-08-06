@@ -18,6 +18,7 @@
    "scripts": {
       "build": "swc src -d dist -D --delete-dir-on-start",
       "package": "pnpm build -s false && node scripts/pack.mjs",
+      "typings": "rm -rf typings & tsc -d --declarationDir typings --emitDeclarationOnly",
       "dev": "nodemon"
    },
    "aliases": {
