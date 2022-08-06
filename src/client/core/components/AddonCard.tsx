@@ -176,10 +176,10 @@ export default class AddonCard extends React.Component<AddonCardProps> {
                      const id = author.id ?? author.discord_id;
 
                      await Users?.getUser(id);
-                     Dispatcher.dirtyDispatch({
+                     Dispatcher.wait(() => Dispatcher.dispatch({
                         type: 'USER_PROFILE_MODAL_OPEN',
                         userId: id
-                     });
+                     }));
                   }}
                >
                   {author.name}
