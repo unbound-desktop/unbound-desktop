@@ -177,7 +177,7 @@ export default class AddonCard extends React.Component<AddonCardProps> {
 
                      await Users?.getUser(id);
                      Dispatcher.dirtyDispatch({
-                        type: Constants.ActionTypes.USER_PROFILE_MODAL_OPEN,
+                        type: 'USER_PROFILE_MODAL_OPEN',
                         userId: id
                      });
                   }}
