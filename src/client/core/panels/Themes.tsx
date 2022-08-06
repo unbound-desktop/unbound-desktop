@@ -1,6 +1,7 @@
 import { connectComponent } from '@api/settings';
 import { Plug } from '@core/components/Icons';
 import { Flex } from '@components/discord';
+import { Locale } from '@webpack/common';
 import * as Toasts from '@api/toasts';
 import Manager from './Manager';
 import React from 'react';
@@ -69,7 +70,7 @@ class Themes extends Manager {
          missing.powercord.push(...payload);
       }
 
-      const res = Object.entries(missing).map(([client, addons]) => {
+      const res = Object.entries(missing).flatMap(([client, addons]) => {
          if (!addons.length) return;
          const content = [];
 
@@ -89,15 +90,24 @@ class Themes extends Manager {
          }
 
          return content;
-      }).filter(Boolean) as any as JSX.Element;
+      }).filter(Boolean) as any as JSX.Element[];
 
-      if (!(res as any as []).length) return;
+      if (!res.length) {
+         return Toasts.open({
+            title: Locale.Messages.UNREADS_EMPTY_STATE_HEADER,
+            content: Locale.Messages.UNBOUND_ADDONS_MISSING_NONE,
+            color: 'var(--info-positive-foreground)',
+            timeout: 2500,
+            icon: 'CheckmarkCircle'
+         });
+      }
 
       Toasts.open({
-         title: 'Missing themes found:',
+         title: Locale.Messages.UNBOUND_ADDONS_FOUND.format({ type: 'plugins' }),
          icon: 'CheckmarkCircle',
+         timeout: 5000,
          color: 'var(--info-positive-foreground)',
-         content: () => res
+         content: (): JSX.Element => res as any as JSX.Element
       });
    }
 }

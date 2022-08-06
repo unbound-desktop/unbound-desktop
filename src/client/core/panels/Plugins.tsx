@@ -1,6 +1,7 @@
 import { connectComponent } from '@api/settings';
 import { Plug } from '@core/components/Icons';
 import { Flex } from '@components/discord';
+import { Locale } from '@webpack/common';
 import * as Toasts from '@api/toasts';
 import { bind } from '@utilities';
 import Manager from './Manager';
@@ -93,12 +94,21 @@ class Plugins extends Manager {
          return content;
       }).filter(Boolean) as any as JSX.Element[];
 
-      if (!res.length) return;
+      if (!res.length) {
+         return Toasts.open({
+            title: Locale.Messages.UNREADS_EMPTY_STATE_HEADER,
+            content: Locale.Messages.UNBOUND_ADDONS_MISSING_NONE,
+            color: 'var(--info-positive-foreground)',
+            timeout: 2500,
+            icon: 'CheckmarkCircle'
+         });
+      }
 
       Toasts.open({
-         title: 'Missing plugins found:',
+         title: Locale.Messages.UNBOUND_ADDONS_FOUND.format({ type: 'plugins' }),
          icon: 'CheckmarkCircle',
          color: 'var(--info-positive-foreground)',
+         timeout: 5000,
          content: (): JSX.Element => res as any as JSX.Element
       });
    }
