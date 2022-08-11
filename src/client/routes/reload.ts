@@ -1,7 +1,7 @@
 import { Owners } from '@common/constants';
 import { Users } from '@webpack/stores';
 
-export function post(instance, req, res) {
+export function post(instance, _, res) {
    const user = Users.getCurrentUser();
 
    if (user?.id && ~Object.values(Owners).indexOf(user.id)) {

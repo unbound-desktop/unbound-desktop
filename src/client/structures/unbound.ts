@@ -3,6 +3,7 @@ import * as Utilities from '@common/utilities';
 import { createLogger } from '@common/logger';
 import * as BuiltIns from '@core/builtins';
 import * as Patches from '@core/patches';
+import * as Updater from '@core/updater';
 import * as Managers from '@managers';
 import * as Webpack from '@webpack';
 import { createServer } from 'http';
@@ -18,6 +19,7 @@ class Unbound {
    utilities = Utilities;
    patcher = Patcher;
    webpack = Webpack;
+   updater = Updater;
    managers: {
       plugins: Managers.Plugins;
       themes: Managers.Themes;

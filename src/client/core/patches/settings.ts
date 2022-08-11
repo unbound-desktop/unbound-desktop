@@ -2,8 +2,9 @@ import { findByDisplayName } from '@webpack';
 import { Locale } from '@webpack/common';
 import { create } from '@patcher';
 
-import Plugins from '@core/panels/Plugins';
 import General from '@core/panels/General';
+import Updater from '@core/panels/Updater';
+import Plugins from '@core/panels/Plugins';
 import Themes from '@core/panels/Themes';
 
 const Patcher = create('unbound-settings');
@@ -45,6 +46,11 @@ export function initialize() {
             label: Locale.Messages.UNBOUND_THEMES,
             section: 'Unbound Themes',
             element: Themes
+         },
+         {
+            label: Locale.Messages.UNBOUND_UPDATER,
+            section: 'Unbound Updater',
+            element: Updater
          },
          {
             section: 'DIVIDER'
