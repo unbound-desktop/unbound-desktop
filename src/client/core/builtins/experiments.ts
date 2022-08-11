@@ -18,7 +18,7 @@ export async function initialize() {
    data.cancelled = false;
 
    // Wait for dispatcher handlers
-   const events: any[] = Object.values(Dispatcher._dependencyGraph.nodes);
+   const events: any[] = Object.values(Dispatcher._actionHandlers._dependencyGraph.nodes);
 
    // Don't run code block incase experiments is toggled before the above resolves
    if (data.cancelled) return;
@@ -47,7 +47,6 @@ export async function initialize() {
    function onDispatch() {
       // Call the dispatcher action handler with the spoofed flags to internally allow bucket overrides
       const ExperimentStore = events.find(h => h.name === 'ExperimentStore');
-      console.log(ExperimentStore);
       if (ExperimentStore) ExperimentStore.actionHandler.CONNECTION_OPEN({
          type: 'CONNECTION_OPEN',
          guildExperiments: [],
