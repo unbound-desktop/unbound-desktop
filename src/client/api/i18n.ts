@@ -21,6 +21,18 @@ export function initialize() {
 export function shutdown() {
    if (!Locale) return;
 
+   const context = Locale._provider._context;
+
+   for (const locale in state.messages) {
+      if (!state.messages[locale]) continue;
+
+      for (const message of Object.keys(state.messages[locale])) {
+         delete context.defaultMessages[message];
+         delete context.messages[message];
+         delete Locale.Messages[message];
+      }
+   }
+
    Locale.off('locale', onChange);
 }
 
