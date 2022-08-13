@@ -1,0 +1,65 @@
+name: Publish
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  GIT_AUTHOR_NAME: "eternal"
+  GIT_AUTHOR_EMAIL: "eternal.git@gmail.com"
+  GIT_COMMITTER_NAME: "eternal"
+  GIT_COMMITTER_EMAIL: "eternal.git@gmail.com"
+
+jobs:
+  release:
+      if: "!contains(github.event.head_commit.message, 'skip ci')"
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+
+        - uses: pnpm/action-setup@v2.0.1
+          with:
+            version: 6.20.1
+
+        - name: Use Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: 16
+            cache: 'pnpm'
+
+        - name: Reconfigure git to use HTTP authentication
+          run: >
+            git config --global url."https://github.com/".insteadOf
+            ssh://git@github.com/
+
+        - name: Install dependencies
+          run: |
+            git submodule update --init
+            pnpm i
+
+        - name: Build
+          run: |
+            git config --local user.email ${{ env.GIT_AUTHOR_EMAIL }}
+            git config --local user.name ${{ env.GIT_AUTHOR_NAME }}
+            git add ./dist/* --force
+            (git commit -m "Build source code.") || true
+            git push -f
+
+        - name: Build ASAR
+          run: pnpm run package
+
+        - name: Run Semantic Release
+          run: pnpm run release
+          env:
+            GH_TOKEN: ${{ secrets.GH_TOKEN }}
+            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+        - name: Bump version
+          run: |
+            node scripts/bump.mjs
+            git config --local user.email ${{ env.GIT_AUTHOR_EMAIL }}
+            git config --local user.name ${{ env.GIT_AUTHOR_NAME }}
+            git add index.json --force
+            (git commit -m "$(git describe --tags --abbrev=0) [skip ci]") || true
+            git push -f

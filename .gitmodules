@@ -1,0 +1,3 @@
+[submodule "src/client/i18n"]
+	path = src/client/i18n
+	url = https://github.com/unbound-mod/i18n

@@ -1,0 +1,41 @@
+{
+   "branches": [
+      "main",
+      "ci"
+   ],
+   "repositoryUrl": "https://github.com/unbound-mod/unbound",
+   "debug": "true",
+   "plugins": [
+      [
+         "@semantic-release/commit-analyzer",
+         {
+            "releaseRules": [
+               {
+                  "message": "**",
+                  "release": "patch"
+               }
+            ]
+         }
+      ],
+      [
+         "@semantic-release/github",
+         {
+            "assets": [
+               {
+                  "path": "unbound.asar",
+                  "label": "unbound.asar"
+               }
+            ]
+         }
+      ],
+      [
+         "@semantic-release/git",
+         {
+            "assets": [
+               "CHANGELOG.md"
+            ],
+            "message": "v${nextRelease.version} [skip ci]"
+         }
+      ]
+   ]
+}
