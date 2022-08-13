@@ -1,0 +1,55 @@
+name: Bundle & Release ASAR
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: unbound
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Get Version
+        run: |
+          VERSION=$(jq -r '.version' unbound/index.json)
+          echo "::set-output name=name::v$VERSION"
+          echo "::set-output name=tag::$VERSION"
+        id: version
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: latest
+
+      - name: Build ASAR
+        run: |
+          cd unbound
+          pnpm i
+          pnpm package
+
+      - name: Download Latest Release
+        uses: robinraju/release-downloader@v1.2
+        with:
+          repository: ${{ github.repository }}
+          latest: true
+          fileName: "*"
+          out-file-path: "./latest-release"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: hashFiles('latest-release/*') != hashFiles('unbound/dist/*')
+        name: Release
+        uses: softprops/action-gh-release@v0.1.13
+        with:
+          name: ${{ steps.version.outputs.name }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          files: "unbound/unbound.asar"
