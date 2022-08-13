@@ -1,18 +1,5 @@
 {
    "name": "unbound",
-   "version": "1.0.0",
-   "description": "A discord client aimed at giving the user control, stability, a beautiful appearance, and freeing them from the shackles of other client modifications.",
-   "keywords": [
-      "client modification",
-      "client mod",
-      "discord",
-      "discord client",
-      "discord mod",
-      "discord plugins",
-      "discord themes",
-      "themes",
-      "plugins"
-   ],
    "author": "eternal",
    "license": "See LICENSE",
    "scripts": {
