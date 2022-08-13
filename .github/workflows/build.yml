@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ rewrite ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
