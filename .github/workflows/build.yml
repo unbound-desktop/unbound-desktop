@@ -27,7 +27,7 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add ./dist/* --force
-          (git commit -m "Build source code.") || true
+          (git commit -m "[skip ci] Build source code.") || true
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
