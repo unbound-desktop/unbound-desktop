@@ -3,7 +3,7 @@
    "module": {
       "type": "commonjs"
    },
-   "sourceMaps": "inline",
+   "sourceMaps": false,
    "minify": true,
    "jsc": {
       "externalHelpers": false,
