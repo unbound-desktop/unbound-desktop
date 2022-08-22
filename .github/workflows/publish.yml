@@ -17,7 +17,6 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v3
-
         - uses: pnpm/action-setup@v2.0.1
           with:
             version: 6.20.1
@@ -26,7 +25,7 @@ jobs:
           uses: actions/setup-node@v3
           with:
             node-version: 16
-            cache: 'pnpm'
+            cache: "pnpm"
 
         - name: Reconfigure git to use HTTP authentication
           run: >
@@ -44,7 +43,7 @@ jobs:
             git config --local user.name ${{ env.GIT_AUTHOR_NAME }}
             git add ./dist/* --force
             (git commit -m "Build source code.") || true
-            git push -f
+            (git push) || true
 
         - name: Build ASAR
           run: pnpm run package
