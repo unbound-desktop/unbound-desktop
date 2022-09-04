@@ -41,6 +41,7 @@ jobs:
           run: |
             git config --local user.email ${{ env.GIT_AUTHOR_EMAIL }}
             git config --local user.name ${{ env.GIT_AUTHOR_NAME }}
+            pnpm build
             git add ./dist/* --force
             (git commit -m "Build source code.") || true
             (git push) || true
