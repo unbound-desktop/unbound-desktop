@@ -9,6 +9,13 @@ export const Paths = {
    settings: resolve(__dirname, '..', '..', '..', '..', 'unbound', 'settings')
 };
 
+export const ReleaseChannels = {
+   ptb: 'PTB',
+   canary: 'Canary',
+   stable: 'Stable',
+   development: 'Development'
+};
+
 export enum IDs {
    BOT = '934019188450816000'
 }

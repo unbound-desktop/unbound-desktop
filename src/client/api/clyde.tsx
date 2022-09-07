@@ -8,7 +8,7 @@ export function initialize() {
    void AsyncUsers.getUser(IDs.BOT);
 }
 
-export function send(message: MessageJSON, channel: string = SelectedChannels.getChannelId()) {
+export function send(message: Partial<MessageJSON>, channel: string = SelectedChannels.getChannelId()) {
    const payload = {
       ...Clyde.createBotMessage(channel, message?.content),
       state: 'SENT',
@@ -19,3 +19,5 @@ export function send(message: MessageJSON, channel: string = SelectedChannels.ge
 
    Messages?.receiveMessage(channel, payload);
 }
+
+export default { send, initialize };

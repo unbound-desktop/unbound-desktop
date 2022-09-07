@@ -55,7 +55,7 @@ export function addStrings(locale: string, strings: LocaleStrings) {
    inject();
 }
 
-export function inject() {
+function inject() {
    if (!state.locale || !Locale) return;
 
    const context = Locale._provider._context;
@@ -68,3 +68,5 @@ function onChange(locale) {
    state.locale = locale;
    Locale.loadPromise.then(inject);
 }
+
+export default { state, add, inject, addStrings };

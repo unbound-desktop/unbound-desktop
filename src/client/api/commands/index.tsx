@@ -1,7 +1,11 @@
+import type { Channel, Guild } from 'discord-types/general';
 import { createLogger } from '@common/logger';
 import { bulk, filters } from '@webpack';
+import { Messages } from '@webpack/api';
 import { classnames } from '@utilities';
 import { create } from '@patcher';
+import Core from '@core/commands';
+import Clyde from '@api/clyde';
 import React from 'react';
 
 const Logger = createLogger('API', 'Commands');
@@ -30,13 +34,17 @@ interface Command {
    dmPermission?: boolean;
    description: string;
    inputType?: number;
+   execute: Executor;
    listed?: boolean;
    guildId?: string;
    target?: number;
    type?: number;
-   executor: Fn;
    id?: string;
 }
+
+type ExecutorData = [args: any[], data: { channel: Channel, guild: Guild; }];
+
+type Executor = (...args: ExecutorData) => any;
 
 interface CommandWithName extends Command {
    name: string;
@@ -75,6 +83,9 @@ export const section = {
 };
 
 export function initialize() {
+   // Register core commands
+   register(...Core);
+
    try {
       Patcher.before(ChannelApplicationIcon, 'type', (_, [props]) => {
          if (!props.section && props.command.__unbound) {
@@ -237,6 +248,8 @@ export function initialize() {
 };
 
 export function shutdown() {
+   Core.map(c => unregister(c.name));
+
    try {
       delete CommandsStore.BUILT_IN_SECTIONS['unbound'];
    } catch (e) {
@@ -246,25 +259,46 @@ export function shutdown() {
    Patcher.unpatchAll();
 }
 
-export function register(options: CommandWithCommandName | CommandWithName) {
-   const { command, name, description, executor, ...cmd } = options;
-   if ((!command && !name) || !description) return;
+export function register(...cmds: CommandWithCommandName[] | CommandWithName[]) {
+   for (const options of cmds) {
+      const { name, description, execute, ...cmd } = options;
+      if (!name || !description) return;
 
-   commands.set(command, {
-      type: 3,
-      target: 1,
-      id: command || name,
-      name: command || name,
-      displayName: command || name,
-      displayDescription: description,
-      applicationId: section.id,
-      options: [],
-      __unbound: true,
-      listed: true,
-      dmPermission: true,
-      executor: () => { },
-      ...cmd
-   });
+      commands.set(name, {
+         type: 3,
+         target: 1,
+         id: name,
+         name: name,
+         displayName: name,
+         displayDescription: description,
+         applicationId: section.id,
+         options: [],
+         __unbound: true,
+         listed: true,
+         dmPermission: true,
+         execute: (...args: ExecutorData) => {
+            const res = execute?.(...args);
+
+            if (typeof res === 'object' && !Array.isArray(res)) {
+               if (!res.send) {
+                  return Clyde.send(res);
+               } else {
+                  Messages.sendMessage(args[1].channel.id, {
+                     invalidEmojis: [],
+                     tts: false,
+                     validNonShortcutEmojis: [],
+                     ...res
+                  });
+
+                  return;
+               }
+            }
+
+            return res;
+         },
+         ...cmd
+      });
+   }
 }
 
 export function unregister(id) {
