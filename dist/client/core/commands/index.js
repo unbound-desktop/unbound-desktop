@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),Object.defineProperty(exports,"default",{enumerable:!0,get:()=>d});const a=require("fs"),b=require("path"),c=[];(0,a.readdirSync)(__dirname).filter(a=>a!==(0,b.basename)(__filename)).map(a=>{let b=a.split(".");1!=b.length&&b.splice(b.length-1,1);let d=require(`${__dirname}/${a}`);c.push(d.default)});const d=c
