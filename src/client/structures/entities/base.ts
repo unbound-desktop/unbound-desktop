@@ -5,6 +5,7 @@ import { Colors } from '@constants';
 class Base {
    public logger: ReturnType<typeof createLogger>;
    public started: boolean;
+   public packed: boolean;
    public data: Manifest;
    public folder: string;
    public path: string;

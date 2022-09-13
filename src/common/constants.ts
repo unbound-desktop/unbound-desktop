@@ -63,7 +63,8 @@ export const Headers = {
 } as const;
 
 export const Colors = {
-   BRAND: '#C74050'
+   BRAND: '#C74050',
+   BD: '#3E82E5'
 } as const;
 
 export const LoggerStyles = {

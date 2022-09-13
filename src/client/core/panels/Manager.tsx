@@ -1,6 +1,5 @@
 import { Text, Caret, Menu, FormTitle, RelativeTooltip, SearchBar, Popout } from '@components/discord';
-import DOMWrapper from '@core/components/DOMWrapper';
-import AddonCard from '@core/components/AddonCard';
+import { DOMWrapper, AddonCard } from '@core/components';
 import { ErrorBoundary, Icon } from '@components';
 import { bind, classnames } from '@utilities';
 import { Colors, Paths } from '@constants';
@@ -487,7 +486,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
    resolveColor(client: string, entity) {
       switch (client) {
          case 'bd':
-            return '#3E82E5';
+            return Colors.BD;
          case 'powercord':
             return entity.color ?? entity.manifest.color ?? Colors.BRAND;
          case 'unbound':

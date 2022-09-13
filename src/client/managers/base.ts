@@ -301,7 +301,7 @@ class Manager extends Emitter {
       const addon = this.resolve(id);
       if (!addon) throw new Error('Invalid addon.');
 
-      const addons = Settings.get('unbound', 'addon-states', {});
+      const addons = Settings.get('unbound', 'addonStates', {});
       addons[this.id] ??= {};
       addons[this.id][addon.id] = false;
 
@@ -309,14 +309,14 @@ class Manager extends Emitter {
          this.stop(addon);
       }
 
-      return Settings.set('unbound', 'addon-states', addons);
+      return Settings.set('unbound', 'addonStates', addons);
    }
 
    enable(id: string) {
       const addon = this.resolve(id);
       if (!addon) throw new Error('Invalid addon.');
 
-      const addons = Settings.get('unbound', 'addon-states', {});
+      const addons = Settings.get('unbound', 'addonStates', {});
       addons[this.id] ??= {};
       addons[this.id][addon.id] = true;
 
@@ -324,14 +324,14 @@ class Manager extends Emitter {
          this.start(addon.folder);
       }
 
-      return Settings.set('unbound', 'addon-states', addons);
+      return Settings.set('unbound', 'addonStates', addons);
    }
 
    toggle(id: string) {
       const addon = this.resolve(id);
       if (!addon) throw new Error('Invalid addon.');
 
-      const addons = Settings.get('unbound', 'addon-states', {});
+      const addons = Settings.get('unbound', 'addonStates', {});
       addons[this.id] ??= {};
       addons[this.id][addon.id] = !(addons[this.id][addon.id] ?? false);
 
@@ -341,7 +341,7 @@ class Manager extends Emitter {
          this.stop(addon);
       }
 
-      Settings.set('unbound', 'addon-states', addons);
+      Settings.set('unbound', 'addonStates', addons);
       this.emit('toggle');
    }
 
@@ -349,7 +349,7 @@ class Manager extends Emitter {
       const addon = this.resolve(id);
       if (!addon) throw new Error('Invalid addon.');
 
-      return Settings.get('unbound', 'addon-states', {})[this.id]?.[addon.id] ?? false;
+      return Settings.get('unbound', 'addonStates', {})[this.id]?.[addon.id] ?? false;
    }
 
    resolvePayload(root: string, data: Record<string, any>, isSplash: boolean = false) {
@@ -394,6 +394,10 @@ class Manager extends Emitter {
          folder: {
             get: () => basename(path),
             set: () => this.logger.error('Folder changes are forbidden at runtime.')
+         },
+         packed: {
+            get: () => basename(path).endsWith('.asar'),
+            set: () => this.logger.error('Packed changes are forbidden at runtime.')
          }
       });
    };
