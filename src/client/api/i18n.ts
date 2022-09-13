@@ -44,9 +44,23 @@ export function add(strings: LocaleStrings) {
    for (const locale in strings) {
       addStrings(locale, strings[locale]);
    }
+
+   return {
+      remove: () => {
+         const context = Locale._provider._context;
+
+         for (const locale in strings) {
+            for (const message of Object.keys(strings[locale])) {
+               delete context.defaultMessages[message];
+               delete context.messages[message];
+               delete Locale.Messages[message];
+            }
+         }
+      }
+   };
 };
 
-export function addStrings(locale: string, strings: LocaleStrings) {
+function addStrings(locale: string, strings: LocaleStrings) {
    if (!state.locale) return;
 
    state.messages[locale] ??= {};
@@ -69,4 +83,4 @@ function onChange(locale) {
    Locale.loadPromise.then(inject);
 }
 
-export default { state, add, inject, addStrings };
+export default { state, add, inject };
