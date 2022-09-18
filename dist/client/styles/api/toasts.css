@@ -4,7 +4,7 @@
    align-items: center;
    justify-content: center;
    flex-direction: column;
-   z-index: 99999999999999999;
+   z-index: 999;
    margin: 15px;
 }
 
