@@ -50,6 +50,7 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
             {Locale.Messages.UNBOUND_GENERAL}
          </FormTitle>
          {this.renderToasts()}
+         {this.renderTweaks()}
          {this.renderSplash()}
          {this.renderDeveloper()}
          {this.renderBDSettings()}
@@ -131,6 +132,29 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
       </Category>;
    }
 
+   renderTweaks() {
+      const { settings } = this.props;
+
+      return <Category
+         title={Locale.Messages.UNBOUND_TWEAKS_SETTINGS_TITLE}
+         description={Locale.Messages.UNBOUND_TWEAKS_SETTINGS_DESCRIPTION}
+         icon='Science'
+         className='unbound-settings-tweaks-category'
+         opened={this.state.tweaks}
+         onChange={() => this.setState(s => ({ ...s, tweaks: !s.tweaks }))}
+      >
+         <Switch
+            title={Locale.Messages.UNBOUND_ANTI_TRACK_TITLE}
+            description={Locale.Messages.UNBOUND_ANTI_TRACK_DESCRIPTION}
+            checked={settings.get('tweaks.antiTrack', true)}
+            onChange={() => settings.toggle('tweaks.antiTrack', true)}
+            bottomMargin={7.5}
+            endDivider={false}
+         />
+         <div style={{ marginBottom: 2.5 }} />
+      </Category>;
+   }
+
    renderDeveloper() {
       const { settings } = this.props;
 
@@ -164,6 +188,18 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
       const { settings } = this.props;
 
       const quotes = settings.get('splashQuotes', ['Unleash the chains']);
+
+      const onSubmit = (e) => {
+         if (e.keyCode !== 13) return;
+
+         if ([...this.state.splashAdd].filter(Boolean).length === 0) {
+            return;
+         }
+
+         quotes.push(this.state.splashAdd);
+         settings.set('splashQuotes', quotes);
+         this.setState({ splashAdd: '' });
+      };
 
       return <Category
          title={Locale.Messages.UNBOUND_SPLASH_SETTINGS_TITLE}
@@ -199,26 +235,19 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
                )}
                <div className='unbound-settings-splash-quote-wrapper'>
                   <input
+                     type='text'
                      placeholder={Locale.Messages.UNBOUND_SPLASH_SETTINGS_QUOTES_ADD}
                      className='unbound-settings-splash-quote-add'
                      onChange={e => this.setState({ splashAdd: e.target.value })}
                      value={this.state.splashAdd}
+                     onSelect={() => document.addEventListener('keydown', onSubmit)}
+                     onBlur={() => document.removeEventListener('keydown', onSubmit)}
                   />
                   <Tooltip
                      className='unbound-settings-splash-quote-tooltip'
                      text={Locale.Messages.UNBOUND_SPLASH_SETTINGS_QUOTES_TOOLTIP}
                   >
-                     <div
-                        onClick={() => {
-                           if ([...this.state.splashAdd].filter(Boolean).length === 0) {
-                              return;
-                           }
-
-                           quotes.push(this.state.splashAdd);
-                           settings.set('splashQuotes', quotes);
-                           this.setState({ splashAdd: '' });
-                        }}
-                     >
+                     <div onClick={() => onSubmit({ keyCode: 13 })}>
                         <Icon
                            className='unbound-settings-splash-quote-add-icon'
                            width={24}
