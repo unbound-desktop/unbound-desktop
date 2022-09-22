@@ -1,1 +1,1 @@
-"use strict";const a=require("@webpack"),b=a.common.Stores;module.exports=b
+"use strict";const a=require("@webpack"),b=a.common.Stores;module.exports=new Proxy(b,{get(c,d){if(!b[d]){let e=(0,a.findStore)(d);return e&&(b[d]??=e),e}return b[d]}})

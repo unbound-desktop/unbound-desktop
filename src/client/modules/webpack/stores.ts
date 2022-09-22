@@ -1,6 +1,17 @@
-import Modules from '@common/data/modules';
-import { common } from '@webpack';
+import { findStore, common } from '@webpack';
 
-const out: Record<keyof typeof Modules.Stores.items, any> = common.Stores;
+const out: Record<string, any> = common.Stores;
 
-export = out;
+export = new Proxy(out, {
+   get(_, prop: string) {
+      if (!out[prop]) {
+         const payload = findStore(prop);
+
+         if (payload) out[prop] ??= payload;
+
+         return payload;
+      }
+
+      return out[prop];
+   }
+});
