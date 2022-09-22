@@ -426,7 +426,7 @@ export function findByPrototypes(...options: any[]): any {
 }
 
 export function findByKeyword(...options: any[]): any {
-   const [name, { caseSensitive = false, ...rest }] = parseOptions(options);
+   const [name, { caseSensitive = false, ...rest }] = parseOptions<Record<any, any>>(options);
 
    return _find(name, rest, (keyword) => (mdl) => {
       const mdls = [...Object.keys(mdl), ...Object.keys(mdl.__proto__)];
@@ -452,19 +452,19 @@ export function findByKeyword(...options: any[]): any {
 }
 
 export function findStore(...options: any[]): any {
-   const [name, { short = false, ...rest }] = parseOptions(options);
+   const [name, { short = false, ...rest }] = parseOptions<Record<any, any>>(options);
 
    return _find(name, { short, ...rest }, filters.byStoreName);
 }
 
 export function findByStrings(...options: any[]): any {
-   const [strings, { interop = true, ...rest }] = parseOptions(options);
+   const [strings, { interop = true, ...rest }] = parseOptions<Record<any, any>>(options);
 
    return _find(strings, { interop, ...rest }, filters.byStrings);
 }
 
 export function findByDisplayName(...options: any[]): any {
-   const [displayNames, { interop = true, deep = false, exact = true, ...rest }] = parseOptions(options);
+   const [displayNames, { interop = true, deep = false, exact = true, ...rest }] = parseOptions<Record<any, any>>(options);
 
    return _find(displayNames, { interop, ...rest }, (displayName) => filters.byDisplayName(displayName, interop, deep, exact));
 }

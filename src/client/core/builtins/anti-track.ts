@@ -20,9 +20,9 @@ const [
 
 export const data = {
    name: 'Anti-Track',
-   id: 'misc.antiTrack',
+   id: 'tweaks.antiTrack',
    wait: false,
-   default: false
+   default: true
 };
 
 export function initialize() {
