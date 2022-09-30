@@ -15,10 +15,9 @@ const oResolveFilename = PatchedModule._resolveFilename;
 PatchedModule._resolveFilename = function (request, parent, isMain, options) {
    if (!request) return oResolveFilename.call(this, request, parent, isMain, options);
 
-   const [name, location] = Object.entries<string>(aliases).find(([name]) => ~request.indexOf(name)) || [];
-   if (name && location) {
-      request = join(__dirname, '..', '..', location, request.substr(name.length));
-   }
+   const entries = Object.entries<string>(aliases);
+   const [name, location] = entries.find(([name]) => request === name) || entries.find(([name]) => request.startsWith(name)) || [];
+   if (name && location) request = join(__dirname, '..', '..', location, request.substr(name.length));
 
    return oResolveFilename.call(this, request, parent, isMain, options);
 };

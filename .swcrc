@@ -35,13 +35,16 @@
       "transform": {
          "react": {
             "useBuiltins": true
-         },
-         "optimizer": {
-            "simplify": true
          }
       },
       "baseUrl": "src",
       "paths": {
+         "react": [
+            "client/modules/react.ts"
+         ],
+         "react-dom": [
+            "client/modules/react-dom.ts"
+         ],
          "@client": [
             "client/index.ts"
          ],
@@ -59,6 +62,9 @@
          ],
          "@structures/*": [
             "client/structures/*"
+         ],
+         "@webpack": [
+            "client/modules/webpack/index.ts"
          ],
          "@webpack/*": [
             "client/modules/webpack/*"

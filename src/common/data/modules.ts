@@ -27,10 +27,7 @@ const modules = {
       ]
    },
    Locale: {
-      props: [
-         'Messages'
-      ],
-      ensure: (m) => Object.keys(m?.Messages ?? {}).length > 5
+      props: ['Messages']
    },
    HighlightJS: {
       props: ['highlight', 'NUMBER_MODE']
@@ -141,22 +138,17 @@ const modules = {
             displayName: 'TabBar'
          },
          Text: {
-            displayName: 'LegacyText'
+            filter: m => m.Sizes?.SIZE_32 && m.Colors
          },
          Flex: {
             displayName: 'Flex'
          },
          Tooltip: {
-            props: [
-               'TooltipContainer'
-            ],
-            prop: 'TooltipContainer'
+            prototypes: ['renderTooltip']
          },
          RelativeTooltip: {
-            props: [
-               'TooltipContainer'
-            ],
-            prop: 'default'
+            filter: m => Object.values(m)?.find((e: any) => e?.prototype?.renderTooltip),
+            map: m => Object.values(m).find((e: any) => !e.prototype?.renderTooltip && ~e.toString().indexOf('getOwnPropertySymbols'))
          },
          Menu: {
             props: [
@@ -181,7 +173,7 @@ const modules = {
             ]
          },
          SearchBar: {
-            displayName: 'SearchBar'
+            prototypes: ['blur', 'focus']
          },
          Scrollers: {
             props: [

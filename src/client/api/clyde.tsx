@@ -5,7 +5,7 @@ import { Clyde } from '@webpack/common';
 import { IDs } from '@constants';
 
 export function initialize() {
-   void AsyncUsers.getUser(IDs.BOT);
+   // void AsyncUsers.getUser(IDs.BOT);
 }
 
 export function send(message: Partial<MessageJSON>, channel: string = SelectedChannels.getChannelId()) {

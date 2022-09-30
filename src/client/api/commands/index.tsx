@@ -86,6 +86,8 @@ export function initialize() {
    // Register core commands
    register(...Core);
 
+   return;
+
    try {
       Patcher.before(ChannelApplicationIcon, 'type', (_, [props]) => {
          if (!props.section && props.command.__unbound) {
@@ -250,6 +252,7 @@ export function initialize() {
 export function shutdown() {
    Core.map(c => unregister(c.name));
 
+   return;
    try {
       delete CommandsStore.BUILT_IN_SECTIONS['unbound'];
    } catch (e) {

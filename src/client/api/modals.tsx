@@ -30,7 +30,9 @@ export function showConfirmModal(options: ConfirmModalProps) {
          {...options}
          {...props}
       >
-         <Markdown>{options.content}</Markdown>
+         <Markdown>
+            {options.content}
+         </Markdown>
       </ConfirmModal>
    );
 }

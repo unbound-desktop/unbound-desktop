@@ -1,16 +1,16 @@
 import { findByDisplayName } from '@webpack';
 
-const cache = {};
+const cache: Record<string, any> = {};
 
-export = new Proxy({}, {
-   get: function (_, prop) {
-      if (cache[prop]) return cache[prop];
+export = new Proxy(cache, {
+   get(_, prop: string) {
+      if (!cache[prop]) {
+         const name = prop.toString().replace('Raw', '');
+         const interop = !prop.toString().startsWith('Raw') ?? true;
 
-      const name = prop.toString().replace('Raw', '');
-      const res = findByDisplayName(name, { interop: !prop.toString().startsWith('Raw') ?? true });
+         cache[prop] ??= findByDisplayName(name, { interop });
+      }
 
-      if (res) cache[prop] = res;
-
-      return res;
+      return cache[prop];
    }
 });

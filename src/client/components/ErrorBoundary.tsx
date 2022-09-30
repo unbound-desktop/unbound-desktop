@@ -95,20 +95,8 @@ class ErrorBoundary extends React.PureComponent<ErrorBoundaryProps, ErrorBoundar
                   size={Text.Sizes.SIZE_16}
                   className='unbound-boundary-notice'
                >
-                  Oops, we had a fucky wucky.
+                  Oops, we couldn't render this.
                </Text>
-               <RelativeTooltip text='Retry'>
-                  {props => <Icon
-                     {...props}
-                     className='unbound-boundary-retry'
-                     name='Replay'
-                     width={32}
-                     height={32}
-                     onClick={() => this.setState({ error: false })}
-                  >
-                     Retry
-                  </Icon>}
-               </RelativeTooltip>
                {this.renderStack(js)}
                {this.renderStack(component)}
             </div>
@@ -118,52 +106,19 @@ class ErrorBoundary extends React.PureComponent<ErrorBoundaryProps, ErrorBoundar
       return this.props.children;
    }
 
-   renderStack({ name, state, description, icon }) {
-      const isOpen = this.state[`${state}Open`] ?? false;
+   renderStack({ state }) {
       const error = this.state[state];
-
       if (!error) return null;
 
       return (
-         <Card
-            onClick={() => this.setState<any>({ [`${state}Open`]: !isOpen })}
-            className='unbound-boundary-integration-card'
-         >
-            <div className='unbound-boundary-align'>
-               <IntegrationInfo
-                  name={name}
-                  icon={props => <Icon name={icon} {...props} />}
-                  details={[{ text: description }]}
-               />
-               <Icon
-                  name={`ArrowDrop${isOpen ? 'Up' : 'Down'}`}
-                  className='unbound-boundary-integration-icon'
-               />
-            </div>
-            {isOpen && <>
-               <Divider className='unbound-boundary-divider' />
-               {error.message && <Card
-                  type='card'
-                  className='unbound-boundary-error-wrapper'
-               >
-                  <Scrollers.AdvancedScrollerThin className='unbound-boundary-scroller'>
-                     <Text className='unbound-boundary-error-details'>
-                        {error.message}
-                     </Text>
-                  </Scrollers.AdvancedScrollerThin>
-               </Card>}
-               {error.stack && <Card
-                  type='card'
-                  className='unbound-boundary-error-wrapper'
-               >
-                  <Scrollers.AdvancedScrollerThin className='unbound-boundary-scroller'>
-                     <Text className='unbound-boundary-error-details'>
-                        {error.stack}
-                     </Text>
-                  </Scrollers.AdvancedScrollerThin>
-               </Card>}
-            </>}
-         </Card>
+         <div className='unbound-boundary-integration-card'>
+            {error.message && <div className='unbound-boundary-error-wrapper'>
+               {error.message}
+            </div>}
+            {error.stack && <div className='unbound-boundary-error-wrapper'>
+               {error.stack}
+            </div>}
+         </div>
       );
    }
 };

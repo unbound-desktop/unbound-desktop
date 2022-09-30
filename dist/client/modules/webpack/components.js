@@ -1,1 +1,1 @@
-"use strict";const a=require("@webpack"),b={};module.exports=new Proxy({},{get:function(c,d){if(b[d])return b[d];let e=d.toString().replace("Raw",""),f=(0,a.findByDisplayName)(e,{interop:!d.toString().startsWith("Raw")?? !0});return f&&(b[d]=f),f}})
+"use strict";const a=require("./index"),b={};module.exports=new Proxy(b,{get(c,d){if(!b[d]){let e=d.toString().replace("Raw",""),f=!d.toString().startsWith("Raw")?? !0;b[d]??=(0,a.findByDisplayName)(e,{interop:f})}return b[d]}})

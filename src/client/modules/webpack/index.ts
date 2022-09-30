@@ -1,7 +1,5 @@
 import type { Common } from '@common/data/modules';
 import { createLogger } from '@common/logger';
-import modules from '@common/data/modules';
-import splash from '@common/data/splash';
 
 const Logger = createLogger('Webpack');
 
@@ -17,6 +15,7 @@ interface Options {
 interface LazyOptions {
    all?: boolean;
    interop?: boolean;
+   raw?: boolean;
 }
 
 interface WaitOptions extends LazyOptions {
@@ -52,49 +51,12 @@ export const data = {
 /* FILTERS */
 export namespace filters {
    /*
-    * Searches a modules properties for matching keys.
-    *
-    * Props are caught with spread args and the options go last.
-    *
-    * ```js
-    * filters.byProps('getUser');
-    * filters.byProps('getUser', 'getCurrentUser');
-    * filters.byProps('getUser', 'getCurrentUser', true);
-    * filters.byProps('getUser', 'getCurrentUser', ['prototype']);
-    * filters.byProps('getUser', ['default', 'constructor']);
-    * ```
-    *
-    * If the last arg is `true` it will search in `exports.default`; meaning it will return the module outside of `default` meaning you can patch it.
-    *
-    * If the last arg is `string[]` it will traverse down the path provided. Example:
-    * filters.byProps('users', ['263689920210534400']) would access module.users['263689920210534400']
-    *
-    * If nothing is provided, normal behavior searches both `exports` and `exports.default` and returns inside whatever matches.
+    * Searches a module for matching keys.
     */
-   export function byProps(...props: string[]): SearchFilter;
-   export function byProps(...args: [...props: string[], def: boolean]): SearchFilter;
-   export function byProps(...args: [...props: string[], traverse: string[]]): SearchFilter;
-   export function byProps(...args: [...props: string[], traverse: boolean | string[]] | string[]): SearchFilter {
-      const filter = (l) => typeof l === 'boolean' || Array.isArray(l);
-      const [props, traverse] = parseOptions<string[] | boolean>(args, filter, false);
-
-      /* These computations are heavy so we avoid doing them in the module search. */
-      const def = traverse && typeof traverse === 'boolean';
-      const arr = !def && Array.isArray(traverse);
-
+   export function byProps(...props: string[]): SearchFilter {
       return (mdl) => {
-         if (def && mdl.default === undefined) {
-            return false;
-         }
-
          for (let i = 0, len = props.length; i < len; i++) {
-            if (arr) {
-               for (let i = 0, len = traverse.length; i < len; i++) {
-                  mdl = mdl?.[traverse[i]];
-               }
-            }
-
-            if ((def ? mdl.default : mdl)?.[props[i]] === undefined) {
+            if (mdl[props[i]] === void 0) {
                return false;
             }
          }
@@ -103,30 +65,13 @@ export namespace filters {
       };
    }
 
-   export function byPrototypes(...props: string[]): SearchFilter;
-   export function byPrototypes(...args: [...props: string[], def: boolean]): SearchFilter;
-   export function byPrototypes(...args: [...props: string[], traverse: string[]]): SearchFilter;
-   export function byPrototypes(...args: [...props: string[], traverse: boolean | string[]] | string[]): SearchFilter {
-      const filter = (l) => typeof l === 'boolean' || Array.isArray(l);
-      const [props, traverse] = parseOptions<string[] | boolean>(args, filter, false);
-
-      /* These computations are heavy so we avoid doing them in the module search. */
-      const def = traverse && typeof traverse === 'boolean';
-      const arr = !def && Array.isArray(traverse);
-
+   /*
+    * Searches a module for matching keys in its prototype.
+    */
+   export function byPrototypes(...props: string[]): SearchFilter {
       return (mdl) => {
-         if (def && mdl.default === undefined) {
-            return false;
-         }
-
          for (let i = 0, len = props.length; i < len; i++) {
-            if (arr) {
-               for (let i = 0, len = traverse.length; i < len; i++) {
-                  mdl = mdl?.[traverse[i]];
-               }
-            }
-
-            if ((def ? mdl.default : mdl)?.prototype?.[props[i]] === undefined) {
+            if (mdl.prototype?.[props[i]] === void 0) {
                return false;
             }
          }
@@ -181,22 +126,6 @@ export namespace filters {
 
    /**
     * A utility function for combining filters efficiently (by not recreating functions).
-    *
-    * For example, say you want to get a module with props 'icon', 'selectable', 'wrapper', and NOT props 'mask'.
-    *
-    * Your first attempt would probably end up with something like this:
-    * ```js
-    * (mdl) => !mdl.mask && filters.byProps('icon', 'selectable', 'wrapper')(mdl);
-    * ```
-    *
-    * This is actually very slow as it creates a "byProps" function everytime with spread args and option parsing.
-    *
-    * All we care about is the filter itself so using this function we can isolate and memoize that filter and have the combine function handle the merging.
-    *
-    * A more performant version of the above function would look something like this:
-    * ```js
-    * filters.combine((mdl) => !mdl.mask, filters.byProps('icon', 'selectable', 'wrapper'));
-    * ```
     */
    export function combine(...filters: SearchFilter[]): SearchFilter {
       return (mdl, id) => {
@@ -210,29 +139,8 @@ export namespace filters {
       };
    };
 
-   // TODO: "or" util
-
-   /**
-    * A utility function to make inverse logic easier with the combine utility function.
-    *
-    * In the combine example we use a simple `(mdl) => !mdl.mask` filter but if you were to want to use `byProps` in that case you would have to write it like:
-    * ```js
-    * filters.combine(((f) => (m) => !f(m))(filters.byProps('mask'), ...);
-    * ```
-    *
-    * This utility function lets you write this expression in a more prettier format.
-    * ```js
-    * filters.combine(filters.inverse(filters.byProps('mask')), ...);
-    * ```
-    */
-   export function inverse(filter: SearchFilter): SearchFilter {
-      return (mdl, id) => !filter(mdl, id);
-   }
-
    /**
     * A utility function to traverse down a prop or an collection of props before running the filter.
-    *
-    * Works the same way as the last arg of `byProps` but now it can be used with other filters.
     */
    export function traverse(filter: SearchFilter, props: string | string[]): SearchFilter {
       return (mdl, id) => {
@@ -328,6 +236,30 @@ export function find(...args: [...filters: SearchFilter[], options: Options] | S
                found.push(value);
             }
 
+            const descriptors = Object.getOwnPropertyDescriptors(mdl);
+            const getters = Object.keys(descriptors).filter(e => descriptors[e].get);
+
+            if (getters) {
+               for (const getter of getters) {
+                  const wrapped = mdl[getter];
+                  if (!wrapped) continue;
+
+                  if (wrapped.__esModule && wrapped.default && validate(wrapped.default, id)) {
+                     const value = raw ? mdl : interop ? wrapped.default : wrapped;
+
+                     if (!all) return value;
+                     found.push(value);
+                  }
+
+                  if (validate(wrapped, id)) {
+                     const value = raw ? mdl : wrapped;
+
+                     if (!all) return value;
+                     found.push(value);
+                  }
+               }
+            }
+
             break;
          default:
             if (!validate(mdl, id)) continue;
@@ -365,7 +297,7 @@ export function findByIndex(id: number): any {
 export function findLazy(...filters: SearchFilter[]): Promise<any>;
 export function findLazy(...args: [...filters: SearchFilter[], options: LazyOptions]): Promise<any>;
 export function findLazy(...args: [...filters: SearchFilter[], options: LazyOptions] | SearchFilter[]) {
-   const [search, { all = false, interop = true }] = parseOptions<LazyOptions, SearchFilter[]>(args);
+   const [search, { all = false, interop = true, raw = false }] = parseOptions<LazyOptions, SearchFilter[]>(args);
    const cache = find(...search, { all, interop });
    if (cache) return Promise.resolve(cache);
 
@@ -389,6 +321,26 @@ export function findLazy(...args: [...filters: SearchFilter[], options: LazyOpti
          if (mdl.default && validate(mdl.default)) {
             const value = interop ? mdl.default : mdl;
             found.push(value);
+         }
+
+         const descriptors = Object.getOwnPropertyDescriptors(mdl);
+         const getters = Object.keys(descriptors).filter(e => descriptors[e].get);
+
+         if (getters) {
+            for (const getter of getters) {
+               const wrapped = mdl[getter];
+               if (!wrapped) continue;
+
+               if (wrapped.__esModule && wrapped.default && validate(wrapped.default)) {
+                  const value = raw ? mdl : interop ? wrapped.default : wrapped;
+                  found.push(value);
+               }
+
+               if (validate(wrapped)) {
+                  const value = raw ? mdl : wrapped;
+                  found.push(value);
+               }
+            }
          }
 
          if (found.length) {
@@ -532,7 +484,7 @@ export async function initialize(): Promise<void> {
       });
 
       // Finish initialization when webpack modules are loaded
-      await findLazy(m => m.popLayer);
+      await findLazy(filters.byPrototypes('getPredicateSections'));
    } else {
       const oCall = Function.prototype.call;
 
@@ -556,12 +508,6 @@ export async function initialize(): Promise<void> {
       });
    }
 
-   try {
-      await initializeModules();
-   } catch (e) {
-      Logger.error('Failed to initialize common modules.', e.message);
-   }
-
    data.initialized = true;
    data.available = Promise.resolve();
 }
@@ -578,99 +524,6 @@ export function shutdown(): void {
          window[data.global].push = push;
       }
    });
-}
-
-async function initializeModules() {
-   const filters = [];
-   const payload = window.__SPLASH__ ? splash : modules;
-
-   for (const name in payload) {
-      const mdl = modules[name];
-
-      if (mdl.submodule) {
-         if (!mdl.items) continue;
-
-         const modules = {};
-         for (const entry in mdl.items) {
-            const item = mdl.items[entry];
-            const res = handleCommonModule(entry, item);
-            res.id = name;
-
-            const oResMap = res.map;
-            res.map = (mdl) => {
-               const res = oResMap?.(mdl) ?? mdl;
-               modules[entry] = res;
-               return modules;
-            };
-
-            filters.push(res);
-         }
-      } else {
-         const res = handleCommonModule(name, mdl);
-         filters.push(res);
-      }
-   }
-
-   const results = bulk(...filters.map(({ filter }) => filter));
-   filters.map(({ id, map }, index) => {
-      const mapper = map ?? (_ => _);
-      const res = mapper(results[index]);
-      common[id] = res;
-   });
-}
-
-function handleCommonModule(name: string, module: Record<string, any>): Record<string, any> {
-   if (module.storeName) {
-      return {
-         id: name,
-         filter: filters.byStoreName(module.storeName),
-         map: module.prop ? (mdl) => mdl[module.prop] : null
-      };
-   } else if (module.props) {
-      if (module.props.every(props => Array.isArray(props))) {
-         const found = [];
-
-         return {
-            id: name,
-            filter: (mdl) => {
-               const res = module.props.some(props => props.every(p => mdl[p] !== void 0));
-               if (res && module.ensure && !module.ensure(mdl)) {
-                  return false;
-               } else if (res) {
-                  found.push(mdl);
-               }
-
-               return res;
-            },
-            map: () => Object.assign({}, ...found)
-         };
-      } else {
-         return {
-            id: name,
-            filter: (mdl) => {
-               const res = filters.byProps(...module.props)(mdl);
-               if (res && module.ensure && !module.ensure(mdl)) {
-                  return false;
-               }
-
-               return res;
-            },
-            map: module.prop ? (mdl) => mdl[module.prop] : null
-         };
-      }
-   } else if (module.displayName) {
-      return {
-         id: name,
-         filter: filters.byDisplayName(module.displayName, module.default ?? true),
-         map: module.prop ? (mdl) => mdl[module.prop] : null
-      };
-   } else if (module.filter) {
-      return {
-         id: name,
-         filter: module.filter,
-         map: module.prop ? (mdl) => mdl[module.prop] : null
-      };
-   }
 }
 
 export function request(cache = true) {

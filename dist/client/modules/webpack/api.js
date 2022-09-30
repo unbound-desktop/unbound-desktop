@@ -1,1 +1,1 @@
-"use strict";const a=require("@webpack"),b=a.common.API;module.exports=b
+"use strict";const a=require("./index"),b=a.common.API??{};module.exports=b

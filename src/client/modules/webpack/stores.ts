@@ -1,17 +1,15 @@
-import { findStore, common } from '@webpack';
+import { findStore } from '@webpack';
 
-const out: Record<string, any> = common.Stores;
+const cache: Record<string, any> = {};
 
-export = new Proxy(out, {
+export = new Proxy(cache, {
    get(_, prop: string) {
-      if (!out[prop]) {
-         const payload = findStore(prop);
+      const name = prop.endsWith('Store') ? prop.slice(0, prop.length - 5) : prop;
 
-         if (payload) out[prop] ??= payload;
-
-         return payload;
+      if (!cache[name]) {
+         cache[name] ??= findStore(name);
       }
 
-      return out[prop];
+      return cache[name];
    }
 });

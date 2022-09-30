@@ -10,7 +10,10 @@ import { createServer } from 'http';
 import Patcher from '@patcher';
 import * as APIs from '@api';
 
-const Logger = createLogger();
+const Loggers = {
+   core: createLogger(),
+   api: createLogger('API')
+};
 
 class Unbound {
    #sockets: any = new Set();
@@ -28,7 +31,7 @@ class Unbound {
    async initialize(): Promise<void> {
       global.unbound = this;
 
-      Logger.log('Initializing...');
+      Loggers.core.log('Initializing...');
       const start = performance.now();
 
       // Initialize core patches
@@ -44,6 +47,7 @@ class Unbound {
 
          this.apis[name] = APIs[api];
          await this.apis[name].initialize?.();
+         Loggers.api.log(`Initialized ${name}.`);
       }
 
       this.managers = {
@@ -54,7 +58,7 @@ class Unbound {
       this.managers.themes.initialize();
       this.managers.plugins.initialize();
 
-      Logger.log(`Initialized in ${Math.round(performance.now() - start)}ms.`);
+      Loggers.core.log(`Initialized in ${Math.round(performance.now() - start)}ms.`);
 
       // Offload server to another thread
       this.#setupServer();
@@ -67,9 +71,9 @@ class Unbound {
          this.#sockets.delete(socket);
       }
 
-      this.server?.close?.(() => Logger.debug('Server closed'));
+      this.server?.close?.(() => Loggers.core.debug('Server closed'));
 
-      Logger.log('Shutting down...');
+      Loggers.core.log('Shutting down...');
 
       this.managers.plugins.shutdown();
       this.managers.themes.shutdown();
@@ -138,7 +142,7 @@ class Unbound {
          });
       });
 
-      this.server.listen(9859, () => Logger.debug('Server running at port 9859'));
+      this.server.listen(9859, () => Loggers.core.debug('Server running at port 9859'));
    }
 
    #onRequest(req, res) {
@@ -170,7 +174,7 @@ class Unbound {
             instance[method](this, req, res, query);
          } catch (e) {
             // Well, shit.
-            Logger.error(`Router failed to route request. (URL: ${url})`, e);
+            Loggers.core.error(`Router failed to route request. (URL: ${url})`, e);
             res.statusCode = 500;
             res.end();
          }

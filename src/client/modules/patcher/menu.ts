@@ -134,6 +134,7 @@ function handleMenu(props, render) {
 }
 
 function initialize() {
+   return;
    const Opener = Webpack.findByProps('openContextMenuLazy');
 
    Patcher.instead('unbound-menu-patcher', Opener, 'openContextMenuLazy', (self, args, orig) => {

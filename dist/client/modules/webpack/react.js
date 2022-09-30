@@ -1,1 +1,0 @@
-"use strict";const a=require("@webpack");module.exports=a.common.React

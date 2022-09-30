@@ -12,7 +12,7 @@ const [
    Reporter
 ] = findByProps(
    ['trackWithMetadata'],
-   ['AnalyticsActionHandlers'],
+   ['handleTrack'],
    ['encodeProperties', 'track'],
    ['submitLiveCrashReport'],
    { bulk: true }
@@ -62,7 +62,7 @@ function patchMetadata(): void {
 }
 
 function patchAnalytics(): void {
-   Patcher.instead(Analytics.AnalyticsActionHandlers, 'handleTrack', () => { });
+   Patcher.instead(Analytics, 'handleTrack', () => { });
 }
 
 function patchProperties(): void {

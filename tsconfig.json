@@ -24,7 +24,10 @@
             "client/styles/*"
          ],
          "react": [
-            "client/modules/webpack/react"
+            "client/modules/react"
+         ],
+         "react-dom": [
+            "client/modules/react-dom"
          ],
          "@structures/*": [
             "client/structures/*"
@@ -101,8 +104,11 @@
          "@compilers/*": [
             "preload/compilers/*"
          ],
-         "reactTypes": [
+         "react-types": [
             "../node_modules/@types/react"
+         ],
+         "react-dom-types": [
+            "../node_modules/@types/react-dom"
          ]
       }
    }

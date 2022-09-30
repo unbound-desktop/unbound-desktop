@@ -1,6 +1,8 @@
-import { findByDisplayName } from '@webpack';
+import { findByPrototypes } from '@webpack';
+import { ErrorBoundary } from '@components';
 import { Locale } from '@webpack/common';
 import { create } from '@patcher';
+import React from 'react';
 
 import General from '@core/panels/General';
 import Updater from '@core/panels/Updater';
@@ -9,7 +11,7 @@ import Themes from '@core/panels/Themes';
 
 const Patcher = create('unbound-settings');
 
-const SettingsView = findByDisplayName('SettingsView');
+const SettingsView = findByPrototypes('getPredicateSections');
 
 export function initialize() {
    if (!SettingsView?.prototype?.getPredicateSections) return;
@@ -21,7 +23,7 @@ export function initialize() {
       }
    });
 
-   Patcher.after(SettingsView.prototype, 'getPredicateSections', (_, args, res) => {
+   Patcher.after(SettingsView.prototype, 'getPredicateSections', (_, __, res) => {
       if (!res?.length) return;
 
       const connections = res.findIndex(r => r.label === Locale.Messages.APP_SETTINGS);
@@ -35,22 +37,30 @@ export function initialize() {
          {
             label: Locale.Messages.UNBOUND_GENERAL,
             section: 'Unbound',
-            element: General
+            element: () => <ErrorBoundary>
+               <General />
+            </ErrorBoundary>
          },
          {
             label: Locale.Messages.UNBOUND_PLUGINS,
             section: 'Unbound Plugins',
-            element: Plugins
+            element: () => <ErrorBoundary>
+               <Plugins />
+            </ErrorBoundary>
          },
          {
             label: Locale.Messages.UNBOUND_THEMES,
             section: 'Unbound Themes',
-            element: Themes
+            element: () => <ErrorBoundary>
+               <Themes />
+            </ErrorBoundary>
          },
          {
             label: Locale.Messages.UNBOUND_UPDATER,
             section: 'Unbound Updater',
-            element: Updater
+            element: () => <ErrorBoundary>
+               <Updater />
+            </ErrorBoundary>
          },
          {
             section: 'DIVIDER'

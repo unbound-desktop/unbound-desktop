@@ -19,8 +19,7 @@
 }
 
 .unbound-boundary-integration-card {
-   padding: 20px 16px;
-   margin-bottom: 16px;
+   padding: 0 20px;
 }
 
 .unbound-boundary-align {
@@ -29,10 +28,28 @@
 }
 
 .unbound-boundary-error-wrapper {
-   display: flex;
+   background: var(--background-secondary-alt);
+   overflow: overlay overlay;
+   color: var(--text-normal);
+   border-radius: 3px;
    margin-top: 15px;
+   white-space: pre;
+   display: flex;
+   padding: 10px;
    border: none;
-   background: var(--background-tertiary);
+}
+
+.unbound-boundary-error-wrapper::-webkit-scrollbar {
+   background-color: transparent;
+   width: 5px;
+   height: 5px;
+}
+
+.unbound-boundary-error-wrapper::-webkit-scrollbar-thumb {
+   border-radius: 15px;
+   background-color: var(--scrollbar-thin-thumb);
+   /* width: 18px;
+   height: 18px; */
 }
 
 .unbound-boundary-error-details {

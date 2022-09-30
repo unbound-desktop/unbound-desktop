@@ -31,7 +31,7 @@ export async function initialize() {
          get(_, prop) {
             if (prop === 'hasFlag') {
                return function (flag) {
-                  if (flag === Constants.UserFlags.STAFF) {
+                  if (flag === 1) {
                      return true;
                   }
 
