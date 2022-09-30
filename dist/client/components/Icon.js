@@ -1,1 +1,1 @@
-"use strict";const a=function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}(require("../modules/react"));class Icon extends a.default.PureComponent{render(){return null}}module.exports=Icon
+"use strict";const a=require("../core/components"),b=function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}(require("../modules/react"));class Icon extends b.default.PureComponent{render(){return b.default.createElement(a.Icons.Bd,Object.assign({},this.props))}}module.exports=Icon

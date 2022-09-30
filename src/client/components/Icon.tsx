@@ -1,3 +1,4 @@
+import { Icons } from '@core/components';
 import { findByDisplayName, findByStrings } from '@webpack';
 import React from 'react';
 
@@ -13,7 +14,8 @@ interface IconProps {
 
 class Icon extends React.PureComponent<IconProps> {
    render() {
-      return null;
+      return <Icons.Bd {...this.props} />;
+      // return null;
       // if (!this.props.name) return null;
 
       // const Icon = cache.components[this.props.name] ?? findByDisplayName(this.props.name);

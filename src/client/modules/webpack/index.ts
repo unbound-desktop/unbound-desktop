@@ -104,14 +104,36 @@ export namespace filters {
       };
    }
 
+   /*
+    * Searches function modules by strings in their function body.
+    */
    export function byStrings(...strings: string[]): SearchFilter {
+      return (mdl) => {
+         if (!mdl || typeof mdl !== 'function') {
+            return false;
+         }
+
+         for (let i = 0, len = strings.length; i < len; i++) {
+            if (!~(mdl.__original ?? mdl).toString?.()?.indexOf?.(strings[i])) {
+               return false;
+            }
+         }
+
+         return true;
+      };
+   };
+
+   /*
+    * Matches function modules by strings in their function body.
+    */
+   export function byRegex(...regex: string[]): SearchFilter {
       return (mdl) => {
          if (!mdl || typeof mdl !== 'function' || (mdl.__original?.toString ?? mdl.toString) !== Function.prototype.toString) {
             return false;
          }
 
-         for (let i = 0, len = strings.length; i < len; i++) {
-            if (!~mdl.toString?.()?.indexOf?.(strings[i])) {
+         for (let i = 0, len = regex.length; i < len; i++) {
+            if (!mdl.toString?.()?.match?.(regex[i])) {
                return false;
             }
          }
@@ -413,6 +435,12 @@ export function findByStrings(...options: any[]): any {
    const [strings, { interop = true, ...rest }] = parseOptions<Record<any, any>>(options);
 
    return _find(strings, { interop, ...rest }, filters.byStrings);
+}
+
+export function findByRegex(...options: any[]): any {
+   const [regex, { interop = true, ...rest }] = parseOptions<Record<any, any>>(options);
+
+   return _find(regex, { interop, ...rest }, filters.byRegex);
 }
 
 export function findByDisplayName(...options: any[]): any {

@@ -7,7 +7,7 @@ interface PatchedModule extends Module {
    globalPaths: string[];
 }
 
-const PatchedModule = (module.constructor.length > 1 ? module.constructor : Module) as any as PatchedModule;
+const PatchedModule = Module as any as PatchedModule;
 
 const aliases = {};
 

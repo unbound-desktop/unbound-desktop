@@ -2,7 +2,7 @@ import type Toast from '@api/toasts/components/Toast';
 
 import { ColorPicker, SettingsItem, SliderInput, Switch } from '@components/settings';
 import { ErrorBoundary, Category, AsyncComponent, Divider, Icon } from '@components';
-import { FormTitle, Tooltip } from '@components/discord';
+import { Typography, Tooltip } from '@components/discord';
 import { connectComponent } from '@api/settings';
 import { Locale, Colors } from '@webpack/common';
 import { memoize, parseColor } from '@utilities';
@@ -46,9 +46,9 @@ class General extends React.Component<GeneralPanelProps, GeneralPanelState> {
 
    render() {
       return <ErrorBoundary>
-         <FormTitle tag='h1' className='unbound-settings-title'>
+         <Typography variant='text-sm/normal' tag='h1'>
             {Locale.Messages.UNBOUND_GENERAL}
-         </FormTitle>
+         </Typography>
          {this.renderToasts()}
          {this.renderTweaks()}
          {this.renderSplash()}

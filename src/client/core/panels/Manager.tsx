@@ -1,4 +1,4 @@
-import { Text, Caret, Menu, FormTitle, RelativeTooltip, SearchBar, Popout } from '@components/discord';
+import { Text, Caret, Menu, Typography, RelativeTooltip, SearchBar, Popout } from '@components/discord';
 import { DOMWrapper, AddonCard } from '@core/components';
 import { ErrorBoundary, Icon } from '@components';
 import { bind, classnames } from '@utilities';
@@ -140,10 +140,13 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
 
       return (
          <div className='unbound-manager-title'>
-            <FormTitle
+            <Typography
                tag='h1'
+               variant='text-sm/normal'
                onClick={() => this.setState({ settings: null, breadcrumbs: [] })}
                className={classnames(
+                  Typography.Classes.defaultColor,
+                  Typography.Classes.h1,
                   'unbound-manager-title-main',
                   this.state.breadcrumbs.length && 'unbound-manager-title-unselected'
                )}
@@ -153,7 +156,7 @@ class Manager extends React.PureComponent<ManagerPanelProps, ManagerPanelState> 
                   direction={Caret.Directions.RIGHT}
                   className='unbound-manager-title-caret'
                />}
-            </FormTitle>
+            </Typography>
             {this.renderBreadcrumbs()}
          </div>
       );

@@ -1,10 +1,11 @@
-import { Button, Text, Spinner, FormTitle } from '@components/discord';
+import { Button, Text, Spinner, Typography } from '@components/discord';
 import { Divider, ErrorBoundary, Icon } from '@components';
 import { connectComponent } from '@api/settings';
 import { Locale } from '@webpack/common';
 import React from 'react';
 
 import Styles from '@styles/panels/updater.css';
+import { classnames } from '@utilities';
 Styles.append();
 
 enum UpdaterStatus {
@@ -60,9 +61,16 @@ class Updater extends React.Component<UpdaterProps> {
       }
 
       return <ErrorBoundary>
-         <FormTitle tag='h1' className='unbound-settings-title'>
+         <Typography
+            variant='text-sm/normal'
+            className={classnames(
+               Typography.Classes.defaultColor,
+               Typography.Classes.defaultMarginh3,
+               Typography.Classes.h1
+            )}
+         >
             {Locale.Messages.UNBOUND_UPDATER}
-         </FormTitle>
+         </Typography>
          <div className='unbound-updater'>
             <div className='unbound-updater-icon-container'>
                {status === UpdaterStatus.CHECKING ?
@@ -78,9 +86,9 @@ class Updater extends React.Component<UpdaterProps> {
                }
             </div>
             <div className='unbound-updater-status-container'>
-               <FormTitle className='unbound-updater-status' tag='h3'>
+               <Typography className='unbound-updater-status' tag='h3'>
                   {data.text}
-               </FormTitle>
+               </Typography>
                <Text tag='h3'>
                   {data.description}
                </Text>

@@ -31,7 +31,15 @@ const Divider: Divider = ({ direction = 'VERTICAL', height, width, margin, backg
       />;
    }
 
-   return <FormDivider {...rest} />;
+   return <div
+      style={{
+         height: height ?? '1px',
+         width: width ?? '100%',
+         borderTop: 'thin solid var(--background-modifier-accent)',
+         marginTop: 20
+      }}
+      {...rest}
+   />;
 };
 
 Divider.Directions = {

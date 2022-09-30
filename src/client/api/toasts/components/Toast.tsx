@@ -1,4 +1,4 @@
-import { MarkdownParser, Colors, ReactSpring } from '@webpack/common';
+import { MarkdownParser, ReactSpring } from '@webpack/common';
 import { Text, FormTitle, Button } from '@components/discord';
 import { DropdownButton } from 'discord-types/components';
 import Component from '@structures/component';
@@ -55,6 +55,10 @@ export default class Toast extends Component {
 
    componentDidCatch() {
       this.setState({ crashed: true });
+   }
+
+   int2rgba(int: number, opacity: number) {
+      return `rgba(${(int >> 24) & 0xFF},g: ${(int >> 16) & 0xFF},${(int >> 8) & 0xFF}, ${opacity})`;
    }
 
    render() {
@@ -186,7 +190,7 @@ export default class Toast extends Component {
                style={{
                   transform: props.transform,
                   '--color': color,
-                  '--bg': Colors.int2rgba(bgColor, bgOpacity),
+                  '--bg': this.int2rgba(bgColor, bgOpacity),
                   '--blur': `${settings.get('toasts.blurAmount', 7.5)}px`
                }}
                className='unbound-toast'

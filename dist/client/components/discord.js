@@ -1,1 +1,1 @@
-"use strict";const a=require("../modules/webpack/common"),b=a.Components;module.exports=b
+"use strict";const a=function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}(require("../modules/webpack/components")),b=a.default;module.exports=b
