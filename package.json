@@ -1,45 +1,45 @@
 {
-   "name": "unbound",
-   "author": "eternal",
-   "license": "See LICENSE",
-   "scripts": {
-      "build": "swc src -d dist -D --delete-dir-on-start",
-      "package": "pnpm build && node scripts/pack.mjs",
-      "typings": "rm -rf typings & tsc -d --declarationDir typings --emitDeclarationOnly",
-      "dev": "nodemon",
-      "release": "semantic-release"
-   },
-   "aliases": {
-      "@structures": "dist/client/structures",
-      "@entities": "dist/client/structures/entities",
-      "@modules": "dist/client/modules",
-      "@webpack": "dist/client/modules/webpack",
-      "@components": "dist/client/components",
-      "@utilities": "dist/common/utilities",
-      "@common": "dist/common",
-      "@constants": "dist/common/constants",
-      "@patcher": "dist/client/modules/patcher",
-      "@api": "dist/client/api",
-      "@core": "dist/client/core",
-      "react": "dist/client/modules/webpack/react",
-      "@src": "dist",
-      "@root": "dist"
-   },
-   "devDependencies": {
-      "@semantic-release/changelog": "^6.0.1",
-      "@semantic-release/commit-analyzer": "^9.0.2",
-      "@semantic-release/git": "^10.0.1",
-      "@semantic-release/github": "^8.0.5",
-      "@semantic-release/release-notes-generator": "^10.0.3",
-      "@swc/cli": "^0.1.57",
-      "@swc/core": "^1.2.220",
-      "@types/lodash": "^4.14.182",
-      "@types/node": "^18.6.2",
-      "@types/react": "^18.0.15",
-      "asar": "^3.2.0",
-      "discord-types": "^1.3.26",
-      "fs-extra": "^10.1.0",
-      "semantic-release": "^19.0.3",
-      "typescript": "^4.7.4"
-   }
+	"name": "unbound",
+	"author": "Mario <mariovparaschiv@gmail.com> (github.com/localip)",
+	"license": "See LICENSE",
+	"scripts": {
+		"build": "swc src -d dist -D --delete-dir-on-start",
+		"package": "pnpm build && node scripts/pack.mjs",
+		"typings": "rm -rf typings & tsc -d --declarationDir typings --emitDeclarationOnly",
+		"dev": "nodemon",
+		"release": "semantic-release"
+	},
+	"aliases": {
+		"@structures": "dist/client/structures",
+		"@entities": "dist/client/structures/entities",
+		"@modules": "dist/client/modules",
+		"@webpack": "dist/client/modules/webpack",
+		"@components": "dist/client/components",
+		"@utilities": "dist/common/utilities",
+		"@common": "dist/common",
+		"@constants": "dist/common/constants",
+		"@patcher": "dist/client/modules/patcher",
+		"@api": "dist/client/api",
+		"@core": "dist/client/core",
+		"react": "dist/client/modules/webpack/react",
+		"@src": "dist",
+		"@root": "dist"
+	},
+	"devDependencies": {
+		"@semantic-release/changelog": "^6.0.1",
+		"@semantic-release/commit-analyzer": "^9.0.2",
+		"@semantic-release/git": "^10.0.1",
+		"@semantic-release/github": "^8.0.5",
+		"@semantic-release/release-notes-generator": "^10.0.3",
+		"@swc/cli": "^0.1.57",
+		"@swc/core": "^1.2.220",
+		"@types/lodash": "^4.14.182",
+		"@types/node": "^18.6.2",
+		"@types/react": "^18.0.15",
+		"asar": "^3.2.0",
+		"discord-types": "^1.3.26",
+		"fs-extra": "^10.1.0",
+		"semantic-release": "^19.0.3",
+		"typescript": "^4.7.4"
+	}
 }

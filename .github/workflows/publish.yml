@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-  GIT_AUTHOR_NAME: "eternal"
-  GIT_AUTHOR_EMAIL: "eternal.git@gmail.com"
-  GIT_COMMITTER_NAME: "eternal"
-  GIT_COMMITTER_EMAIL: "eternal.git@gmail.com"
+  GIT_AUTHOR_NAME: "Mario"
+  GIT_AUTHOR_EMAIL: "mariovparaschiv@gmail.com"
+  GIT_COMMITTER_NAME: "Mario"
+  GIT_COMMITTER_EMAIL: "mariovparaschiv@gmail.com"
 
 jobs:
   release:
