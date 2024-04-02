@@ -1,6 +1,6 @@
 {
 	"name": "unbound",
-	"author": "Mario <mariovparaschiv@gmail.com> (github.com/localip)",
+	"author": "Mario <me@marioparaschiv.com> (github.com/marioparaschiv)",
 	"license": "See LICENSE",
 	"scripts": {
 		"build": "swc src -d dist -D --delete-dir-on-start",

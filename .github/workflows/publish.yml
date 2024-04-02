@@ -7,9 +7,9 @@ on:
 
 env:
   GIT_AUTHOR_NAME: "Mario"
-  GIT_AUTHOR_EMAIL: "mariovparaschiv@gmail.com"
+  GIT_AUTHOR_EMAIL: "me@marioparaschiv.com"
   GIT_COMMITTER_NAME: "Mario"
-  GIT_COMMITTER_EMAIL: "mariovparaschiv@gmail.com"
+  GIT_COMMITTER_EMAIL: "me@marioparaschiv.com"
 
 jobs:
   release:
